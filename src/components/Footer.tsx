@@ -12,7 +12,7 @@ const Footer = () => {
                 <span className="font-bold text-white text-sm">VT</span>
               </div>
               <div>
-                <h3 className="font-display font-bold text-lg">VeloTech ATV Club</h3>
+                <h3 className="font-display font-bold text-lg">AUTOARCHITECTS</h3>
                 <p className="text-steel-light text-sm">Engineering Excellence</p>
               </div>
             </div>
@@ -36,7 +36,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3 text-steel-light">
                 <MapPin className="w-5 h-5 text-energy" />
-                <span>Engineering Building, Room 204</span>
+                <span>Siddaganga Institute of Technology</span>
               </div>
             </div>
           </div>
@@ -72,7 +72,7 @@ const Footer = () => {
 
         <div className="border-t border-steel mt-8 pt-8 text-center">
           <p className="text-steel-light">
-            © 2024 VeloTech ATV Club. All rights reserved. Built with passion for engineering excellence.
+            © 2025 AUTOARCHITECTS ATV Club. All rights reserved. Built with passion for engineering excellence.
           </p>
         </div>
       </div>

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Trophy, Users, Wrench } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import heroImage from '@/assets/hero-atv.jpg';
+import heroImage from '@/assets/Banner.jpg';
 import workshopImage from '@/assets/workshop-atvs.jpg';
 import eventImage from '@/assets/event-competition.jpg';
 
@@ -58,7 +58,7 @@ const Home = () => {
         
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="font-display font-bold text-5xl md:text-7xl text-white mb-6">
-            VeloTech
+            AUTOARCHITECTS
             <span className="block text-gradient-energy">ATV Club</span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
@@ -72,7 +72,7 @@ const Home = () => {
             </Button>
             <Button asChild variant="outline" size="lg" className="border-white/50 bg-white/10 text-white hover:bg-white/20 hover:border-white/70 backdrop-blur-sm text-lg px-8 py-6 transition-smooth">
               <Link to="/members">
-                Meet The Team
+               Join Team
               </Link>
             </Button>
           </div>

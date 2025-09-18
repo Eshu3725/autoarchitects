@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Menu, X, Zap } from 'lucide-react';
-import ThemeToggle from './ThemeToggle';
+import { Menu, X } from 'lucide-react';
+import TAALogo from '@/assets/TAA.png';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,12 +27,10 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 energy-gradient rounded-lg shadow-glow">
-              <Zap className="w-6 h-6 text-white" />
-            </div>
+            <img src={TAALogo} alt="TAA Logo" className="h-10" />
             <div className="flex flex-col">
-              <span className="font-display font-bold text-xl text-steel-dark">VeloTech</span>
-              <span className="text-xs text-muted-foreground font-medium">ATV CLUB</span>
+              <span className="font-display font-bold text-xl text-steel-dark">AUTOARCHITECTS</span>
+              <span className="text-xs text-muted-foreground font-medium">ONE TEAM ONE DREAM !!!</span>
             </div>
           </div>
 
@@ -47,12 +45,10 @@ const Navigation = () => {
                 {item.name}
               </NavLink>
             ))}
-            <ThemeToggle />
           </div>
 
           {/* Mobile menu button and theme toggle */}
           <div className="md:hidden flex items-center space-x-2">
-            <ThemeToggle />
             <Button
               variant="ghost"
               size="sm"
