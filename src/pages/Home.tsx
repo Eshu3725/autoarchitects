@@ -70,7 +70,7 @@ const Home = () => {
                 Explore Our Journey <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6">
+            <Button asChild variant="outline" size="lg" className="border-white/50 bg-white/10 text-white hover:bg-white/20 hover:border-white/70 backdrop-blur-sm text-lg px-8 py-6 transition-smooth">
               <Link to="/members">
                 Meet The Team
               </Link>
