@@ -134,7 +134,7 @@ const Members = () => {
             Our Team
           </h1>
           <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
-            Meet the passionate engineers and innovators driving VeloTech forward
+            Meet the passionate engineers and innovators driving AutoArchitects forward
           </p>
         </div>
       </section>
