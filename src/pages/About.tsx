@@ -43,12 +43,12 @@ const About = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="hero-gradient py-20 text-white">
+      <section className="hero-gradient py-16 md:py-20 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="font-display font-bold text-5xl md:text-6xl mb-6">
-            About AUTOARCHITECTS
+          <h1 className="font-display font-bold text-4xl sm:text-5xl md:text-6xl mb-4 md:mb-6">
+            About AutoArchitects
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
             Driving innovation in off-road vehicle engineering through passion, 
             dedication, and cutting-edge technology.
           </p>
@@ -175,7 +175,7 @@ const About = () => {
                       Professor of Mechanical Engineering
                     </p>
                     <p className="text-muted-foreground text-sm mb-4">
-                      Dr. Kumar brings over 15 years of experience in automotive engineering and vehicle dynamics. His expertise has been instrumental in our club's success.
+                      He has brings over 15 years of experience in automotive engineering and vehicle dynamics. His expertise has been instrumental in our club's success.
                     </p>
                     <div className="flex flex-wrap gap-2 justify-center">
                       <span className="bg-energy/10 text-energy px-3 py-1 rounded-full text-xs font-medium">
@@ -213,7 +213,7 @@ const About = () => {
                       Assistant Professor of Mechanical Engineering
                     </p>
                     <p className="text-muted-foreground text-sm mb-4">
-                      Dr. Sharma specializes in embedded systems and battery technology, guiding our transition to electric and autonomous ATV development.
+                      He is specializes in embedded systems and battery technology, guiding our transition to electric and autonomous ATV development.
                     </p>
                     <div className="flex flex-wrap gap-2 justify-center">
                       <span className="bg-energy/10 text-energy px-3 py-1 rounded-full text-xs font-medium">

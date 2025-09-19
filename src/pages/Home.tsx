@@ -49,7 +49,7 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative h-[80vh] md:h-screen flex items-center justify-center overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroImage})` }}
@@ -57,20 +57,20 @@ const Home = () => {
         <div className="absolute inset-0 hero-gradient opacity-75" />
         
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="font-display font-bold text-5xl md:text-7xl text-white mb-6">
+          <h1 className="font-display font-bold text-4xl sm:text-5xl md:text-7xl text-white mb-4 md:mb-6">
             AUTOARCHITECTS
             <span className="block text-gradient-energy">ATV Club</span>
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
             Where innovation meets adventure. Engineering the future of off-road vehicles.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="energy-gradient hover-glow transition-smooth text-lg px-8 py-6">
+            <Button asChild size="lg" className="energy-gradient hover-glow transition-smooth text-base md:text-lg px-6 md:px-8 py-3 md:py-6">
               <Link to="/about">
                 Explore Our Journey <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-white/50 bg-white/10 text-white hover:bg-white/20 hover:border-white/70 backdrop-blur-sm text-lg px-8 py-6 transition-smooth">
+            <Button asChild variant="outline" size="lg" className="border-white/50 bg-white/10 text-white hover:bg-white/20 hover:border-white/70 backdrop-blur-sm text-base md:text-lg px-6 md:px-8 py-3 md:py-6 transition-smooth">
               <Link to="/members">
                Join Team
               </Link>
@@ -90,7 +90,7 @@ const Home = () => {
             </div>
             <div className="text-center p-8 rounded-xl metallic-gradient shadow-card hover-lift transition-smooth">
               <Users className="w-12 h-12 text-energy mx-auto mb-4" />
-              <h3 className="font-display font-bold text-3xl text-white mb-2">50+</h3>
+              <h3 className="font-display font-bold text-3xl text-white mb-2">30+</h3>
               <p className="text-white/80 font-medium">Active Members</p>
             </div>
             <div className="text-center p-8 rounded-xl metallic-gradient shadow-card hover-lift transition-smooth">
