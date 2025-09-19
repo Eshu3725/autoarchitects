@@ -1,4 +1,5 @@
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import TAAFooterLogo from '@/assets/TAA_footer.png';
 
 const Footer = () => {
   return (
@@ -8,9 +9,7 @@ const Footer = () => {
           {/* Club Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 energy-gradient rounded-lg flex items-center justify-center">
-                <span className="font-bold text-white text-sm">VT</span>
-              </div>
+              <img src={TAAFooterLogo} alt="TAA Footer Logo" className="h-10" />
               <div>
                 <h3 className="font-display font-bold text-lg">AUTOARCHITECTS</h3>
                 <p className="text-steel-light text-sm">Engineering Excellence</p>
