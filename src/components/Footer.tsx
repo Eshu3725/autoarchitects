@@ -27,15 +27,15 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-steel-light">
                 <Mail className="w-5 h-5 text-energy" />
-                <span>contact@velotechatv.edu</span>
+                <span>autoarchitects@sit.ac.in</span>
               </div>
               <div className="flex items-center space-x-3 text-steel-light">
                 <Phone className="w-5 h-5 text-energy" />
-                <span>+1 (555) 123-4567</span>
+                <span>+91 6363852155</span>
               </div>
               <div className="flex items-center space-x-3 text-steel-light">
                 <MapPin className="w-5 h-5 text-energy" />
-                <span>Siddaganga Institute of Technology</span>
+                <span>Siddaganga Institute  of Technology</span>
               </div>
             </div>
           </div>
