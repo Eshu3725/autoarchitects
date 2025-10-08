@@ -5,6 +5,13 @@ import { Link } from 'react-router-dom';
 import heroImage from '@/assets/Banner.jpg';
 import workshopImage from '@/assets/workshop-atvs.jpg';
 import eventImage from '@/assets/event-competition.jpg';
+import video1 from '@/assets/Videos/1AUTO ARCHITECTS MOTOSPORT BAJA season 2020.mp4';
+import video2 from '@/assets/Videos/2IMAGINATION 4.0SEASON END.mp4';
+import video3 from '@/assets/Videos/3TEAM AUTO ARCHITECTS _ imagination 3.0 _The Journe(1080P_HD).mp4';
+import video4 from '@/assets/Videos/4The Off Road Hustle _Auto Architects_ IMAGINATION(1080P_HD).mp4';
+import video5 from '@/assets/Videos/AUTO ARCHITECTS BAJA SAEINDIA 2020.mp4';
+import video6 from '@/assets/Videos/season 2020 baja auto architects.mp4';
+import video7 from '@/assets/Videos/WhatsApp Video 2019-11-26 at 1.07.35 PM.mp4';
 
 const Home = () => {
   const pastEvents = [
@@ -107,38 +114,218 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-display font-bold text-4xl md:text-5xl text-steel-dark mb-6">
-              Past Events
+              Showcasing Our Journey
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Showcasing our journey through competitions, workshops, and challenges
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {pastEvents.map((event, index) => (
-              <Card key={index} className="overflow-hidden shadow-card hover-lift transition-smooth border-0">
-                <div className="h-48 overflow-hidden">
-                  <img 
-                    src={event.image} 
-                    alt={event.title}
-                    className="w-full h-full object-cover transition-smooth hover:scale-105"
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-3">
-                    <span className="text-sm font-medium text-energy bg-energy/10 px-3 py-1 rounded-full">
-                      {event.date}
-                    </span>
+          <div className="overflow-x-auto pb-6">
+            <div className="flex space-x-8 min-w-max">
+              <div 
+                className="group relative w-[400px]"
+                onMouseLeave={(e) => {
+                  const video = e.currentTarget.querySelector('video');
+                  if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                  }
+                }}
+              >
+                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
+                  <div className="relative">
+                    <video 
+                      className="w-full"
+                      controls
+                      muted
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                    >
+                      <source src={video1} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
                   </div>
-                  <h3 className="font-display font-semibold text-xl text-steel-dark mb-3">
-                    {event.title}
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {event.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+                  <div className="p-4">
+                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">Motorsport BAJA Season 2020</h3>
+                    <p className="text-sm text-muted-foreground">Our team's journey through the intense BAJA competition season, showcasing dedication and engineering excellence.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div 
+                className="group relative w-[400px]"
+                onMouseLeave={(e) => {
+                  const video = e.currentTarget.querySelector('video');
+                  if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                  }
+                }}
+              >
+                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
+                  <div className="relative">
+                    <video 
+                      className="w-full"
+                      controls
+                      muted
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                    >
+                      <source src={video2} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">IMAGINATION 4.0 Season Finale</h3>
+                    <p className="text-sm text-muted-foreground">The culmination of our innovative design process and technical achievements in the latest season.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div 
+                className="group relative w-[400px]"
+                onMouseLeave={(e) => {
+                  const video = e.currentTarget.querySelector('video');
+                  if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                  }
+                }}
+              >
+                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
+                  <div className="relative">
+                    <video 
+                      className="w-full"
+                      controls
+                      muted
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                    >
+                      <source src={video3} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">IMAGINATION 3.0 Journey</h3>
+                    <p className="text-sm text-muted-foreground">A glimpse into our team's evolution and groundbreaking achievements during IMAGINATION 3.0.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div 
+                className="group relative w-[400px]"
+                onMouseLeave={(e) => {
+                  const video = e.currentTarget.querySelector('video');
+                  if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                  }
+                }}
+              >
+                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
+                  <div className="relative">
+                    <video 
+                      className="w-full"
+                      controls
+                      muted
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                    >
+                      <source src={video4} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">The Off-Road Hustle</h3>
+                    <p className="text-sm text-muted-foreground">Experience the thrill and challenges of off-road engineering with our dedicated team.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div 
+                className="group relative w-[400px]"
+                onMouseLeave={(e) => {
+                  const video = e.currentTarget.querySelector('video');
+                  if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                  }
+                }}
+              >
+                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
+                  <div className="relative">
+                    <video 
+                      className="w-full"
+                      controls
+                      muted
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                    >
+                      <source src={video5} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">BAJA SAEINDIA 2020</h3>
+                    <p className="text-sm text-muted-foreground">Our competitive spirit and technical prowess on display at BAJA SAEINDIA 2020.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div 
+                className="group relative w-[400px]"
+                onMouseLeave={(e) => {
+                  const video = e.currentTarget.querySelector('video');
+                  if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                  }
+                }}
+              >
+                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
+                  <div className="relative">
+                    <video 
+                      className="w-full"
+                      controls
+                      muted
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                    >
+                      <source src={video6} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">Season 2020 Highlights</h3>
+                    <p className="text-sm text-muted-foreground">A compilation of our best moments and achievements throughout the 2020 season.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div 
+                className="group relative w-[400px]"
+                onMouseLeave={(e) => {
+                  const video = e.currentTarget.querySelector('video');
+                  if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                  }
+                }}
+              >
+                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
+                  <div className="relative">
+                    <video 
+                      className="w-full"
+                      controls
+                      muted
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                    >
+                      <source src={video7} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">Team Showcase 2019</h3>
+                    <p className="text-sm text-muted-foreground">A special glimpse into our team's dynamics and innovative approach to ATV engineering.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
