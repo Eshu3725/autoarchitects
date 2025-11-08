@@ -3,37 +3,104 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Mail, Linkedin, Github, Award } from 'lucide-react';
+import { link } from 'fs';
 
 const Members = () => {
   const [selectedRole, setSelectedRole] = useState('all');
 
   const teamMembers = [
+    // 4th Year Members (8 total)
+    // Leadership and Senior Technical Roles
+    
     {
-      name: "Sarah Johnson",
-      role: "President",
-      year: "Senior",
+      name: "Kushal MV",
+      role: "Captain",
+      year: "4th Year",
+      major: "- Mechanical Engineering",
+      bio: "1SI23ME426",
+      email: "kushalmvkushi2@gmail.com",
+      linkedin: "Kushal MV",
+      category: "leadership"
+    },
+    {
+      name: "Tejashree P",
+      role: "Vice Captain",
+      year: "4th Year",
+      major: "- Mechanical Engineering",
+      bio: "1SI22ME059",
+      email: "tejashree62005@gmail.com",
+      linkedin: "marcusrodriguez",
+      category: "leadership"
+    },
+    {
+      name: "Basavraj L Arakeri",
+      role: "Breaks Lead",
+      year: "4th Year",
+      major: "- Mechanical Engineering",
+      bio: "1SI22ME008",
+      email: "basavrajarakeri20@gmail.com",
+      linkedin: "mariagarcia",
+      category: "technical"
+    },
+    {
+      name: "Kushal NS",
+      role: "Steering",
+      year: "4th Year",
+      major: "- Mechanical Engineering",
+      bio: "1SI22ME021",
+      email: "kushalns32@gmail.com",
+      linkedin: "emmawhite",
+      category: "technical"
+    },
+    {
+      name: "Karthik K",
+      role: "Transmission",
+      year: "4th Year",
       major: "Mechanical Engineering",
-      bio: "Leading the team with passion for innovation and competitive racing.",
-      achievements: ["National Competition Winner", "Design Excellence Award"],
-      email: "sarah.j@velotechatv.edu",
-      linkedin: "sarahjohnson",
-      category: "leadership"
+      bio: "1SI22ME020",
+      email: "karthikkkantharaju28@gmail.com",
+      linkedin: "jordantaylor",
+      category: "technical"
     },
     {
-      name: "Marcus Rodriguez",
-      role: "Vice President",
-      year: "Senior", 
-      major: "Automotive Engineering",
-      bio: "Specializes in engine optimization and performance tuning.",
-      achievements: ["Engine Innovation Award", "Technical Leadership"],
-      email: "marcus.r@velotechatv.edu",
-      github: "marcusrodriguez",
+      name: "Vivek Hiremansor",
+      role: "Training Director",
+      year: "4th Year",
+      major: "Education Engineering",
+      bio: "Develops and implements team training programs.",
+      achievements: ["Training Excellence Award"],
+      email: "samuel.m@velotechatv.edu",
+      github: "samuelmartinez",
+      category: "operations"
+    },
+    {
+      name: "Aisha Patel",
+      role: "Sponsorship Director",
+      year: "4th Year",
+      major: "Business Administration",
+      bio: "Develops and maintains sponsor relationships.",
+      achievements: ["Sponsorship Growth Award"],
+      email: "aisha.p@velotechatv.edu",
+      linkedin: "aishapatel",
+      category: "operations"
+    },
+    {
+      name: "Michael Patel",
+      role: "Innovation Director",
+      year: "4th Year",
+      major: "Robotics Engineering",
+      bio: "Driving technological innovation and research initiatives.",
+      achievements: ["Innovation Excellence", "Research Leadership"],
+      email: "michael.p@velotechatv.edu",
+      github: "michaelpatel",
       category: "leadership"
     },
+
+    // 3rd Year Members (14 total)
     {
       name: "Emily Chen",
       role: "Technical Lead",
-      year: "Junior",
+      year: "3rd Year",
       major: "Electrical Engineering",
       bio: "Expert in electronic systems and control mechanisms for ATVs.",
       achievements: ["Best Electronic Design", "Innovation Scholarship"],
@@ -42,10 +109,155 @@ const Members = () => {
       category: "technical"
     },
     {
+      name: "James Wilson",
+      role: "Suspension Engineer",
+      year: "3rd Year",
+      major: "Mechanical Engineering",
+      bio: "Specializes in suspension design and optimization.",
+      achievements: ["Suspension Innovation Award"],
+      email: "james.w@velotechatv.edu",
+      linkedin: "jameswilson",
+      category: "technical"
+    },
+    {
+      name: "Daniel Lee",
+      role: "Software Engineer",
+      year: "3rd Year",
+      major: "Computer Engineering",
+      bio: "Develops control software and data acquisition systems.",
+      achievements: ["Software Innovation Award"],
+      email: "daniel.l@velotechatv.edu",
+      github: "daniellee",
+      category: "technical"
+    },
+    {
+      name: "Olivia Chen",
+      role: "Systems Engineer",
+      year: "3rd Year",
+      major: "Systems Engineering",
+      bio: "Integrates various subsystems and ensures compatibility.",
+      achievements: ["Systems Integration Award"],
+      email: "olivia.c@velotechatv.edu",
+      linkedin: "oliviachen",
+      category: "technical"
+    },
+    {
+      name: "Nathan Park",
+      role: "Controls Engineer",
+      year: "3rd Year",
+      major: "Control Systems Engineering",
+      bio: "Develops vehicle control algorithms and stability systems.",
+      achievements: ["Control Systems Excellence"],
+      email: "nathan.p@velotechatv.edu",
+      github: "nathanpark",
+      category: "technical"
+    },
+    {
+      name: "William Zhang",
+      role: "CAD Engineer",
+      year: "3rd Year",
+      major: "Mechanical Engineering",
+      bio: "Creates detailed 3D models and technical drawings.",
+      achievements: ["CAD Design Excellence"],
+      email: "william.z@velotechatv.edu",
+      github: "williamzhang",
+      category: "technical"
+    },
+    {
+      name: "Lisa Park",
+      role: "Finance Manager",
+      year: "3rd Year",
+      major: "Business Engineering",
+      bio: "Manages club budget and fundraising initiatives.",
+      achievements: ["Financial Management Excellence"],
+      email: "lisa.p@velotechatv.edu",
+      linkedin: "lisapark",
+      category: "operations"
+    },
+    {
+      name: "Thomas Anderson",
+      role: "Logistics Coordinator",
+      year: "3rd Year",
+      major: "Supply Chain Management",
+      bio: "Manages parts inventory and supply chain.",
+      achievements: ["Logistics Excellence"],
+      email: "thomas.a@velotechatv.edu",
+      github: "thomasanderson",
+      category: "operations"
+    },
+    {
+      name: "Victoria Chang",
+      role: "Compliance Officer",
+      year: "3rd Year",
+      major: "Engineering Management",
+      bio: "Ensures adherence to competition rules and regulations.",
+      achievements: ["Compliance Excellence"],
+      email: "victoria.c@velotechatv.edu",
+      linkedin: "victoriachang",
+      category: "operations"
+    },
+    {
+      name: "Grace Wilson",
+      role: "Sustainability Officer",
+      year: "3rd Year",
+      major: "Environmental Engineering",
+      bio: "Implements sustainable practices in operations.",
+      achievements: ["Sustainability Innovation"],
+      email: "grace.w@velotechatv.edu",
+      linkedin: "gracewilson",
+      category: "operations"
+    },
+    {
+      name: "Carlos Rivera",
+      role: "Events Coordinator",
+      year: "3rd Year",
+      major: "Project Management",
+      bio: "Organizes team events and competition logistics.",
+      achievements: ["Event Management Excellence"],
+      email: "carlos.r@velotechatv.edu",
+      linkedin: "carlosrivera",
+      category: "operations"
+    },
+    {
+      name: "Lucas Santos",
+      role: "Aerodynamics Engineer",
+      year: "3rd Year",
+      major: "Aerospace Engineering",
+      bio: "Optimizes vehicle aerodynamics through CFD analysis.",
+      achievements: ["Aero Design Excellence"],
+      email: "lucas.s@velotechatv.edu",
+      github: "lucassantos",
+      category: "technical"
+    },
+    {
+      name: "Sophia Lee",
+      role: "Electronics Engineer",
+      year: "3rd Year",
+      major: "Electrical Engineering",
+      bio: "Designs and implements electronic control systems.",
+      achievements: ["Circuit Design Excellence"],
+      email: "sophia.l@velotechatv.edu",
+      github: "sophialee",
+      category: "technical"
+    },
+    {
+      name: "Ryan Martinez",
+      role: "Manufacturing Lead",
+      year: "3rd Year",
+      major: "Manufacturing Engineering",
+      bio: "Oversees fabrication processes and quality control.",
+      achievements: ["Manufacturing Innovation Award"],
+      email: "ryan.m@velotechatv.edu",
+      github: "ryanmartinez",
+      category: "technical"
+    },
+
+    // 2nd Year Members (8 total)
+    {
       name: "David Kim",
       role: "Design Engineer",
-      year: "Junior",
-      major: "Mechanical Engineering", 
+      year: "2nd Year",
+      major: "Mechanical Engineering",
       bio: "CAD specialist focusing on chassis design and aerodynamics.",
       achievements: ["Design Competition Winner"],
       email: "david.k@velotechatv.edu",
@@ -55,7 +267,7 @@ const Members = () => {
     {
       name: "Jessica Wang",
       role: "Marketing Director",
-      year: "Sophomore",
+      year: "2nd Year",
       major: "Industrial Engineering",
       bio: "Manages club communications and sponsor relationships.",
       achievements: ["Outstanding Leadership Award"],
@@ -66,7 +278,7 @@ const Members = () => {
     {
       name: "Alex Thompson",
       role: "Safety Officer",
-      year: "Sophomore", 
+      year: "2nd Year",
       major: "Mechanical Engineering",
       bio: "Ensures all safety protocols and testing procedures are followed.",
       achievements: ["Safety Excellence Recognition"],
@@ -74,35 +286,213 @@ const Members = () => {
       category: "operations"
     },
     {
-      name: "Ryan Martinez",
-      role: "Manufacturing Lead",
-      year: "Senior",
-      major: "Manufacturing Engineering",
-      bio: "Oversees fabrication processes and quality control.",
-      achievements: ["Manufacturing Innovation Award"],
-      email: "ryan.m@velotechatv.edu",
-      github: "ryanmartinez",
-      category: "technical"
+      name: "Hannah Kim",
+      role: "Documentation Manager",
+      year: "2nd Year",
+      major: "Technical Writing",
+      bio: "Maintains technical documentation and team records.",
+      achievements: ["Documentation Excellence"],
+      email: "hannah.k@velotechatv.edu",
+      linkedin: "hannahkim",
+      category: "operations"
     },
     {
-      name: "Lisa Park",
-      role: "Finance Manager",
-      year: "Junior",
-      major: "Business Engineering",
-      bio: "Manages club budget and fundraising initiatives.",
-      achievements: ["Financial Management Excellence"],
-      email: "lisa.p@velotechatv.edu",
-      linkedin: "lisapark",
+      name: "Maya Singh",
+      role: "Community Outreach",
+      year: "2nd Year",
+      major: "Communications",
+      bio: "Coordinates community engagement and educational programs.",
+      achievements: ["Community Impact Award"],
+      email: "maya.s@velotechatv.edu",
+      linkedin: "mayasingh",
       category: "operations"
     },
     {
       name: "Kevin Brown",
       role: "Test Engineer",
-      year: "Sophomore",
+      year: "2nd Year",
       major: "Mechanical Engineering",
       bio: "Conducts performance testing and data analysis.",
       achievements: ["Testing Innovation Award"],
       email: "kevin.b@velotechatv.edu",
+      category: "technical"
+    },
+    {
+      name: "Isabella Romano",
+      role: "Test Engineer",
+      year: "2nd Year",
+      major: "Mechanical Engineering",
+      bio: "Conducts vehicle testing and performance analysis.",
+      achievements: ["Testing Excellence"],
+      email: "isabella.r@velotechatv.edu",
+      linkedin: "isabellaromano",
+      category: "technical"
+    },
+    {
+      name: "Raj Patel",
+      role: "Data Analyst",
+      year: "2nd Year",
+      major: "Data Science",
+      bio: "Analyzes vehicle performance data and testing results.",
+      achievements: ["Data Analysis Excellence"],
+      email: "raj.p@velotechatv.edu",
+      github: "rajpatel",
+      category: "technical"
+    },
+    {
+      name: "Amy Chen",
+      role: "Component Engineer",
+      year: "2nd Year",
+      major: "Mechanical Engineering",
+      bio: "Designs and tests individual vehicle components.",
+      achievements: ["Component Design Award"],
+      email: "amy.c@velotechatv.edu",
+      linkedin: "amychen",
+      category: "technical"
+    },
+    {
+      name: "Tyler Wilson",
+      role: "Workshop Technician",
+      year: "1st Year",
+      major: "Manufacturing Technology",
+      bio: "Maintains workshop equipment and assists in fabrication.",
+      achievements: ["Technical Excellence"],
+      email: "tyler.w@velotechatv.edu",
+      github: "tylerwilson",
+      category: "operations"
+    },
+    {
+      name: "Sarah Lee",
+      role: "Quality Control Assistant",
+      year: "1st Year",
+      major: "Quality Engineering",
+      bio: "Ensures quality standards in manufacturing and assembly.",
+      achievements: ["Quality Excellence"],
+      email: "sarah.l@velotechatv.edu",
+      linkedin: "sarahlee",
+      category: "operations"
+    },
+    {
+      name: "Marco Ferrari",
+      role: "Dynamics Engineer",
+      year: "2nd Year",
+      major: "Mechanical Engineering",
+      bio: "Studies vehicle dynamics and handling characteristics.",
+      achievements: ["Dynamics Innovation"],
+      email: "marco.f@velotechatv.edu",
+      github: "marcoferrari",
+      category: "technical"
+    },
+    {
+      name: "Lily Zhang",
+      role: "UI/UX Designer",
+      year: "2nd Year",
+      major: "Design Engineering",
+      bio: "Designs user interfaces for vehicle control systems.",
+      achievements: ["UI Design Excellence"],
+      email: "lily.z@velotechatv.edu",
+      linkedin: "lilyzhang",
+      category: "technical"
+    },
+    {
+      name: "Benjamin Foster",
+      role: "Resource Coordinator",
+      year: "2nd Year",
+      major: "Industrial Engineering",
+      bio: "Manages team resources and equipment allocation.",
+      achievements: ["Resource Management Award"],
+      email: "benjamin.f@velotechatv.edu",
+      github: "benjaminfoster",
+      category: "operations"
+    },
+    {
+      name: "Priya Sharma",
+      role: "Communications Officer",
+      year: "2nd Year",
+      major: "Communications Engineering",
+      bio: "Handles internal team communications and documentation.",
+      achievements: ["Communication Excellence"],
+      email: "priya.s@velotechatv.edu",
+      linkedin: "priyasharma",
+      category: "operations"
+    },
+
+    // 1st Year Members (7 total)
+    {
+      name: "Alex Chen",
+      role: "Junior Engineer",
+      year: "1st Year",
+      major: "Mechanical Engineering",
+      bio: "Eager learner focusing on ATV chassis and suspension systems.",
+      achievements: ["First-Year Excellence Award"],
+      email: "alex.c@velotechatv.edu",
+      github: "alexchen",
+      category: "technical"
+    },
+    {
+      name: "Rachel Thompson",
+      role: "Design Assistant",
+      year: "1st Year",
+      major: "Industrial Design",
+      bio: "Supporting the design team with fresh perspectives and innovative ideas.",
+      achievements: ["Design Innovation Award"],
+      email: "rachel.t@velotechatv.edu",
+      linkedin: "rachelthompson",
+      category: "technical"
+    },
+    {
+      name: "Miguel Santos",
+      role: "Workshop Assistant",
+      year: "1st Year",
+      major: "Manufacturing Engineering",
+      bio: "Assisting with fabrication and assembly of ATV components.",
+      achievements: ["Workshop Safety Excellence"],
+      email: "miguel.s@velotechatv.edu",
+      github: "miguelsantos",
+      category: "operations"
+    },
+    {
+      name: "Emma Davis",
+      role: "Documentation Assistant",
+      year: "1st Year",
+      major: "Technical Writing",
+      bio: "Supporting the team with technical documentation and reports.",
+      achievements: ["Documentation Initiative Award"],
+      email: "emma.d@velotechatv.edu",
+      linkedin: "emmadavis",
+      category: "operations"
+    },
+    {
+      name: "Kai Patel",
+      role: "Software Assistant",
+      year: "1st Year",
+      major: "Computer Science",
+      bio: "Contributing to software development and data analysis.",
+      achievements: ["Programming Excellence"],
+      email: "kai.p@velotechatv.edu",
+      github: "kaipatel",
+      category: "technical"
+    },
+    {
+      name: "Sofia Rodriguez",
+      role: "Marketing Assistant",
+      year: "1st Year",
+      major: "Marketing",
+      bio: "Supporting team outreach and social media presence.",
+      achievements: ["Social Media Innovation"],
+      email: "sofia.r@velotechatv.edu",
+      linkedin: "sofiarodriguez",
+      category: "operations"
+    },
+    {
+      name: "James Lee",
+      role: "Testing Assistant",
+      year: "1st Year",
+      major: "Mechanical Engineering",
+      bio: "Supporting vehicle testing and performance analysis.",
+      achievements: ["Testing Protocol Excellence"],
+      email: "james.l@velotechatv.edu",
+      github: "jameslee",
       category: "technical"
     }
   ];
@@ -197,7 +587,7 @@ const Members = () => {
                         {member.role}
                       </Badge>
                       <p className="text-sm text-muted-foreground">
-                        {member.year} • {member.major}
+                        {member.year}  {member.major}
                       </p>
                     </div>
 

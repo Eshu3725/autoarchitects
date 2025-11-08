@@ -33,8 +33,8 @@ const About = () => {
   ];
 
   const milestones = [
-    { year: "2020", event: "Club Founded", members: "12" },
-    { year: "2021", event: "First Competition", members: "25" },
+    { year: "2012", event: "Club Founded", members: "12" },
+    { year: "2013", event: "First Competition", members: "25" },
     { year: "2022", event: "Regional Champions", members: "35" },
     { year: "2023", event: "National Recognition", members: "45" },
     { year: "2024", event: "Innovation Leaders", members: "50+" }
@@ -68,7 +68,7 @@ const About = () => {
                 <p className="text-muted-foreground">
                   To foster innovation in ATV engineering while providing students with 
                   hands-on experience in design, manufacturing, and competitive racing.
-                </p>
+                </p> 
               </CardContent>
             </Card>
 

@@ -1,22 +1,60 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Lock, Mail, Eye, EyeOff, Zap } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Lock, Mail, Eye, EyeOff, Zap, AlertCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import TAALogo from '@/assets/TAA.png';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login, isAuthenticated, user } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        navigate('/user/dashboard', { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login attempt:', { email, password });
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const success = await login(email, password);
+
+      if (success) {
+        toast.success('Login successful!');
+        // Navigation will be handled by useEffect
+      } else {
+        setError('Invalid email or password. Please try again.');
+        toast.error('Login failed');
+      }
+    } catch (err) {
+      setError('An error occurred during login. Please try again.');
+      toast.error('Login error');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-steel/5 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -24,11 +62,13 @@ const Login = () => {
         {/* Logo and Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-3 mb-6">
-            <div className="flex items-center justify-center w-12 h-12 energy-gradient rounded-xl shadow-glow">
-              <Zap className="w-7 h-7 text-white" />
-            </div>
+            <img
+              src={TAALogo}
+              alt="AutoArchitects Logo"
+              className="w-16 h-16 object-contain"
+            />
             <div className="flex flex-col">
-              <span className="font-display font-bold text-2xl text-steel-dark">VeloTech</span>
+              <span className="font-display font-bold text-2xl text-steel-dark">AutoArchitects</span>
               <span className="text-xs text-muted-foreground font-medium">ATV CLUB</span>
             </div>
           </div>
@@ -40,12 +80,21 @@ const Login = () => {
           </p>
         </div>
 
+
+
         {/* Login Form */}
         <Card className="border-0 shadow-elegant">
           <CardHeader className="text-center pb-4">
-            <CardTitle className="font-display text-2xl text-steel-dark">Member Login</CardTitle>
+            <CardTitle className="font-display text-2xl text-steel-dark">Attendance System Login</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             <form onSubmit={handleLogin} className="space-y-6">
               {/* Email Field */}
               <div className="space-y-2">
@@ -117,42 +166,23 @@ const Login = () => {
               </div>
 
               {/* Login Button */}
-              <Button 
+              <Button
                 type="submit"
+                disabled={isLoading}
                 className="w-full h-12 energy-gradient hover-glow transition-smooth font-semibold text-lg"
               >
-                Sign In
+                {isLoading ? 'Signing In...' : 'Sign In'}
               </Button>
             </form>
 
-            <div className="relative">
-              <Separator className="my-6" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="bg-card px-4 text-sm text-muted-foreground">
-                  New to VeloTech?
-                </span>
-              </div>
-            </div>
-
-            {/* Register Link */}
-            <div className="text-center space-y-4">
-              <Button 
-                variant="outline" 
-                className="w-full h-12 border-steel/30 text-steel hover:bg-steel/10 hover:text-energy hover:border-energy transition-smooth font-semibold"
-                asChild
-              >
-                <Link to="#">
-                  Create New Account
-                </Link>
-              </Button>
-              
+            <div className="text-center">
               <p className="text-sm text-muted-foreground">
                 Need help? Contact{' '}
-                <a 
-                  href="mailto:support@velotechatv.edu" 
+                <a
+                  href="mailto:support@autoarchitects.com"
                   className="text-energy hover:text-energy-dark transition-smooth font-medium"
                 >
-                  support@velotechatv.edu
+                  support@autoarchitects.com
                 </a>
               </p>
             </div>
@@ -162,14 +192,7 @@ const Login = () => {
         {/* Additional Info */}
         <div className="mt-8 text-center">
           <p className="text-sm text-muted-foreground">
-            By signing in, you agree to our{' '}
-            <Link to="#" className="text-energy hover:text-energy-dark transition-smooth">
-              Terms of Service
-            </Link>{' '}
-            and{' '}
-            <Link to="#" className="text-energy hover:text-energy-dark transition-smooth">
-              Privacy Policy
-            </Link>
+            Attendance Management System for AutoArchitects ATV Club
           </p>
         </div>
       </div>

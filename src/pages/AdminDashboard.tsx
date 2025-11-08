@@ -1,0 +1,533 @@
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { AttendanceRecord } from '@/types/auth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp } from 'lucide-react';
+import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
+import Layout from '@/components/Layout';
+
+const AdminDashboard = () => {
+  const { user } = useAuth();
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [teamMembers, setTeamMembers] = useState<Array<{ id: string; name: string; email: string }>>([]);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<AttendanceRecord | null>(null);
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    userId: '',
+    userName: '',
+    date: new Date().toISOString().split('T')[0],
+    status: 'present' as 'present' | 'absent' | 'late' | 'leave',
+    checkInTime: '',
+    checkOutTime: '',
+    notes: ''
+  });
+
+  // Load team members and attendance records from Supabase
+  useEffect(() => {
+    loadTeamMembers();
+    loadAttendanceRecords();
+  }, []);
+
+  const loadTeamMembers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, name, email')
+        .eq('role', 'user')
+        .order('name');
+
+      if (error) {
+        console.error('Error loading team members:', error);
+        toast.error('Failed to load team members');
+        return;
+      }
+
+      setTeamMembers(data || []);
+    } catch (error) {
+      console.error('Error loading team members:', error);
+      toast.error('Failed to load team members');
+    }
+  };
+
+  const loadAttendanceRecords = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('attendance_records')
+        .select('*')
+        .order('date', { ascending: false });
+
+      if (error) {
+        console.error('Error loading attendance records:', error);
+        toast.error('Failed to load attendance records');
+        return;
+      }
+
+      // Transform Supabase data to match our AttendanceRecord type
+      const transformedData: AttendanceRecord[] = (data || []).map(record => ({
+        id: record.id,
+        userId: record.user_id,
+        userName: record.user_name,
+        date: record.date,
+        status: record.status,
+        checkInTime: record.check_in_time,
+        checkOutTime: record.check_out_time,
+        notes: record.notes,
+        createdBy: record.created_by,
+        updatedAt: record.updated_at
+      }));
+
+      setAttendanceRecords(transformedData);
+    } catch (error) {
+      console.error('Error loading attendance records:', error);
+      toast.error('Failed to load attendance records');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddAttendance = async () => {
+    if (!formData.userId || !formData.date) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    const selectedMember = teamMembers.find(m => m.id === formData.userId);
+    if (!selectedMember) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('attendance_records')
+        .insert([
+          {
+            user_id: formData.userId,
+            user_name: selectedMember.name,
+            date: formData.date,
+            status: formData.status,
+            check_in_time: formData.checkInTime || null,
+            check_out_time: formData.checkOutTime || null,
+            notes: formData.notes || null,
+            created_by: user?.id || ''
+          }
+        ])
+        .select();
+
+      if (error) {
+        console.error('Error adding attendance:', error);
+        toast.error('Failed to add attendance record');
+        return;
+      }
+
+      setIsAddDialogOpen(false);
+      resetForm();
+      toast.success('Attendance record added successfully');
+      loadAttendanceRecords(); // Reload records
+    } catch (error) {
+      console.error('Error adding attendance:', error);
+      toast.error('Failed to add attendance record');
+    }
+  };
+
+  const handleEditAttendance = async () => {
+    if (!selectedRecord) return;
+
+    try {
+      const { error } = await supabase
+        .from('attendance_records')
+        .update({
+          status: formData.status,
+          check_in_time: formData.checkInTime || null,
+          check_out_time: formData.checkOutTime || null,
+          notes: formData.notes || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', selectedRecord.id);
+
+      if (error) {
+        console.error('Error updating attendance:', error);
+        toast.error('Failed to update attendance record');
+        return;
+      }
+
+      setIsEditDialogOpen(false);
+      setSelectedRecord(null);
+      resetForm();
+      toast.success('Attendance record updated successfully');
+      loadAttendanceRecords(); // Reload records
+    } catch (error) {
+      console.error('Error updating attendance:', error);
+      toast.error('Failed to update attendance record');
+    }
+  };
+
+  const openEditDialog = (record: AttendanceRecord) => {
+    setSelectedRecord(record);
+    setFormData({
+      userId: record.userId,
+      userName: record.userName,
+      date: record.date,
+      status: record.status,
+      checkInTime: record.checkInTime || '',
+      checkOutTime: record.checkOutTime || '',
+      notes: record.notes || ''
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      userId: '',
+      userName: '',
+      date: new Date().toISOString().split('T')[0],
+      status: 'present',
+      checkInTime: '',
+      checkOutTime: '',
+      notes: ''
+    });
+  };
+
+  const getStatusBadge = (status: string) => {
+    const variants = {
+      present: 'bg-green-500/10 text-green-700 border-green-500/20',
+      absent: 'bg-red-500/10 text-red-700 border-red-500/20',
+      late: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20',
+      leave: 'bg-blue-500/10 text-blue-700 border-blue-500/20'
+    };
+    return variants[status as keyof typeof variants] || '';
+  };
+
+  // Filter records
+  const filteredRecords = attendanceRecords.filter(record => {
+    const matchesStatus = filterStatus === 'all' || record.status === filterStatus;
+    const matchesSearch = record.userName.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+
+  // Calculate statistics
+  const stats = {
+    totalRecords: attendanceRecords.length,
+    present: attendanceRecords.filter(r => r.status === 'present').length,
+    absent: attendanceRecords.filter(r => r.status === 'absent').length,
+    late: attendanceRecords.filter(r => r.status === 'late').length
+  };
+
+  return (
+    <Layout>
+      <div className="min-h-screen bg-muted/30">
+        {/* Header */}
+        <section className="hero-gradient py-12 text-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="font-display font-bold text-4xl mb-2">Admin Dashboard</h1>
+                <p className="text-white/90">Welcome back, {user?.name}</p>
+              </div>
+              <ClipboardList className="w-16 h-16 text-energy" />
+            </div>
+          </div>
+        </section>
+
+        {/* Statistics */}
+        <section className="py-8 bg-background border-b border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card className="border-0 shadow-card">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Records</p>
+                      <p className="text-3xl font-bold text-steel-dark">{stats.totalRecords}</p>
+                    </div>
+                    <TrendingUp className="w-10 h-10 text-energy" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-card">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Present</p>
+                      <p className="text-3xl font-bold text-green-600">{stats.present}</p>
+                    </div>
+                    <Users className="w-10 h-10 text-green-600" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-card">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Absent</p>
+                      <p className="text-3xl font-bold text-red-600">{stats.absent}</p>
+                    </div>
+                    <Users className="w-10 h-10 text-red-600" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-card">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Late</p>
+                      <p className="text-3xl font-bold text-yellow-600">{stats.late}</p>
+                    </div>
+                    <Calendar className="w-10 h-10 text-yellow-600" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Main Content */}
+        <section className="py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Card className="border-0 shadow-card">
+              <CardHeader>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <CardTitle className="font-display text-2xl text-steel-dark">
+                    Attendance Records
+                  </CardTitle>
+                  <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="energy-gradient hover-glow" onClick={resetForm}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Attendance
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Add Attendance Record</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label>Team Member *</Label>
+                          <Select value={formData.userId} onValueChange={(value) => setFormData({ ...formData, userId: value })}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select member" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {teamMembers.map(member => (
+                                <SelectItem key={member.id} value={member.id}>
+                                  {member.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Date *</Label>
+                          <Input
+                            type="date"
+                            value={formData.date}
+                            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Status *</Label>
+                          <Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="present">Present</SelectItem>
+                              <SelectItem value="absent">Absent</SelectItem>
+                              <SelectItem value="late">Late</SelectItem>
+                              <SelectItem value="leave">Leave</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Check In</Label>
+                            <Input
+                              type="time"
+                              value={formData.checkInTime}
+                              onChange={(e) => setFormData({ ...formData, checkInTime: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Check Out</Label>
+                            <Input
+                              type="time"
+                              value={formData.checkOutTime}
+                              onChange={(e) => setFormData({ ...formData, checkOutTime: e.target.value })}
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Notes</Label>
+                          <Textarea
+                            value={formData.notes}
+                            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                            placeholder="Add any notes..."
+                          />
+                        </div>
+                        <Button onClick={handleAddAttendance} className="w-full energy-gradient">
+                          Add Record
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {/* Filters */}
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                  <Input
+                    placeholder="Search by name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="md:w-64"
+                  />
+                  <Select value={filterStatus} onValueChange={setFilterStatus}>
+                    <SelectTrigger className="md:w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="present">Present</SelectItem>
+                      <SelectItem value="absent">Absent</SelectItem>
+                      <SelectItem value="late">Late</SelectItem>
+                      <SelectItem value="leave">Leave</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Table */}
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Check In</TableHead>
+                        <TableHead>Check Out</TableHead>
+                        <TableHead>Notes</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredRecords.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                            No attendance records found
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        filteredRecords.map((record) => (
+                          <TableRow key={record.id}>
+                            <TableCell className="font-medium">{record.userName}</TableCell>
+                            <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
+                            <TableCell>
+                              <Badge className={getStatusBadge(record.status)}>
+                                {record.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{record.checkInTime || '-'}</TableCell>
+                            <TableCell>{record.checkOutTime || '-'}</TableCell>
+                            <TableCell className="max-w-xs truncate">{record.notes || '-'}</TableCell>
+                            <TableCell>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => openEditDialog(record)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* Edit Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Attendance Record</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Team Member</Label>
+                <Input value={formData.userName} disabled />
+              </div>
+              <div className="space-y-2">
+                <Label>Date</Label>
+                <Input type="date" value={formData.date} disabled />
+              </div>
+              <div className="space-y-2">
+                <Label>Status *</Label>
+                <Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="present">Present</SelectItem>
+                    <SelectItem value="absent">Absent</SelectItem>
+                    <SelectItem value="late">Late</SelectItem>
+                    <SelectItem value="leave">Leave</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Check In</Label>
+                  <Input
+                    type="time"
+                    value={formData.checkInTime}
+                    onChange={(e) => setFormData({ ...formData, checkInTime: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Check Out</Label>
+                  <Input
+                    type="time"
+                    value={formData.checkOutTime}
+                    onChange={(e) => setFormData({ ...formData, checkOutTime: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Notes</Label>
+                <Textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  placeholder="Add any notes..."
+                />
+              </div>
+              <Button onClick={handleEditAttendance} className="w-full energy-gradient">
+                Update Record
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </Layout>
+  );
+};
+
+export default AdminDashboard;
+
