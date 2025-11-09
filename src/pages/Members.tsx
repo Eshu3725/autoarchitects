@@ -336,7 +336,7 @@ const Members = () => {
       name: "Bhumika B.R",
       role: "Graphics",
       year: "3rd Year",
-      major: "Mechanical Engineering",
+      major: "Computer science and Engineering",
       bio: "USN: 1SI24ME034",
       email: "b301898@gmail.com",
       category: "operations"
