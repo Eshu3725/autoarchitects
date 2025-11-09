@@ -59,74 +59,116 @@ const Home = () => {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative h-[80vh] md:h-screen flex items-center justify-center overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105 transition-transform duration-[10s] hover:scale-110"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
-        <div className="absolute inset-0 hero-gradient opacity-75" />
-        
+        <div className="absolute inset-0 hero-gradient opacity-80" />
+
+        {/* Animated gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50" />
+
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="font-display font-bold text-4xl sm:text-5xl md:text-7xl text-white mb-4 md:mb-6">
+          <h1 className="font-display font-bold text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white mb-4 md:mb-6 animate-fade-in-up">
             AUTOARCHITECTS
-            <span className="block text-gradient-energy">ATV Club</span>
+            <span className="block text-gradient-energy mt-2 animate-pulse-glow">ATV Club</span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-8 md:mb-10 max-w-2xl mx-auto font-medium leading-relaxed animate-fade-in-up delay-200">
             Where innovation meets adventure. Engineering the future of off-road vehicles.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="energy-gradient hover-glow transition-smooth text-base md:text-lg px-6 md:px-8 py-3 md:py-6">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up delay-300">
+            <Button asChild size="lg" className="energy-gradient hover-glow hover-shine transition-smooth text-base md:text-lg px-8 md:px-10 py-4 md:py-7 font-semibold shadow-2xl">
               <Link to="/about">
                 Explore Our Journey <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-white/50 bg-white/10 text-white hover:bg-white/20 hover:border-white/70 backdrop-blur-sm text-base md:text-lg px-6 md:px-8 py-3 md:py-6 transition-smooth">
+            <Button asChild variant="outline" size="lg" className="bg-white/20 backdrop-blur-md border-2 border-white/60 text-white hover:bg-white/30 hover:border-white hover:scale-105 text-base md:text-lg px-8 md:px-10 py-4 md:py-7 font-bold transition-all duration-300 shadow-2xl hover:shadow-white/20">
               <Link to="/members">
                Join Team
               </Link>
             </Button>
           </div>
         </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-white/70 rounded-full mt-2 animate-pulse" />
+          </div>
+        </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-24 bg-gradient-to-b from-background via-background to-muted/30 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-energy rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary rounded-full blur-3xl" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16 animate-fade-in-up">
+            <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl text-steel-dark mb-4">
+              Our <span className="text-gradient-energy">Achievements</span>
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Pushing boundaries and setting new standards in ATV engineering
+            </p>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-8 rounded-xl metallic-gradient shadow-card hover-lift transition-smooth">
-              <Trophy className="w-12 h-12 text-energy mx-auto mb-4" />
-              <h3 className="font-display font-bold text-3xl text-white mb-2">15+</h3>
-              <p className="text-white/80 font-medium">Awards Won</p>
+            <div className="group text-center p-10 rounded-2xl glass-card hover-lift transition-smooth border-2 border-transparent hover:border-energy/30 animate-fade-in-up delay-100">
+              <div className="relative inline-block mb-6">
+                <div className="absolute inset-0 bg-energy/20 rounded-full blur-xl group-hover:blur-2xl transition-all" />
+                <Trophy className="w-16 h-16 text-energy mx-auto relative z-10 group-hover:scale-110 transition-transform" />
+              </div>
+              <h3 className="font-display font-bold text-4xl md:text-5xl bg-gradient-to-br from-energy to-energy-dark bg-clip-text text-transparent mb-3">15+</h3>
+              <p className="text-foreground/80 font-semibold text-lg">Awards Won</p>
+              <p className="text-muted-foreground text-sm mt-2">National & International Recognition</p>
             </div>
-            <div className="text-center p-8 rounded-xl metallic-gradient shadow-card hover-lift transition-smooth">
-              <Users className="w-12 h-12 text-energy mx-auto mb-4" />
-              <h3 className="font-display font-bold text-3xl text-white mb-2">30+</h3>
-              <p className="text-white/80 font-medium">Active Members</p>
+            <div className="group text-center p-10 rounded-2xl glass-card hover-lift transition-smooth border-2 border-transparent hover:border-energy/30 animate-fade-in-up delay-200">
+              <div className="relative inline-block mb-6">
+                <div className="absolute inset-0 bg-energy/20 rounded-full blur-xl group-hover:blur-2xl transition-all" />
+                <Users className="w-16 h-16 text-energy mx-auto relative z-10 group-hover:scale-110 transition-transform" />
+              </div>
+              <h3 className="font-display font-bold text-4xl md:text-5xl bg-gradient-to-br from-energy to-energy-dark bg-clip-text text-transparent mb-3">30+</h3>
+              <p className="text-foreground/80 font-semibold text-lg">Active Members</p>
+              <p className="text-muted-foreground text-sm mt-2">Passionate Engineers & Innovators</p>
             </div>
-            <div className="text-center p-8 rounded-xl metallic-gradient shadow-card hover-lift transition-smooth">
-              <Wrench className="w-12 h-12 text-energy mx-auto mb-4" />
-              <h3 className="font-display font-bold text-3xl text-white mb-2">25+</h3>
-              <p className="text-white/80 font-medium">ATVs Built</p>
+            <div className="group text-center p-10 rounded-2xl glass-card hover-lift transition-smooth border-2 border-transparent hover:border-energy/30 animate-fade-in-up delay-300">
+              <div className="relative inline-block mb-6">
+                <div className="absolute inset-0 bg-energy/20 rounded-full blur-xl group-hover:blur-2xl transition-all" />
+                <Wrench className="w-16 h-16 text-energy mx-auto relative z-10 group-hover:scale-110 transition-transform" />
+              </div>
+              <h3 className="font-display font-bold text-4xl md:text-5xl bg-gradient-to-br from-energy to-energy-dark bg-clip-text text-transparent mb-3">25+</h3>
+              <p className="text-foreground/80 font-semibold text-lg">ATVs Built</p>
+              <p className="text-muted-foreground text-sm mt-2">Cutting-Edge ATV Designs</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Past Events */}
-      <section className="py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-display font-bold text-4xl md:text-5xl text-steel-dark mb-6">
-              Showcasing Our Journey
+      <section className="py-24 bg-gradient-to-b from-muted/30 via-background to-muted/20 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary rounded-full blur-3xl" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16 animate-fade-in-up">
+            <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl text-steel-dark mb-4">
+              Showcasing Our <span className="text-gradient-energy">Journey</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Showcasing our journey through competitions, workshops, and challenges
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+              Experience our journey through competitions, workshops, and challenges
             </p>
           </div>
 
-          <div className="overflow-x-auto pb-6">
-            <div className="flex space-x-8 min-w-max">
+          <div className="overflow-x-auto pb-8 -mx-4 px-4">
+            <div className="flex space-x-6 min-w-max">
               <div
-                className="group relative w-[400px]"
+                className="group relative w-[420px]"
                 onMouseLeave={(e) => {
                   const video = e.currentTarget.querySelector('video');
                   if (video) {
@@ -135,20 +177,22 @@ const Home = () => {
                   }
                 }}
               >
-                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
-                  <div className="relative">
+                <div className="relative glass-card rounded-2xl border-2 border-white/10 shadow-2xl overflow-hidden transition-all duration-500 ease-out group-hover:scale-105 group-hover:shadow-energy/20 group-hover:border-energy/30">
+                  <div className="relative overflow-hidden">
                     <video
-                      className="w-full"
+                      className="w-full aspect-video object-cover"
                       muted
                       onMouseEnter={(e) => e.currentTarget.play()}
                     >
                       <source src={video1} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
+                    {/* Gradient overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
-                  <div className="p-4">
-                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">Motorsport BAJA Season 2020</h3>
-                    <p className="text-sm text-muted-foreground">Our team's journey through the intense BAJA competition season, showcasing dedication and engineering excellence.</p>
+                  <div className="p-6 bg-gradient-to-b from-background/95 to-background">
+                    <h3 className="font-display font-bold text-xl text-steel-dark mb-2 group-hover:text-energy transition-colors">Motorsport BAJA Season 2020</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">Our team's journey through the intense BAJA competition season, showcasing dedication and engineering excellence.</p>
                   </div>
                 </div>
               </div>
