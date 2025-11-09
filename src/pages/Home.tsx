@@ -5,13 +5,15 @@ import { Link } from 'react-router-dom';
 import heroImage from '@/assets/Banner.jpg';
 import workshopImage from '@/assets/workshop-atvs.jpg';
 import eventImage from '@/assets/event-competition.jpg';
-import video1 from '@/assets/Videos/1AUTO ARCHITECTS MOTOSPORT BAJA season 2020.mp4';
-import video2 from '@/assets/Videos/2IMAGINATION 4.0SEASON END.mp4';
-import video3 from '@/assets/Videos/3TEAM AUTO ARCHITECTS _ imagination 3.0 _The Journe(1080P_HD).mp4';
-import video4 from '@/assets/Videos/4The Off Road Hustle _Auto Architects_ IMAGINATION(1080P_HD).mp4';
-import video5 from '@/assets/Videos/AUTO ARCHITECTS BAJA SAEINDIA 2020.mp4';
-import video6 from '@/assets/Videos/season 2020 baja auto architects.mp4';
-import video7 from '@/assets/Videos/WhatsApp Video 2019-11-26 at 1.07.35 PM.mp4';
+
+// Video files are served from public folder to avoid bundling large files
+const video1 = '/videos/1AUTO ARCHITECTS MOTOSPORT BAJA season 2020.mp4';
+const video2 = '/videos/2IMAGINATION 4.0SEASON END.mp4';
+const video3 = '/videos/3TEAM AUTO ARCHITECTS _ imagination 3.0 _The Journe(1080P_HD).mp4';
+const video4 = '/videos/4The Off Road Hustle _Auto Architects_ IMAGINATION(1080P_HD).mp4';
+const video5 = '/videos/AUTO ARCHITECTS BAJA SAEINDIA 2020.mp4';
+const video6 = '/videos/season 2020 baja auto architects.mp4';
+const video7 = '/videos/WhatsApp Video 2019-11-26 at 1.07.35 PM.mp4';
 
 const Home = () => {
   const pastEvents = [
@@ -123,7 +125,7 @@ const Home = () => {
 
           <div className="overflow-x-auto pb-6">
             <div className="flex space-x-8 min-w-max">
-              <div 
+              <div
                 className="group relative w-[400px]"
                 onMouseLeave={(e) => {
                   const video = e.currentTarget.querySelector('video');
@@ -135,9 +137,8 @@ const Home = () => {
               >
                 <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
                   <div className="relative">
-                    <video 
+                    <video
                       className="w-full"
-                      controls
                       muted
                       onMouseEnter={(e) => e.currentTarget.play()}
                     >
@@ -152,7 +153,7 @@ const Home = () => {
                 </div>
               </div>
 
-              <div 
+              <div
                 className="group relative w-[400px]"
                 onMouseLeave={(e) => {
                   const video = e.currentTarget.querySelector('video');
@@ -164,9 +165,8 @@ const Home = () => {
               >
                 <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
                   <div className="relative">
-                    <video 
+                    <video
                       className="w-full"
-                      controls
                       muted
                       onMouseEnter={(e) => e.currentTarget.play()}
                     >
@@ -181,7 +181,7 @@ const Home = () => {
                 </div>
               </div>
 
-              <div 
+              <div
                 className="group relative w-[400px]"
                 onMouseLeave={(e) => {
                   const video = e.currentTarget.querySelector('video');
@@ -193,9 +193,8 @@ const Home = () => {
               >
                 <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
                   <div className="relative">
-                    <video 
+                    <video
                       className="w-full"
-                      controls
                       muted
                       onMouseEnter={(e) => e.currentTarget.play()}
                     >
@@ -210,7 +209,7 @@ const Home = () => {
                 </div>
               </div>
 
-              <div 
+              <div
                 className="group relative w-[400px]"
                 onMouseLeave={(e) => {
                   const video = e.currentTarget.querySelector('video');
@@ -222,9 +221,8 @@ const Home = () => {
               >
                 <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
                   <div className="relative">
-                    <video 
+                    <video
                       className="w-full"
-                      controls
                       muted
                       onMouseEnter={(e) => e.currentTarget.play()}
                     >
@@ -239,7 +237,7 @@ const Home = () => {
                 </div>
               </div>
 
-              <div 
+              <div
                 className="group relative w-[400px]"
                 onMouseLeave={(e) => {
                   const video = e.currentTarget.querySelector('video');
@@ -251,9 +249,8 @@ const Home = () => {
               >
                 <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
                   <div className="relative">
-                    <video 
+                    <video
                       className="w-full"
-                      controls
                       muted
                       onMouseEnter={(e) => e.currentTarget.play()}
                     >
@@ -268,7 +265,7 @@ const Home = () => {
                 </div>
               </div>
 
-              <div 
+              <div
                 className="group relative w-[400px]"
                 onMouseLeave={(e) => {
                   const video = e.currentTarget.querySelector('video');
@@ -280,9 +277,8 @@ const Home = () => {
               >
                 <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
                   <div className="relative">
-                    <video 
+                    <video
                       className="w-full"
-                      controls
                       muted
                       onMouseEnter={(e) => e.currentTarget.play()}
                     >
@@ -297,7 +293,7 @@ const Home = () => {
                 </div>
               </div>
 
-              <div 
+              <div
                 className="group relative w-[400px]"
                 onMouseLeave={(e) => {
                   const video = e.currentTarget.querySelector('video');
@@ -309,9 +305,8 @@ const Home = () => {
               >
                 <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
                   <div className="relative">
-                    <video 
+                    <video
                       className="w-full"
-                      controls
                       muted
                       onMouseEnter={(e) => e.currentTarget.play()}
                     >
