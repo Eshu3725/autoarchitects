@@ -77,6 +77,15 @@ const Members = () => {
 
     // Transmission Team
     {
+      name: "Darshan H.S",
+      role: "Transmission (Lead)",
+      year: "3rd Year",
+      major: "Mechanical Engineering",
+      bio: "USN: 1SI23ME016",
+      email: "darshanvaibhav2@gmail.com",
+      category: "technical"
+    },
+    {
       name: "Karthik K",
       role: "Transmission",
       year: "4th Year",
@@ -104,6 +113,15 @@ const Members = () => {
       category: "technical"
     },
     {
+      name: "Damaresh",
+      role: "Transmission",
+      year: "3rd Year",
+      major: "Mechanical Engineering",
+      bio: "USN: 1SI23ME014",
+      email: "damaresh712@gmail.com",
+      category: "technical"
+    },
+    {
       name: "Dimple K",
       role: "Transmission",
       year: "3rd Year",
@@ -112,17 +130,18 @@ const Members = () => {
       email: "dimplek8580@gmail.com",
       category: "technical"
     },
-    {
-      name: "Manoj D",
-      role: "Transmission",
-      year: "3rd Year",
-      major: "Mechanical Engineering",
-      bio: "USN: 1SI23ME010",
-      email: "manojyadav31@gmail.com",
-      category: "technical"
-    },
+    
 
     // Suspension Team
+    {
+      name: "Vivek J",
+      role: "Suspension",
+      year: "3rd Year",
+      major: "Mechanical Engineering",
+      bio: "USN: 1SI23ME070",
+      email: "vivek838466@gmail.com",
+      category: "technical"
+    },
     {
       name: "Likith H",
       role: "Suspension",
@@ -130,6 +149,15 @@ const Members = () => {
       major: "Mechanical Engineering",
       bio: "USN: 1SI22ME023",
       email: "likith.785@gmail.com",
+      category: "technical"
+    },
+    {
+      name: "Manoj G",
+      role: "Suspension",
+      year: "3rd Year",
+      major: "Mechanical Engineering",
+      bio: "USN: 1SI23ME010",
+      email: "manojyadav31@gmail.com",
       category: "technical"
     },
     {
@@ -159,15 +187,7 @@ const Members = () => {
       email: "prathikjaintn21@gmail.com",
       category: "technical"
     },
-    {
-      name: "Vivek J",
-      role: "Suspension",
-      year: "3rd Year",
-      major: "Mechanical Engineering",
-      bio: "USN: 1SI23ME070",
-      email: "vivek838466@gmail.com",
-      category: "technical"
-    },
+    
     {
       name: "Jaswanth D.",
       role: "Suspension",
@@ -244,15 +264,7 @@ const Members = () => {
     },
 
     // CAE (Chassis) Team
-    {
-      name: "Damaresh",
-      role: "CAE (Chassis)",
-      year: "3rd Year",
-      major: "Mechanical Engineering",
-      bio: "USN: 1SI23ME014",
-      email: "damaresh712@gmail.com",
-      category: "technical"
-    },
+    
     {
       name: "Yashas M.S",
       role: "CAE (Chassis)",
@@ -262,15 +274,7 @@ const Members = () => {
       email: "yashasm9125@gmail.com",
       category: "technical"
     },
-    {
-      name: "Darshan H.S",
-      role: "CAE (Chassis)",
-      year: "3rd Year",
-      major: "Mechanical Engineering",
-      bio: "USN: 1SI23ME016",
-      email: "darshanvaibhav2@gmail.com",
-      category: "technical"
-    },
+    
     {
       name: "Dr.Kamlesh D.R",
       role: "CAE (Chassis)",
