@@ -245,12 +245,12 @@ const Members = () => {
 
     // CAE (Chassis) Team
     {
-      name: "Damaneet",
+      name: "Damaresh",
       role: "CAE (Chassis)",
       year: "3rd Year",
       major: "Mechanical Engineering",
       bio: "USN: 1SI23ME014",
-      email: "damaneet712@gmail.com",
+      email: "damaresh712@gmail.com",
       category: "technical"
     },
     {
