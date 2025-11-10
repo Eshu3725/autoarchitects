@@ -6,14 +6,24 @@ import heroImage from '@/assets/Banner.jpg';
 import workshopImage from '@/assets/workshop-atvs.jpg';
 import eventImage from '@/assets/event-competition.jpg';
 
-// Video files are served from public folder to avoid bundling large files
-const video1 = '/videos/1AUTO ARCHITECTS MOTOSPORT BAJA season 2020.mp4';
-const video2 = '/videos/2IMAGINATION 4.0SEASON END.mp4';
-const video3 = '/videos/3TEAM AUTO ARCHITECTS _ imagination 3.0 _The Journe(1080P_HD).mp4';
-const video4 = '/videos/4The Off Road Hustle _Auto Architects_ IMAGINATION(1080P_HD).mp4';
-const video5 = '/videos/AUTO ARCHITECTS BAJA SAEINDIA 2020.mp4';
-const video6 = '/videos/season 2020 baja auto architects.mp4';
-const video7 = '/videos/WhatsApp Video 2019-11-26 at 1.07.35 PM.mp4';
+// YouTube video embeds
+const youtubeVideos = [
+  {
+    id: 's5r2IgRNKy8',
+    title: 'Imagination 4.0',
+    description: 'Experience our innovative design process and technical achievements in the latest season of Imagination 4.0.'
+  },
+  {
+    id: 'jJvIsFY4SLE',
+    title: 'Offroad Hustle',
+    description: 'Experience the thrill and challenges of off-road engineering with our dedicated team pushing boundaries.'
+  },
+  {
+    id: '3iw9kQVrP6A',
+    title: 'Team AutoArchitects',
+    description: 'A glimpse into our team\'s dynamics, dedication, and innovative approach to ATV engineering excellence.'
+  }
+];
 
 const Home = () => {
   const pastEvents = [
@@ -148,7 +158,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Past Events */}
+      {/* Video Showcase */}
       <section className="py-24 bg-gradient-to-b from-muted/30 via-background to-muted/20 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 opacity-5">
@@ -165,206 +175,35 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="overflow-x-auto pb-8 -mx-4 px-4">
-            <div className="flex space-x-6 min-w-max">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {youtubeVideos.map((video, index) => (
               <div
-                className="group relative w-[420px]"
-                onMouseLeave={(e) => {
-                  const video = e.currentTarget.querySelector('video');
-                  if (video) {
-                    video.pause();
-                    video.currentTime = 0;
-                  }
-                }}
+                key={video.id}
+                className="group animate-scale-in"
+                style={{ animationDelay: `${index * 0.15}s` }}
               >
                 <div className="relative glass-card rounded-2xl border-2 border-white/10 shadow-2xl overflow-hidden transition-all duration-500 ease-out group-hover:scale-105 group-hover:shadow-energy/20 group-hover:border-energy/30">
-                  <div className="relative overflow-hidden">
-                    <video
-                      className="w-full aspect-video object-cover"
-                      muted
-                      onMouseEnter={(e) => e.currentTarget.play()}
-                    >
-                      <source src={video1} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                    {/* Gradient overlay on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative overflow-hidden aspect-video">
+                    <iframe
+                      className="w-full h-full"
+                      src={`https://www.youtube.com/embed/${video.id}`}
+                      title={video.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
                   </div>
                   <div className="p-6 bg-gradient-to-b from-background/95 to-background">
-                    <h3 className="font-display font-bold text-xl text-steel-dark mb-2 group-hover:text-energy transition-colors">Motorsport BAJA Season 2020</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">Our team's journey through the intense BAJA competition season, showcasing dedication and engineering excellence.</p>
+                    <h3 className="font-display font-bold text-xl text-steel-dark mb-2 group-hover:text-energy transition-colors">
+                      {video.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {video.description}
+                    </p>
                   </div>
                 </div>
               </div>
-
-              <div
-                className="group relative w-[400px]"
-                onMouseLeave={(e) => {
-                  const video = e.currentTarget.querySelector('video');
-                  if (video) {
-                    video.pause();
-                    video.currentTime = 0;
-                  }
-                }}
-              >
-                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
-                  <div className="relative">
-                    <video
-                      className="w-full"
-                      muted
-                      onMouseEnter={(e) => e.currentTarget.play()}
-                    >
-                      <source src={video2} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">IMAGINATION 4.0 Season Finale</h3>
-                    <p className="text-sm text-muted-foreground">The culmination of our innovative design process and technical achievements in the latest season.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className="group relative w-[400px]"
-                onMouseLeave={(e) => {
-                  const video = e.currentTarget.querySelector('video');
-                  if (video) {
-                    video.pause();
-                    video.currentTime = 0;
-                  }
-                }}
-              >
-                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
-                  <div className="relative">
-                    <video
-                      className="w-full"
-                      muted
-                      onMouseEnter={(e) => e.currentTarget.play()}
-                    >
-                      <source src={video3} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">IMAGINATION 3.0 Journey</h3>
-                    <p className="text-sm text-muted-foreground">A glimpse into our team's evolution and groundbreaking achievements during IMAGINATION 3.0.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className="group relative w-[400px]"
-                onMouseLeave={(e) => {
-                  const video = e.currentTarget.querySelector('video');
-                  if (video) {
-                    video.pause();
-                    video.currentTime = 0;
-                  }
-                }}
-              >
-                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
-                  <div className="relative">
-                    <video
-                      className="w-full"
-                      muted
-                      onMouseEnter={(e) => e.currentTarget.play()}
-                    >
-                      <source src={video4} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">The Off-Road Hustle</h3>
-                    <p className="text-sm text-muted-foreground">Experience the thrill and challenges of off-road engineering with our dedicated team.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className="group relative w-[400px]"
-                onMouseLeave={(e) => {
-                  const video = e.currentTarget.querySelector('video');
-                  if (video) {
-                    video.pause();
-                    video.currentTime = 0;
-                  }
-                }}
-              >
-                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
-                  <div className="relative">
-                    <video
-                      className="w-full"
-                      muted
-                      onMouseEnter={(e) => e.currentTarget.play()}
-                    >
-                      <source src={video5} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">BAJA SAEINDIA 2020</h3>
-                    <p className="text-sm text-muted-foreground">Our competitive spirit and technical prowess on display at BAJA SAEINDIA 2020.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className="group relative w-[400px]"
-                onMouseLeave={(e) => {
-                  const video = e.currentTarget.querySelector('video');
-                  if (video) {
-                    video.pause();
-                    video.currentTime = 0;
-                  }
-                }}
-              >
-                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
-                  <div className="relative">
-                    <video
-                      className="w-full"
-                      muted
-                      onMouseEnter={(e) => e.currentTarget.play()}
-                    >
-                      <source src={video6} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">Season 2020 Highlights</h3>
-                    <p className="text-sm text-muted-foreground">A compilation of our best moments and achievements throughout the 2020 season.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className="group relative w-[400px]"
-                onMouseLeave={(e) => {
-                  const video = e.currentTarget.querySelector('video');
-                  if (video) {
-                    video.pause();
-                    video.currentTime = 0;
-                  }
-                }}
-              >
-                <div className="relative bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-card overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl">
-                  <div className="relative">
-                    <video
-                      className="w-full"
-                      muted
-                      onMouseEnter={(e) => e.currentTarget.play()}
-                    >
-                      <source src={video7} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-display font-semibold text-lg text-steel-dark mb-2">Team Showcase 2019</h3>
-                    <p className="text-sm text-muted-foreground">A special glimpse into our team's dynamics and innovative approach to ATV engineering.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
