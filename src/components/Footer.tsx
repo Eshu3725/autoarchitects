@@ -38,7 +38,7 @@ const Footer = () => {
                 <div className="p-2 bg-white/10 rounded-lg group-hover:bg-energy/20 transition-colors">
                   <Mail className="w-5 h-5 text-energy" />
                 </div>
-                <span className="font-medium">autoarchitects@sit.ac.in</span>
+                <span className="font-medium">autoarchitects@gmail.com</span>
               </a>
               <a href="tel:+916363852155" className="flex items-center space-x-3 text-white/80 hover:text-energy transition-colors group">
                 <div className="p-2 bg-white/10 rounded-lg group-hover:bg-energy/20 transition-colors">

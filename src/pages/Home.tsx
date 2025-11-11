@@ -8,7 +8,8 @@ import heroImage from '@/assets/Banner.jpg';
 import workshopImage from '@/assets/workshop-atvs.jpg';
 import eventImage from '@/assets/event-competition.jpg';
 import bannerImage from '@/assets/Banner2.png';
-import heroAtvImage from '@/assets/hero-atv.jpg';
+import dscImage from '@/assets/DSC_0691.jpg';
+import image from  '@/assets/image.png';
 
 // YouTube video embeds
 const youtubeVideos = [
@@ -53,8 +54,9 @@ const Home = () => {
 
   // ATV Carousel Images
   const atvImages = [
-    { src: heroAtvImage, alt: "AutoArchitects ATV" },
-    { src: bannerImage, alt: "Team AutoArchitects" }
+    { src: dscImage, alt: "Imagination 4.0" },
+    { src: bannerImage, alt: "Team AutoArchitects" },
+    { src: image, alt: "One Team One Dream" }
   ];
 
   // Embla Carousel Setup
@@ -91,8 +93,8 @@ const Home = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up delay-300">
             <Button asChild size="lg" className="energy-gradient hover-glow hover-shine transition-smooth text-base md:text-lg px-8 md:px-10 py-4 md:py-7 font-semibold shadow-2xl">
-              <Link to="/about">
-                Explore Our Journey <ArrowRight className="ml-2 w-5 h-5" />
+              <Link to="/about#our-journey">
+                Know about Us<ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="bg-white/20 backdrop-blur-md border-2 border-white/60 text-white hover:bg-white/30 hover:border-white hover:scale-105 text-base md:text-lg px-8 md:px-10 py-4 md:py-7 font-bold transition-all duration-300 shadow-2xl hover:shadow-white/20">
@@ -216,7 +218,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-display font-bold text-4xl md:text-5xl text-steel-dark mb-6">
-              Our ATV Showcase
+            Visual <span className="text-gradient-energy">Collections</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Engineering excellence in every vehicle we build
