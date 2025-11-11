@@ -1,11 +1,22 @@
-import { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Mail } from 'lucide-react';
 
 const Members = () => {
-  const [selectedRole, setSelectedRole] = useState('all');
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offset = 100; // Offset for sticky navigation
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const teamMembers = [
     // Leadership Team
@@ -339,22 +350,77 @@ const Members = () => {
     }
   ];
 
-  const roleCategories = [
-    { id: 'all', name: 'All Members', count: teamMembers.length },
-    { id: 'leadership', name: 'Leadership', count: teamMembers.filter(m => m.category === 'leadership').length },
-    { id: 'technical', name: 'Technical Team', count: teamMembers.filter(m => m.category === 'technical').length },
-    { id: 'operations', name: 'Operations', count: teamMembers.filter(m => m.category === 'operations').length },
-  ];
-
-  const filteredMembers = selectedRole === 'all' 
-    ? teamMembers 
-    : teamMembers.filter(member => member.category === selectedRole);
+  // Group members by category
+  const leadershipMembers = teamMembers.filter(m => m.category === 'leadership');
+  const technicalMembers = teamMembers.filter(m => m.category === 'technical');
+  const operationsMembers = teamMembers.filter(m => m.category === 'operations');
 
   const getRoleColor = (role: string) => {
     if (role.includes('President')) return 'energy';
     if (role.includes('Lead') || role.includes('Director')) return 'steel';
     return 'metallic';
   };
+
+  // Render member card component
+  const renderMemberCard = (member: typeof teamMembers[0], index: number) => (
+    <Card key={index} className="group glass-card border-2 border-white/10 shadow-2xl hover-lift transition-all duration-500 overflow-hidden hover:border-energy/30 hover:shadow-energy/10 animate-scale-in" style={{ animationDelay: `${(index % 9) * 0.1}s` }}>
+      <CardContent className="p-0">
+        {/* Avatar Section */}
+        <div className="h-52 metallic-gradient flex items-center justify-center relative overflow-hidden">
+          {/* Animated gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-energy/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+
+          <div className="relative z-10">
+            <div className="w-28 h-28 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-4 border-white/30 group-hover:border-energy/50 transition-all duration-300 group-hover:scale-110 shadow-2xl">
+              <span className="font-display font-bold text-4xl text-white">
+                {member.name.split(' ').map(n => n[0]).join('')}
+              </span>
+            </div>
+          </div>
+
+          <div className="absolute inset-0 bg-gradient-to-t from-steel-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+        </div>
+
+        {/* Content Section */}
+        <div className="p-6 bg-gradient-to-b from-background/95 to-background">
+          <div className="text-center mb-4">
+            <h3 className="font-display font-bold text-xl text-steel-dark mb-2 group-hover:text-energy transition-colors">
+              {member.name}
+            </h3>
+            <Badge
+              variant="secondary"
+              className={`mb-3 font-semibold transition-all duration-300 ${
+                getRoleColor(member.role) === 'energy'
+                  ? 'bg-energy/10 text-energy border border-energy/20 group-hover:bg-energy group-hover:text-white'
+                  : getRoleColor(member.role) === 'steel'
+                  ? 'bg-steel/10 text-steel border border-steel/20 group-hover:bg-steel group-hover:text-white'
+                  : 'bg-metallic/10 text-metallic border border-metallic/20 group-hover:bg-metallic group-hover:text-white'
+              }`}
+            >
+              {member.role}
+            </Badge>
+            <p className="text-sm text-muted-foreground font-medium">
+              {member.year} • {member.major}
+            </p>
+          </div>
+
+          <p className="text-sm text-muted-foreground text-center mb-4 leading-relaxed">
+            {member.bio}
+          </p>
+
+          {/* Contact Links */}
+          <div className="flex justify-center pt-4 border-t border-border/50">
+            <a
+              href={`mailto:${member.email}`}
+              className="w-12 h-12 glass rounded-full flex items-center justify-center hover:bg-energy hover-glow transition-all duration-300 group/btn border border-white/20 hover:border-energy/50 hover:scale-110"
+            >
+              <Mail className="w-5 h-5 text-steel group-hover/btn:text-white transition-colors" />
+            </a>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="min-h-screen">
@@ -382,99 +448,109 @@ const Members = () => {
         </div>
       </section>
 
-      {/* Filter Section */}
-      <section className="py-12 bg-gradient-to-b from-background to-muted/20 border-b border-border/50 sticky top-16 z-40 backdrop-blur-md">
+      {/* Scroll Navigation */}
+      <section className="py-6 bg-gradient-to-b from-background to-muted/20 border-b border-border/50 sticky top-16 z-40 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap gap-3 justify-center">
-            {roleCategories.map((category, index) => (
-              <Button
-                key={category.id}
-                variant={selectedRole === category.id ? "default" : "outline"}
-                onClick={() => setSelectedRole(category.id)}
-                className={`transition-all duration-300 hover-scale animate-fade-in delay-${index * 100} ${
-                  selectedRole === category.id
-                    ? 'energy-gradient text-white shadow-glow scale-105'
-                    : 'glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30'
-                }`}
-              >
-                {category.name} <span className="ml-1 opacity-70">({category.count})</span>
-              </Button>
-            ))}
+            <Button
+              variant="outline"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+            >
+              All Members <span className="ml-1 opacity-70">({teamMembers.length})</span>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => scrollToSection('leadership-team')}
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+            >
+              Leadership <span className="ml-1 opacity-70">({leadershipMembers.length})</span>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => scrollToSection('technical-team')}
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+            >
+              Technical <span className="ml-1 opacity-70">({technicalMembers.length})</span>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => scrollToSection('operations-team')}
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+            >
+              Operations <span className="ml-1 opacity-70">({operationsMembers.length})</span>
+            </Button>
           </div>
         </div>
       </section>
 
-      {/* Team Members Grid */}
-      <section className="py-24 bg-gradient-to-b from-muted/30 via-background to-muted/20 relative overflow-hidden">
+      {/* Leadership Team Section */}
+      <section id="leadership-team" className="py-24 bg-gradient-to-b from-muted/30 via-background to-muted/20 relative overflow-hidden scroll-mt-24">
         {/* Background decoration */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-energy rounded-full blur-3xl" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16 animate-fade-in-up">
+            <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl text-steel-dark mb-4">
+              Leadership <span className="text-gradient-energy">Team</span>
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              {leadershipMembers.length} Members
+            </p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredMembers.map((member, index) => (
-              <Card key={index} className="group glass-card border-2 border-white/10 shadow-2xl hover-lift transition-all duration-500 overflow-hidden hover:border-energy/30 hover:shadow-energy/10 animate-scale-in" style={{ animationDelay: `${(index % 9) * 0.1}s` }}>
-                <CardContent className="p-0">
-                  {/* Avatar Section */}
-                  <div className="h-52 metallic-gradient flex items-center justify-center relative overflow-hidden">
-                    {/* Animated gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-energy/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
-
-                    <div className="relative z-10">
-                      <div className="w-28 h-28 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-4 border-white/30 group-hover:border-energy/50 transition-all duration-300 group-hover:scale-110 shadow-2xl">
-                        <span className="font-display font-bold text-4xl text-white">
-                          {member.name.split(' ').map(n => n[0]).join('')}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-steel-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                  </div>
-
-                  {/* Content Section */}
-                  <div className="p-6 bg-gradient-to-b from-background/95 to-background">
-                    <div className="text-center mb-4">
-                      <h3 className="font-display font-bold text-xl text-steel-dark mb-2 group-hover:text-energy transition-colors">
-                        {member.name}
-                      </h3>
-                      <Badge
-                        variant="secondary"
-                        className={`mb-3 font-semibold transition-all duration-300 ${
-                          getRoleColor(member.role) === 'energy'
-                            ? 'bg-energy/10 text-energy border border-energy/20 group-hover:bg-energy group-hover:text-white'
-                            : getRoleColor(member.role) === 'steel'
-                            ? 'bg-steel/10 text-steel border border-steel/20 group-hover:bg-steel group-hover:text-white'
-                            : 'bg-metallic/10 text-metallic border border-metallic/20 group-hover:bg-metallic group-hover:text-white'
-                        }`}
-                      >
-                        {member.role}
-                      </Badge>
-                      <p className="text-sm text-muted-foreground font-medium">
-                        {member.year} • {member.major}
-                      </p>
-                    </div>
-
-                    <p className="text-sm text-muted-foreground text-center mb-4 leading-relaxed">
-                      {member.bio}
-                    </p>
-
-                    {/* Contact Links */}
-                    <div className="flex justify-center pt-4 border-t border-border/50">
-                      <a
-                        href={`mailto:${member.email}`}
-                        className="w-12 h-12 glass rounded-full flex items-center justify-center hover:bg-energy hover-glow transition-all duration-300 group/btn border border-white/20 hover:border-energy/50 hover:scale-110"
-                      >
-                        <Mail className="w-5 h-5 text-steel group-hover/btn:text-white transition-colors" />
-                      </a>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {leadershipMembers.map((member, index) => renderMemberCard(member, index))}
           </div>
         </div>
       </section>
+
+      {/* Technical Team Section */}
+      <section id="technical-team" className="py-24 bg-gradient-to-b from-background via-muted/10 to-background relative overflow-hidden scroll-mt-24">
+        {/* Background decoration */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-steel rounded-full blur-3xl" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16 animate-fade-in-up">
+            <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl text-steel-dark mb-4">
+              Technical <span className="text-gradient-energy">Team</span>
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              {technicalMembers.length} Members
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {technicalMembers.map((member, index) => renderMemberCard(member, index))}
+          </div>
+        </div>
+      </section>
+
+      {/* Operations Team Section */}
+      <section id="operations-team" className="py-24 bg-gradient-to-b from-muted/20 via-background to-muted/30 relative overflow-hidden scroll-mt-24">
+        {/* Background decoration */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute bottom-1/3 left-1/2 w-96 h-96 bg-energy rounded-full blur-3xl" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16 animate-fade-in-up">
+            <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl text-steel-dark mb-4">
+              Operations <span className="text-gradient-energy">Team</span>
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              {operationsMembers.length} Members
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {operationsMembers.map((member, index) => renderMemberCard(member, index))}
+          </div>
+        </div>
+      </section>
+
+
 
       {/* Join Us Section */}
       <section className="relative py-24 md:py-32 bg-gradient-to-br from-steel-dark via-steel to-metallic overflow-hidden">
