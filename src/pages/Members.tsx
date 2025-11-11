@@ -499,81 +499,82 @@ const Members = () => {
         </div>
       </section>
 
-      {/* Scroll Navigation */}
-      <section className="py-6 bg-gradient-to-b from-background to-muted/20 border-b border-border/50 sticky top-16 z-40 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap gap-2 justify-center">
+      {/* Scroll Navigation - Optimized for mobile */}
+      <section className="py-2 md:py-4 lg:py-6 bg-gradient-to-b from-background to-muted/20 border-b border-border/50 sticky top-16 z-40 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          {/* Mobile: Horizontal scroll, Desktop: Wrap */}
+          <div className="flex md:flex-wrap gap-1 md:gap-2 justify-start md:justify-center overflow-x-auto scrollbar-hide pb-1 md:pb-0">
             <Button
               variant="outline"
               size="sm"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
             >
-              All <span className="ml-1 opacity-70">({teamMembers.length})</span>
+              All <span className="ml-1 opacity-70 hidden sm:inline">({teamMembers.length})</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('leadership-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
             >
-              Leadership <span className="ml-1 opacity-70">({leadershipMembers.length})</span>
+              Leadership <span className="ml-1 opacity-70 hidden sm:inline">({leadershipMembers.length})</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('steering-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
             >
-              Steering <span className="ml-1 opacity-70">({steeringMembers.length})</span>
+              Steering <span className="ml-1 opacity-70 hidden sm:inline">({steeringMembers.length})</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('transmission-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
             >
-              Transmission <span className="ml-1 opacity-70">({transmissionMembers.length})</span>
+              Transmission <span className="ml-1 opacity-70 hidden sm:inline">({transmissionMembers.length})</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('suspension-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
             >
-              Suspension <span className="ml-1 opacity-70">({suspensionMembers.length})</span>
+              Suspension <span className="ml-1 opacity-70 hidden sm:inline">({suspensionMembers.length})</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('brakes-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
             >
-              Brakes <span className="ml-1 opacity-70">({brakesMembers.length})</span>
+              Brakes <span className="ml-1 opacity-70 hidden sm:inline">({brakesMembers.length})</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('chassis-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
             >
-              Chassis/CAE <span className="ml-1 opacity-70">({chassisMembers.length})</span>
+              Chassis/CAE <span className="ml-1 opacity-70 hidden sm:inline">({chassisMembers.length})</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('digital-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
             >
-              Digital <span className="ml-1 opacity-70">({digitalMembers.length})</span>
+              Digital <span className="ml-1 opacity-70 hidden sm:inline">({digitalMembers.length})</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('graphics-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30"
+              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
             >
-              Graphics <span className="ml-1 opacity-70">({graphicsMembers.length})</span>
+              Graphics <span className="ml-1 opacity-70 hidden sm:inline">({graphicsMembers.length})</span>
             </Button>
           </div>
         </div>
