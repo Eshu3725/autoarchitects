@@ -132,7 +132,7 @@ const Home = () => {
                 <div className="absolute inset-0 bg-energy/20 rounded-full blur-xl group-hover:blur-2xl transition-all" />
                 <Trophy className="w-16 h-16 text-energy mx-auto relative z-10 group-hover:scale-110 transition-transform" />
               </div>
-              <h3 className="font-display font-bold text-4xl md:text-5xl bg-gradient-to-br from-energy to-energy-dark bg-clip-text text-transparent mb-3">15+</h3>
+              <h3 className="font-display font-bold text-4xl md:text-5xl bg-gradient-to-br from-energy to-energy-dark bg-clip-text text-transparent mb-3">10+</h3>
               <p className="text-foreground/80 font-semibold text-lg">Awards Won</p>
               <p className="text-muted-foreground text-sm mt-2">National & International Recognition</p>
             </div>
@@ -141,7 +141,7 @@ const Home = () => {
                 <div className="absolute inset-0 bg-energy/20 rounded-full blur-xl group-hover:blur-2xl transition-all" />
                 <Users className="w-16 h-16 text-energy mx-auto relative z-10 group-hover:scale-110 transition-transform" />
               </div>
-              <h3 className="font-display font-bold text-4xl md:text-5xl bg-gradient-to-br from-energy to-energy-dark bg-clip-text text-transparent mb-3">30+</h3>
+              <h3 className="font-display font-bold text-4xl md:text-5xl bg-gradient-to-br from-energy to-energy-dark bg-clip-text text-transparent mb-3">35+</h3>
               <p className="text-foreground/80 font-semibold text-lg">Active Members</p>
               <p className="text-muted-foreground text-sm mt-2">Passionate Engineers & Innovators</p>
             </div>
@@ -150,7 +150,7 @@ const Home = () => {
                 <div className="absolute inset-0 bg-energy/20 rounded-full blur-xl group-hover:blur-2xl transition-all" />
                 <Wrench className="w-16 h-16 text-energy mx-auto relative z-10 group-hover:scale-110 transition-transform" />
               </div>
-              <h3 className="font-display font-bold text-4xl md:text-5xl bg-gradient-to-br from-energy to-energy-dark bg-clip-text text-transparent mb-3">25+</h3>
+              <h3 className="font-display font-bold text-4xl md:text-5xl bg-gradient-to-br from-energy to-energy-dark bg-clip-text text-transparent mb-3">10+</h3>
               <p className="text-foreground/80 font-semibold text-lg">ATVs Built</p>
               <p className="text-muted-foreground text-sm mt-2">Cutting-Edge ATV Designs</p>
             </div>

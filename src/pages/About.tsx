@@ -7,37 +7,31 @@ import nareshImage from '@/assets/Naresh.jpg';
 const About = () => {
   const achievements = [
     {
-      year: "2024",
-      title: "National ATV Championship - 2nd Place",
+      year: "2025",
+      title: "Cleared Technical Round of BAJA SAE INDIA 2025",
       description: "Outstanding performance in the national competition with our innovative racing ATV design.",
       icon: Trophy
     },
     {
-      year: "2023",
-      title: "Innovation Excellence Award",
-      description: "Recognized for groundbreaking electric ATV prototype and sustainable engineering practices.",
-      icon: Award
-    },
-    {
-      year: "2023",
-      title: "Best Engineering Design",
+      year: "2020",
+      title: "Champions Of Champions",
       description: "Awarded for exceptional technical design and manufacturing quality in regional competition.",
       icon: Target
     },
     {
-      year: "2022",
-      title: "Student Organization of the Year",
-      description: "University recognition for outstanding contribution to engineering education and student development.",
+      year: "2010",
+      title: "37th place",
+      description: "In BAJA SAE INDIA 2010 we secured 37th position among 180 teams.",
       icon: Users
     }
   ];
 
   const milestones = [
-    { year: "2012", event: "Club Founded", members: "12" },
-    { year: "2013", event: "First Competition", members: "25" },
-    { year: "2022", event: "Regional Champions", members: "35" },
-    { year: "2023", event: "National Recognition", members: "45" },
-    { year: "2024", event: "Innovation Leaders", members: "50+" }
+    { year: "2008", event: "Club Founded", members: "10+" },
+    { year: "2010", event: "First Competition", members: "25+" },
+    { year: "2016", event: "National Recognition", members: "30+" },
+    { year: "2020", event: "Champions of champions", members: "30+" },
+    { year: "2025", event: "BAJA SAE INDIA 2025", members: "30+" }
   ];
 
   return (
