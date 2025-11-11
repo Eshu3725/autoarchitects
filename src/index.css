@@ -7,56 +7,62 @@
 @layer base {
   :root {
     --background: 210 20% 98%;
-    --foreground: 215 25% 12%;
+    --foreground: 220 30% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 12%;
+    --card-foreground: 220 30% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 12%;
+    --popover-foreground: 220 30% 15%;
 
-    --primary: 215 85% 20%;
+    --primary: 220 70% 25%;
     --primary-foreground: 210 20% 98%;
 
-    --secondary: 215 15% 85%;
-    --secondary-foreground: 215 25% 15%;
+    --secondary: 220 15% 88%;
+    --secondary-foreground: 220 30% 20%;
 
-    --muted: 215 15% 92%;
-    --muted-foreground: 215 10% 45%;
+    --muted: 220 15% 94%;
+    --muted-foreground: 220 12% 48%;
 
-    --accent: 25 95% 53%;
+    --accent: 355 100% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 215 15% 88%;
-    --input: 215 15% 88%;
-    --ring: 215 85% 20%;
+    --border: 220 15% 90%;
+    --input: 220 15% 90%;
+    --ring: 355 100% 45%;
 
     --radius: 0.75rem;
 
-    /* Custom ATV Club Colors */
-    --steel: 215 20% 25%;
-    --steel-light: 215 15% 70%;
-    --steel-dark: 215 25% 15%;
-    
-    --metallic: 210 15% 35%;
-    --metallic-light: 210 10% 75%;
-    
-    --energy: 25 95% 53%;
-    --energy-light: 25 90% 65%;
-    --energy-dark: 25 100% 45%;
+    /* Custom ATV Club Colors - Racing Red & Navy Blue Palette */
+    --steel: 220 45% 28%;
+    --steel-light: 220 30% 62%;
+    --steel-dark: 220 55% 16%;
 
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--steel-dark)) 0%, hsl(var(--steel)) 50%, hsl(var(--metallic)) 100%);
-    --gradient-metallic: linear-gradient(145deg, hsl(var(--metallic-light)) 0%, hsl(var(--metallic)) 100%);
+    --metallic: 215 25% 42%;
+    --metallic-light: 215 18% 72%;
+
+    --energy: 355 100% 45%;
+    --energy-light: 355 100% 62%;
+    --energy-dark: 355 100% 35%;
+
+    --amber: 0 0% 95%;
+    --amber-light: 0 0% 98%;
+    --amber-dark: 0 0% 88%;
+
+    /* Gradients - Racing Inspired */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--steel-dark)) 0%, hsl(220 50% 22%) 50%, hsl(var(--steel)) 100%);
+    --gradient-metallic: linear-gradient(145deg, hsl(var(--metallic-light)) 0%, hsl(var(--metallic)) 50%, hsl(215 30% 35%) 100%);
     --gradient-energy: linear-gradient(135deg, hsl(var(--energy)) 0%, hsl(var(--energy-dark)) 100%);
+    --gradient-amber: linear-gradient(135deg, hsl(0 0% 95%) 0%, hsl(0 0% 88%) 100%);
 
-    /* Shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(var(--steel) / 0.3);
-    --shadow-glow: 0 0 40px hsl(var(--energy) / 0.4);
-    --shadow-card: 0 4px 20px -4px hsl(var(--steel) / 0.2);
+    /* Shadows - Racing Depth */
+    --shadow-elegant: 0 10px 40px -12px hsl(var(--steel) / 0.4);
+    --shadow-glow: 0 0 50px hsl(var(--energy) / 0.6);
+    --shadow-card: 0 4px 24px -6px hsl(var(--steel) / 0.3);
+    --shadow-amber-glow: 0 0 40px hsl(0 0% 90% / 0.5);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -80,45 +86,49 @@
   }
 
   .dark {
-    --background: 215 25% 8%;
+    --background: 220 35% 10%;
     --foreground: 210 20% 95%;
 
-    --card: 215 25% 10%;
+    --card: 220 30% 12%;
     --card-foreground: 210 20% 95%;
 
-    --popover: 215 25% 10%;
+    --popover: 220 30% 12%;
     --popover-foreground: 210 20% 95%;
 
-    --primary: 25 95% 53%;
+    --primary: 355 100% 45%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 20% 20%;
+    --secondary: 220 25% 22%;
     --secondary-foreground: 210 20% 95%;
 
-    --muted: 215 20% 15%;
-    --muted-foreground: 215 15% 70%;
+    --muted: 220 25% 18%;
+    --muted-foreground: 220 15% 68%;
 
-    --accent: 25 95% 53%;
+    --accent: 355 100% 58%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 20% 20%;
-    --input: 215 20% 18%;
-    --ring: 25 95% 53%;
+    --border: 220 25% 22%;
+    --input: 220 25% 20%;
+    --ring: 355 100% 45%;
 
-    /* Custom ATV Club Colors - Dark Mode */
-    --steel: 215 15% 75%;
-    --steel-light: 215 10% 85%;
-    --steel-dark: 215 20% 65%;
-    
-    --metallic: 210 10% 70%;
-    --metallic-light: 210 8% 80%;
-    
-    --energy: 25 95% 53%;
-    --energy-light: 25 90% 65%;
-    --energy-dark: 25 100% 45%;
+    /* Custom ATV Club Colors - Dark Mode Racing */
+    --steel: 220 28% 68%;
+    --steel-light: 220 22% 80%;
+    --steel-dark: 220 32% 58%;
+
+    --metallic: 215 18% 65%;
+    --metallic-light: 215 14% 75%;
+
+    --energy: 355 100% 58%;
+    --energy-light: 355 100% 70%;
+    --energy-dark: 355 100% 48%;
+
+    --amber: 0 0% 92%;
+    --amber-light: 0 0% 96%;
+    --amber-dark: 0 0% 85%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -154,6 +164,10 @@
     background: var(--gradient-energy);
   }
 
+  .amber-gradient {
+    background: var(--gradient-amber);
+  }
+
   /* Custom Shadows */
   .shadow-elegant {
     box-shadow: var(--shadow-elegant);
@@ -161,6 +175,10 @@
 
   .shadow-glow {
     box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-amber-glow {
+    box-shadow: var(--shadow-amber-glow);
   }
 
   .shadow-card {
@@ -245,6 +263,13 @@
   /* Typography */
   .text-gradient-energy {
     background: var(--gradient-energy);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gradient-amber {
+    background: var(--gradient-amber);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
