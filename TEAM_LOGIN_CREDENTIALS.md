@@ -26,10 +26,11 @@ All team members can login using:
 | Name | Email | Password (USN) |
 |------|-------|----------------|
 | Kushal N.S | kushalns32@gmail.com | 1SI22ME021 |
-| Inchara M.K | incharakswamy31@gmail.com | 1SI24ME039 |
-| Siddharth S. | siddarth.s7090@gmail.com | 1SI23ME093 |
+| Skanda Moudgalya KS | skandaksmoudgalya@gmail.com | 1SI22ME052 |
+| Siddharth S. | siddharth.s7060@gmail.com | 1SI23ME093 |
 | Veeresh | veereshsg14@gmail.com | 1SI23ME108 |
 | Dhanush gowda | dhanushgowdaa@gmail.com | 1SI24ME025 |
+| Inchara M.K | incharakswamy31@gmail.com | 1SI24ME039 |
 
 ---
 
@@ -37,12 +38,14 @@ All team members can login using:
 
 | Name | Email | Password (USN) |
 |------|-------|----------------|
-| Karthik K | karthikkkantharaju@gmail.com | 1SI22ME020 |
-| Karthik S | karthikarthik1937@gmail.com | 1SI24ME046 |
-| Sharadhasimha | sharadhasimnachina@gmail.com | 1SI23ME084 |
-| Dimple K | dimplek8580@gmail.com | 1SI24ME026 |
-| Manoj D | manojyadav31@gmail.com | 1SI23ME010 |
-| Shivaprakash T.P | shivaprakashtp12@gmail.com | 1SI23ME089 |
+| Karthik K | karthikkantharaju28@gmail.com | 1SI22ME020 |
+| Damaresh R | damaresh@gmail.com | 1SI23ME014 |
+| Darshan H.S | darshanvaibhav2@gmail.com | 1SI23ME016 |
+| Sharadhi Simha Chi Na | sharadhisimhachina@gmail.com | 1SI23ME084 |
+| Shivaprakash H B | shivaprakashb712@gmail.com | 1SI23ME089 |
+| Dimple K | dimplek5936@gmail.com | 1SI24ME028 |
+| Karthik S | karthikkarthik19370@gmail.com | 1SI24ME046 |
+| Pavan H.S | pavanshekar0206@gmail.com | 1SI24ME080 |
 
 ---
 
@@ -50,12 +53,12 @@ All team members can login using:
 
 | Name | Email | Password (USN) |
 |------|-------|----------------|
-| Likith H | likith.785@gmail.com | 1SI22ME023 |
-| Skanda Moguda | skandamoguda@gmail.com | 1SI22ME052 |
-| Mithun Yadav M.R | mithunyadav72@gmail.com | 1SI23ME047 |
-| Prathik Jain T.N | prathikjaintn21@gmail.com | 1SI23ME012 |
-| Vivek J | vivek838466@gmail.com | 1SI23ME070 |
-| Jaswanth D. | jaswanthd150@gmail.com | 1SI24ME011 |
+| Likith H | likhith.785@gmail.com | 1SI22ME023 |
+| Prathik Jain T.N | prathikjaintn12@gmail.com | 1SI23ME000 |
+| Mithan Yadav H.R | mithunyadavhr@gmail.com | 1SI23ME057 |
+| Vivek J | vivek838466@gmail.com | 1SI23ME111 |
+| Jaswanth D. | jaswanthd150@gmail.com | 1SI24ME041 |
+| Manoj G | manojyadav.girish@gmail.com | 1SI24ME061 |
 
 ---
 
@@ -63,13 +66,11 @@ All team members can login using:
 
 | Name | Email | Password (USN) |
 |------|-------|----------------|
-| Basavaraj L Arakeri | basavrajarakeri20@gmail.com | 1SI22ME081 |
 | Vivek Hiresomannavar | vivekhiresomannavar@gmail.com | 1SI22ME067 |
-| Medha D. | dmedha2005@gmail.com | 1SI23ME055 |
-| Mohammed Umar Siddiq | mdumarsiddiq50@gmail.com | 1SI23ME059 |
-| Sumanth Honmunger | sumanthhonmunger@gmail.com | 1SI23ME102 |
-| Shashikumar | shashi600325@gmail.com | 1SI24ME053 |
-| Kavana U | kavana688@gmail.com | 1SI23ME081 |
+| Basavaraj L Arakeri | basavarajarakeri@zohomail.in | 1SI24ME008 |
+| Sumanth Honnungar | sumanthhonnungar@gmail.com | 1SI23ME100 |
+| Kavana G | kavanag720@gmail.com | 1SI24ME048 |
+| Shashi Kumar | shashi60835@gmail.com | 1SI24CH045 |
 
 ---
 
@@ -77,13 +78,12 @@ All team members can login using:
 
 | Name | Email | Password (USN) |
 |------|-------|----------------|
-| Damaneet | damaneet712@gmail.com | 1SI23ME014 |
-| Yashas M.S | yashasm9125@gmail.com | 1SI23ME015 |
-| Darshan H.S | darshanvaibhav2@gmail.com | 1SI23ME016 |
-| Dr.Kamlesh D.R | drkamlesh17@gmail.com | 1SI23ME074 |
-| Nikshit J. | nikshitjagadeesh@gmail.com | 1SI24ME075 |
-| Pallav B | pallavpallu8206@gmail.com | 1SI24ME078 |
-| Pavan H.S | pavanhsnaik2806@gmail.com | 1SI24ME080 |
+| Yashas M.S | yashasms9125@gmail.com | 1SI23ME115 |
+| Medha D. | dmedha2005@gmail.com | 1SI23ME055 |
+| Mohammed Umar Siddiq | mdumarsiddiq5@gmail.com | 1SI23ME059 |
+| Kamalesh D.R | drkamalesh397@gmail.com | 1SI23ME038 |
+| Nikshith J | nikshithjagadeesh@gmail.com | 1SI24ME075 |
+| Pallav B | pallavpallu806@gmail.com | 1SI24ME078 |
 
 ---
 
@@ -91,7 +91,7 @@ All team members can login using:
 
 | Name | Email | Password (USN) |
 |------|-------|----------------|
-| Bhumika B.R | b301898@gmail.com | 1SI24ME034 |
+| Bhumika B.R | b301898@gmail.com | 1SI24CS034 |
 
 ---
 
@@ -99,11 +99,10 @@ All team members can login using:
 
 **These members have admin access (can add/edit attendance for all members):**
 
-| Name | Role | Email |
-|------|------|-------|
-| Kushal M.V | Captain (Steering) | kushalmvkushi2@gmail.com |
-| Tejashree P | Lead (Chassis) CAE | tejashree3005@gmail.com |
-| Eshaan AV | Digital | eshaanvenkatesh3725@gmail.com |
+| Name | Role | Email | USN |
+|------|------|-------|-----|
+| Kushal M.V | Captain (Steering) | kushalmvkushi2@gmail.com | 1SI23ME426 |
+| Tejashree P | Vice Captain (Chassis) CAE | tejashree62005@gmail.com | 1SI22ME059 |
 
 *Admin passwords are set separately and not listed here.*
 
@@ -206,17 +205,25 @@ You'll be redirected to your personal dashboard
 
 ## 📝 Quick Reference
 
-**Total Team Members:** 35  
-**User Accounts:** 33  
-**Admin Accounts:** 3  
-**Password Format:** USN (e.g., 1SI22ME021)  
-**Login URL:** http://localhost:8081/login
+**Total Team Members:** 34
+**User Accounts:** 32
+**Admin Accounts:** 2
+**Password Format:** USN (e.g., 1SI22ME021)
+**Login URL:** http://localhost:8082/login
+
+**Team Breakdown:**
+- Steering: 6 members
+- Transmission: 8 members
+- Suspension: 6 members
+- Brakes: 5 members
+- Chassis (CAE): 6 members
+- Graphics: 1 member
 
 ---
 
 ## ✅ Account Status
 
-All 33 team member accounts have been created and are ready to use!
+All 32 team member accounts have been created and are ready to use!
 
 **To verify your account:**
 1. Go to the login page
@@ -237,5 +244,5 @@ All 33 team member accounts have been created and are ready to use!
 
 **Welcome to the AutoArchitects ATV Club Attendance Management System!** 🚀
 
-*Last Updated: 2025-11-08*
+*Last Updated: 2025-11-11*
 

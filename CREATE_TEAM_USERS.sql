@@ -2,7 +2,7 @@
 -- CREATE USER ACCOUNTS FOR ALL TEAM MEMBERS
 -- ============================================
 -- This script creates login accounts for all AutoArchitects ATV Club team members
--- Excludes: Captain (Kushal M.V), Lead (Tejashree P), and Digital (Eshaan AV) - they are admins
+-- Excludes: Captain (Kushal M.V) and Vice Captain (Tejashree P) - they are admins
 -- Password: Each member's USN (University Serial Number)
 -- Role: 'user' (lowercase) for all team members
 
@@ -12,7 +12,7 @@
 -- 1. Run this in Supabase SQL Editor
 -- 2. All passwords are set to the member's USN
 -- 3. Members should change their password after first login (future feature)
--- 4. Total users to be created: 33 (35 total - 2 admins excluded)
+-- 4. Total users to be created: 32 (34 total - 2 admins excluded)
 -- 5. Role is 'user' (lowercase) - case sensitive!
 
 -- ============================================
@@ -20,50 +20,50 @@
 -- ============================================
 
 INSERT INTO users (email, password, name, role)
-VALUES 
-  -- STEERING TEAM (5 members)
+VALUES
+  -- STEERING TEAM (6 members)
   ('kushalns32@gmail.com', '1SI22ME021', 'Kushal N.S', 'user'),
-  ('incharakswamy31@gmail.com', '1SI24ME039', 'Inchara M.K', 'user'),
-  ('siddarth.s7090@gmail.com', '1SI23ME093', 'Siddharth S.', 'user'),
+  ('skandaksmoudgalya@gmail.com', '1SI22ME052', 'Skanda Moudgalya KS', 'user'),
+  ('siddharth.s7060@gmail.com', '1SI23ME093', 'Siddharth S.', 'user'),
   ('veereshsg14@gmail.com', '1SI23ME108', 'Veeresh', 'user'),
   ('dhanushgowdaa@gmail.com', '1SI24ME025', 'Dhanush gowda', 'user'),
-  
-  -- TRANSMISSION TEAM (6 members)
-  ('karthikkkantharaju@gmail.com', '1SI22ME020', 'Karthik K', 'user'),
-  ('karthikarthik1937@gmail.com', '1SI24ME046', 'Karthik S', 'user'),
-  ('sharadhasimnachina@gmail.com', '1SI23ME084', 'Sharadhasimha', 'user'),
-  ('dimplek8580@gmail.com', '1SI24ME026', 'Dimple K', 'user'),
-  ('manojyadav31@gmail.com', '1SI23ME010', 'Manoj D', 'user'),
-  ('shivaprakashtp12@gmail.com', '1SI23ME089', 'Shivaprakash T.P', 'user'),
-  
-  -- SUSPENSION TEAM (6 members)
-  ('likith.785@gmail.com', '1SI22ME023', 'Likith H', 'user'),
-  ('skandamoguda@gmail.com', '1SI22ME052', 'Skanda Moguda', 'user'),
-  ('mithunyadav72@gmail.com', '1SI23ME047', 'Mithun Yadav M.R', 'user'),
-  ('prathikjaintn21@gmail.com', '1SI23ME012', 'Prathik Jain T.N', 'user'),
-  ('vivek838466@gmail.com', '1SI23ME070', 'Vivek J', 'user'),
-  ('jaswanthd150@gmail.com', '1SI24ME011', 'Jaswanth D.', 'user'),
-  
-  -- BRAKES TEAM (7 members)
-  ('basavrajarakeri20@gmail.com', '1SI22ME081', 'Basavaraj L Arakeri', 'user'),
-  ('vivekhiresomannavar@gmail.com', '1SI22ME067', 'Vivek Hiresomannavar', 'user'),
-  ('dmedha2005@gmail.com', '1SI23ME055', 'Medha D.', 'user'),
-  ('mdumarsiddiq50@gmail.com', '1SI23ME059', 'Mohammed Umar Siddiq', 'user'),
-  ('sumanthhonmunger@gmail.com', '1SI23ME102', 'Sumanth Honmunger', 'user'),
-  ('shashi600325@gmail.com', '1SI24ME053', 'Shashikumar', 'user'),
-  ('kavana688@gmail.com', '1SI23ME081', 'Kavana U', 'user'),
-  
-  -- CAE (CHASSIS) TEAM (7 members)
-  ('damaneet712@gmail.com', '1SI23ME014', 'Damaneet', 'user'),
-  ('yashasm9125@gmail.com', '1SI23ME015', 'Yashas M.S', 'user'),
+  ('incharakswamy31@gmail.com', '1SI24ME039', 'Inchara M.K', 'user'),
+
+  -- TRANSMISSION TEAM (8 members)
+  ('karthikkantharaju28@gmail.com', '1SI22ME020', 'Karthik K', 'user'),
+  ('damaresh@gmail.com', '1SI23ME014', 'Damaresh R', 'user'),
   ('darshanvaibhav2@gmail.com', '1SI23ME016', 'Darshan H.S', 'user'),
-  ('drkamlesh17@gmail.com', '1SI23ME074', 'Dr.Kamlesh D.R', 'user'),
-  ('nikshitjagadeesh@gmail.com', '1SI24ME075', 'Nikshit J.', 'user'),
-  ('pallavpallu8206@gmail.com', '1SI24ME078', 'Pallav B', 'user'),
-  ('pavanhsnaik2806@gmail.com', '1SI24ME080', 'Pavan H.S', 'user'),
-  
+  ('sharadhisimhachina@gmail.com', '1SI23ME084', 'Sharadhi Simha Chi Na', 'user'),
+  ('shivaprakashb712@gmail.com', '1SI23ME089', 'Shivaprakash H B', 'user'),
+  ('dimplek5936@gmail.com', '1SI24ME028', 'Dimple K', 'user'),
+  ('karthikkarthik19370@gmail.com', '1SI24ME046', 'Karthik S', 'user'),
+  ('pavanshekar0206@gmail.com', '1SI24ME080', 'Pavan H.S', 'user'),
+
+  -- SUSPENSION TEAM (6 members)
+  ('likhith.785@gmail.com', '1SI22ME023', 'Likith H', 'user'),
+  ('prathikjaintn12@gmail.com', '1SI23ME000', 'Prathik Jain T.N', 'user'),
+  ('mithunyadavhr@gmail.com', '1SI23ME057', 'Mithan Yadav H.R', 'user'),
+  ('vivek838466@gmail.com', '1SI23ME111', 'Vivek J', 'user'),
+  ('jaswanthd150@gmail.com', '1SI24ME041', 'Jaswanth D.', 'user'),
+  ('manojyadav.girish@gmail.com', '1SI24ME061', 'Manoj G', 'user'),
+
+  -- BRAKES TEAM (5 members)
+  ('vivekhiresomannavar@gmail.com', '1SI22ME067', 'Vivek Hiresomannavar', 'user'),
+  ('basavarajarakeri@zohomail.in', '1SI24ME008', 'Basavaraj L Arakeri', 'user'),
+  ('sumanthhonnungar@gmail.com', '1SI23ME100', 'Sumanth Honnungar', 'user'),
+  ('kavanag720@gmail.com', '1SI24ME048', 'Kavana G', 'user'),
+  ('shashi60835@gmail.com', '1SI24CH045', 'Shashi Kumar', 'user'),
+
+  -- CAE (CHASSIS) TEAM (6 members)
+  ('yashasms9125@gmail.com', '1SI23ME115', 'Yashas M.S', 'user'),
+  ('dmedha2005@gmail.com', '1SI23ME055', 'Medha D.', 'user'),
+  ('mdumarsiddiq5@gmail.com', '1SI23ME059', 'Mohammed Umar Siddiq', 'user'),
+  ('drkamalesh397@gmail.com', '1SI23ME038', 'Kamalesh D.R', 'user'),
+  ('nikshithjagadeesh@gmail.com', '1SI24ME075', 'Nikshith J', 'user'),
+  ('pallavpallu806@gmail.com', '1SI24ME078', 'Pallav B', 'user'),
+
   -- GRAPHICS TEAM (1 member)
-  ('b301898@gmail.com', '1SI24ME034', 'Bhumika B.R', 'user')
+  ('b301898@gmail.com', '1SI24CS034', 'Bhumika B.R', 'user')
 
 ON CONFLICT (email) DO NOTHING
 RETURNING id, email, name, role;
@@ -73,13 +73,13 @@ RETURNING id, email, name, role;
 -- ============================================
 -- Run this after the INSERT to verify all users were created
 
-SELECT 
+SELECT
   'Total Users Created' as status,
   COUNT(*) as count
 FROM users
 WHERE role = 'user';
 
--- Expected: 33 users
+-- Expected: 32 users
 
 -- ============================================
 -- VIEW ALL USERS BY ROLE
@@ -96,8 +96,8 @@ ORDER BY role DESC;
 
 -- Expected output:
 -- role  | count | members
--- admin |   3   | Eshaan AV, Kushal M.V, Tejashree P
--- user  |  33   | Basavaraj L Arakeri, Bhumika B.R, ...
+-- admin |   2   | Kushal M.V, Tejashree P
+-- user  |  32   | Basavaraj L Arakeri, Bhumika B.R, ...
 
 -- ============================================
 -- VIEW ALL TEAM MEMBERS (USERS ONLY)
@@ -125,19 +125,18 @@ ORDER BY name;
 -- Email: kushalns32@gmail.com
 -- Password: 1SI22ME021
 
--- Email: incharakswamy31@gmail.com
--- Password: 1SI24ME039
+-- Email: skandaksmoudgalya@gmail.com
+-- Password: 1SI22ME052
 
--- Email: basavrajarakeri20@gmail.com
--- Password: 1SI22ME081
+-- Email: vivekhiresomannavar@gmail.com
+-- Password: 1SI22ME067
 
 -- ============================================
 -- ADMIN ACCOUNTS (NOT CREATED BY THIS SCRIPT)
 -- ============================================
 -- These should be created separately with admin role:
--- 1. Kushal M.V (Captain) - kushalmvkushi2@gmail.com
--- 2. Tejashree P (Lead) - tejashree3005@gmail.com
--- 3. Eshaan AV (Digital) - eshaanvenkatesh3725@gmail.com
+-- 1. Kushal M.V (Captain) - kushalmvkushi2@gmail.com - USN: 1SI23ME426
+-- 2. Tejashree P (Vice Captain) - tejashree62005@gmail.com - USN: 1SI22ME059
 
 -- ============================================
 -- TROUBLESHOOTING
@@ -167,19 +166,28 @@ ORDER BY name;
 -- ============================================
 -- SUMMARY
 -- ============================================
--- Total team members: 35
--- Admin accounts: 3 (Captain, Lead, Digital)
--- User accounts created: 33
+-- Total team members: 34
+-- Admin accounts: 2 (Captain, Vice Captain)
+-- User accounts created: 32
 -- Password format: USN (e.g., 1SI22ME021)
 -- Role: 'user' (lowercase)
 -- All emails are unique
 -- All names match the Members page
+-- Updated: 2025 - Reflects current team roster
+
+-- Team Breakdown:
+-- - Steering: 6 members
+-- - Transmission: 8 members
+-- - Suspension: 6 members
+-- - Brakes: 5 members
+-- - Chassis (CAE): 6 members
+-- - Graphics: 1 member
 
 -- ============================================
 -- NEXT STEPS
 -- ============================================
 -- 1. Run this script in Supabase SQL Editor
--- 2. Verify 33 users were created
+-- 2. Verify 32 users were created
 -- 3. Test login with a few accounts
 -- 4. Share credentials with team members
 -- 5. Consider implementing password change feature
