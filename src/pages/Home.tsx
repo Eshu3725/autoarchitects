@@ -1,10 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Trophy, Users, Wrench } from 'lucide-react';
+import { ArrowRight, Trophy, Users, Wrench, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useCallback } from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
 import heroImage from '@/assets/Banner.jpg';
 import workshopImage from '@/assets/workshop-atvs.jpg';
 import eventImage from '@/assets/event-competition.jpg';
+import bannerImage from '@/assets/Banner2.png';
+import heroAtvImage from '@/assets/hero-atv.jpg';
 
 // YouTube video embeds
 const youtubeVideos = [
@@ -47,23 +51,22 @@ const Home = () => {
     }
   ];
 
-  const showcaseATVs = [
-    {
-      name: "Thunderbolt Racing ATV",
-      description: "High-performance racing machine with custom suspension and 450cc engine.",
-      specs: ["450cc Engine", "Custom Suspension", "Lightweight Frame"]
-    },
-    {
-      name: "All-Terrain Explorer",
-      description: "Versatile ATV designed for extreme off-road conditions and long expeditions.",
-      specs: ["600cc Engine", "All-Weather Design", "GPS Navigation"]
-    },
-    {
-      name: "Electric Pioneer",
-      description: "Eco-friendly electric ATV showcasing sustainable engineering innovation.",
-      specs: ["Electric Motor", "Long Range Battery", "Regenerative Braking"]
-    }
+  // ATV Carousel Images
+  const atvImages = [
+    { src: heroAtvImage, alt: "AutoArchitects ATV" },
+    { src: bannerImage, alt: "Team AutoArchitects" }
   ];
+
+  // Embla Carousel Setup
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, []);
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
 
   return (
     <div className="min-h-screen">
@@ -213,45 +216,57 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-display font-bold text-4xl md:text-5xl text-steel-dark mb-6">
-              Our ATV Collection
+              Our ATV Showcase
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Engineering excellence in every vehicle we build
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              {showcaseATVs.map((atv, index) => (
-                <div key={index} className="p-6 rounded-xl border border-border shadow-card hover-lift transition-smooth">
-                  <h3 className="font-display font-bold text-2xl text-steel-dark mb-3">
-                    {atv.name}
-                  </h3>
-                  <p className="text-muted-foreground mb-4">
-                    {atv.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {atv.specs.map((spec, specIndex) => (
-                      <span 
-                        key={specIndex}
-                        className="text-sm bg-energy/10 text-energy px-3 py-1 rounded-full font-medium"
-                      >
-                        {spec}
-                      </span>
-                    ))}
+          {/* ATV Image Carousel */}
+          <div className="relative">
+            <div className="overflow-hidden rounded-2xl" ref={emblaRef}>
+              <div className="flex">
+                {atvImages.map((image, index) => (
+                  <div key={index} className="flex-[0_0_100%] min-w-0">
+                    <div className="relative group">
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        className="w-full h-[500px] md:h-[600px] object-cover rounded-2xl shadow-2xl"
+                      />
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-steel-dark/70 via-steel-dark/20 to-transparent rounded-2xl" />
+                      {/* Image Caption */}
+                      <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+                        <h3 className="font-display font-bold text-3xl md:text-4xl text-white mb-2">
+                          {image.alt}
+                        </h3>
+                        <p className="text-white/90 text-lg">
+                          Precision engineering meets performance
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            <div className="relative">
-              <img 
-                src={workshopImage} 
-                alt="ATV Workshop" 
-                className="w-full h-auto rounded-xl shadow-elegant"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-steel-dark/50 to-transparent rounded-xl" />
-            </div>
+            {/* Navigation Buttons */}
+            <button
+              onClick={scrollPrev}
+              className="absolute left-4 top-1/2 -translate-y-1/2 glass-card p-3 rounded-full hover:bg-white/30 transition-all duration-300 shadow-2xl hover:scale-110 z-10"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="w-6 h-6 text-white" />
+            </button>
+            <button
+              onClick={scrollNext}
+              className="absolute right-4 top-1/2 -translate-y-1/2 glass-card p-3 rounded-full hover:bg-white/30 transition-all duration-300 shadow-2xl hover:scale-110 z-10"
+              aria-label="Next slide"
+            >
+              <ChevronRight className="w-6 h-6 text-white" />
+            </button>
           </div>
         </div>
       </section>

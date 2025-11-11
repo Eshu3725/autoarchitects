@@ -100,7 +100,7 @@ const Members = () => {
       year: "3rd Year",
       major: "Mechanical Engineering",
       bio: "USN: 1SI23ME014",
-      email: "damaresh@gmail.com",
+      email: "damareshr@gmail.com",
       category: "technical"
     },
     {
@@ -193,7 +193,7 @@ const Members = () => {
       year: "3rd Year",
       major: "Mechanical Engineering",
       bio: "USN: 1SI23ME111",
-      email: "vivek838466@gmail.com",
+      email: "vivek8884168@gmail.com",
       category: "technical"
     },
     {
