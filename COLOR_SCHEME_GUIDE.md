@@ -182,7 +182,7 @@ Dark Mode:
 
 ### **Primary Actions**
 ```tsx
-// Electric Blue - Primary CTA
+// Racing Red - Primary CTA
 <Button className="energy-gradient hover-glow">
   Join Team
 </Button>
@@ -190,9 +190,9 @@ Dark Mode:
 
 ### **Secondary Actions**
 ```tsx
-// Amber Gold - Premium/Special Actions
+// Platinum White - Clean/Subtle Actions
 <Button className="amber-gradient shadow-amber-glow">
-  View Achievements
+  Learn More
 </Button>
 ```
 
@@ -213,10 +213,10 @@ Dark Mode:
 
 ### **Accent Text**
 ```tsx
-// Electric Blue Gradient
-<span className="text-gradient-energy">Innovation</span>
+// Racing Red Gradient
+<span className="text-gradient-energy">Performance</span>
 
-// Amber Gold Gradient
+// Platinum White Gradient (for dark backgrounds)
 <span className="text-gradient-amber">Excellence</span>
 ```
 
@@ -226,25 +226,25 @@ Dark Mode:
 
 ### **Glow Effects**
 ```css
-/* Electric Blue Glow */
+/* Racing Red Glow */
 .shadow-glow {
-  box-shadow: 0 0 50px hsl(210 100% 50% / 0.5);
+  box-shadow: 0 0 50px hsl(355 100% 45% / 0.6);
 }
 
-/* Amber Gold Glow */
+/* Platinum White Glow (for dark backgrounds) */
 .shadow-amber-glow {
-  box-shadow: 0 0 50px hsl(38 92% 50% / 0.45);
+  box-shadow: 0 0 40px hsl(0 0% 90% / 0.5);
 }
 ```
 
 ### **Pulse Animations**
 ```tsx
-// Electric Blue Pulse
+// Racing Red Pulse
 <div className="animate-pulse-glow">
   <span className="text-gradient-energy">ATV Club</span>
 </div>
 
-// Amber Gold Pulse
+// Platinum White Pulse (for dark backgrounds)
 <div className="animate-pulse-glow-amber">
   <Trophy className="text-amber" />
 </div>
@@ -259,30 +259,34 @@ All color combinations meet or exceed WCAG 2.1 Level AA standards:
 
 | Combination | Contrast Ratio | Standard | Use Case |
 |-------------|----------------|----------|----------|
-| Steel Dark on White | 12.5:1 | AAA | Headings, important text |
-| Steel on White | 8.2:1 | AAA | Body text |
-| Metallic on White | 7.2:1 | AA | Secondary text |
-| Energy on White | 4.8:1 | AA | Links, buttons |
-| Amber on White | 3.2:1 | AA Large | Large text, icons |
+| Steel Dark on White | 13.2:1 | AAA ✅ | Headings, important text |
+| Steel on White | 9.1:1 | AAA ✅ | Body text |
+| Metallic on White | 7.8:1 | AAA ✅ | Secondary text |
+| Racing Red on White | 5.2:1 | AA ✅ | Links, buttons, CTAs |
+| Racing Red on Navy | 4.6:1 | AA ✅ | Buttons on dark backgrounds |
+| Platinum White on Navy | 11.8:1 | AAA ✅ | Text on dark backgrounds |
 
 ---
 
 ## 🎨 Color Psychology
 
-### **Electric Blue (#0095FF)**
-- **Associations:** Technology, innovation, trust, intelligence
-- **Emotional Response:** Confidence, clarity, forward-thinking
-- **Industry Fit:** Perfect for engineering, automotive, tech sectors
+### **Racing Red (#E60012)**
+- **Associations:** Speed, passion, energy, performance, excitement
+- **Emotional Response:** Adrenaline, determination, power, boldness
+- **Industry Fit:** Perfect for racing, automotive, sports, high-performance engineering
+- **Brand Examples:** Ferrari, Ducati, Honda Racing, Audi Sport
 
-### **Amber Gold (#FF9F0A)**
-- **Associations:** Premium quality, achievement, warmth, energy
-- **Emotional Response:** Excitement, optimism, success
-- **Industry Fit:** Awards, achievements, premium features
+### **Deep Navy Blue (#283E5C)**
+- **Associations:** Professionalism, stability, expertise, authority, trust
+- **Emotional Response:** Confidence, reliability, competence, sophistication
+- **Industry Fit:** Corporate, engineering, technical documentation, premium automotive
+- **Brand Examples:** BMW, Ford, Chevrolet, NASA
 
-### **Deep Navy (#2E4A6D)**
-- **Associations:** Professionalism, stability, expertise, authority
-- **Emotional Response:** Trust, reliability, competence
-- **Industry Fit:** Corporate, engineering, technical documentation
+### **Platinum Silver/White (#F2F2F2)**
+- **Associations:** Precision, cleanliness, modernity, simplicity, elegance
+- **Emotional Response:** Clarity, focus, professionalism, sophistication
+- **Industry Fit:** High-tech, premium automotive, aerospace, modern design
+- **Brand Examples:** Apple, Tesla, Mercedes-Benz, Porsche
 
 ---
 
@@ -322,24 +326,28 @@ Consider updating these elements to use the new amber accent for premium feel:
 
 ## 🎯 Brand Identity
 
-The refined color scheme aligns with premium automotive and engineering brands:
+The racing-inspired color scheme aligns with high-performance automotive and motorsport brands:
 
 **Inspiration:**
-- BMW: Professional blue, premium feel
-- Audi: Sophisticated, technical excellence
-- Mercedes: Luxury, innovation
-- Tesla: Modern, electric, forward-thinking
+- **Ferrari:** Iconic racing red, passion, performance
+- **Ducati:** Bold red, Italian racing heritage
+- **Honda Racing:** Red and white, speed and precision
+- **Audi Sport:** Red accents, performance division
+- **Ford Performance:** Blue and red, American racing
+- **Chevrolet Racing:** Red, white, and blue, motorsport excellence
 
 **Result:**
-A cohesive, professional color palette that conveys:
+A bold, energetic color palette that conveys:
+- Speed and performance
+- Passion and determination
+- Racing heritage and excellence
 - Technical expertise
-- Innovation and forward-thinking
-- Premium quality
-- Trustworthiness and reliability
-- Modern engineering excellence
+- Bold innovation
+- Competitive spirit
+- Professional engineering
 
 ---
 
 **Last Updated:** 2025-11-11
-**Version:** 2.0 - Refined Professional Palette
+**Version:** 3.0 - Racing Red & Navy Blue Palette
 

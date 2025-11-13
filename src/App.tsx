@@ -12,6 +12,7 @@ import About from "./pages/About";
 import Members from "./pages/Members";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
+import StudentRegistrations from "./pages/StudentRegistrations";
 import UserDashboard from "./pages/UserDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -37,6 +38,14 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="admin">
                   <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/registrations"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <StudentRegistrations />
                 </ProtectedRoute>
               }
             />

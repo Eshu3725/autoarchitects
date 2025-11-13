@@ -85,7 +85,7 @@ const Login = () => {
         {/* Login Form */}
         <Card className="border-0 shadow-elegant">
           <CardHeader className="text-center pb-4">
-            <CardTitle className="font-display text-2xl text-steel-dark">Attendance System Login</CardTitle>
+            <CardTitle className="font-display text-2xl text-steel-dark">Insider's Panel</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {error && (

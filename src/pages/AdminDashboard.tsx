@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { AttendanceRecord } from '@/types/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,13 +11,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp } from 'lucide-react';
+import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import Layout from '@/components/Layout';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
   const [teamMembers, setTeamMembers] = useState<Array<{ id: string; name: string; email: string }>>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -242,9 +244,44 @@ const AdminDashboard = () => {
           </div>
         </section>
 
+        {/* Quick Access */}
+        <section className="py-6 bg-background border-b border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-lg font-semibold text-steel-dark mb-4">Quick Access</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card
+                className="border-0 shadow-card cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => navigate('/admin/registrations')}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Student Registrations</p>
+                      <p className="text-lg font-semibold text-steel-dark">View & Manage Applications</p>
+                    </div>
+                    <UserPlus className="w-10 h-10 text-energy" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-card">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Attendance Management</p>
+                      <p className="text-lg font-semibold text-steel-dark">Current Page</p>
+                    </div>
+                    <ClipboardList className="w-10 h-10 text-steel" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
         {/* Statistics */}
         <section className="py-8 bg-background border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-lg font-semibold text-steel-dark mb-4">Attendance Statistics</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <Card className="border-0 shadow-card">
                 <CardContent className="p-6">

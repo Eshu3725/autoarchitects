@@ -73,6 +73,44 @@ export interface Database {
           updated_at?: string;
         };
       };
+      student_registrations: {
+        Row: {
+          id: string;
+          name: string;
+          usn: string;
+          email: string;
+          phone: string;
+          role_interested: string;
+          part_of_other_club: 'yes' | 'no';
+          other_club_name: string | null;
+          created_at: string;
+          status: 'Pending' | 'Approved' | 'Rejected';
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          usn: string;
+          email: string;
+          phone: string;
+          role_interested: string;
+          part_of_other_club: 'yes' | 'no';
+          other_club_name?: string | null;
+          created_at?: string;
+          status?: 'Pending' | 'Approved' | 'Rejected';
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          usn?: string;
+          email?: string;
+          phone?: string;
+          role_interested?: string;
+          part_of_other_club?: 'yes' | 'no';
+          other_club_name?: string | null;
+          created_at?: string;
+          status?: 'Pending' | 'Approved' | 'Rejected';
+        };
+      };
     };
   };
 }

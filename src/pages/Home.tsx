@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Trophy, Users, Wrench, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import heroImage from '@/assets/Banner.jpg';
 import workshopImage from '@/assets/workshop-atvs.jpg';
@@ -10,6 +10,7 @@ import eventImage from '@/assets/event-competition.jpg';
 import bannerImage from '@/assets/Banner2.png';
 import dscImage from '@/assets/DSC_0691.jpg';
 import image from  '@/assets/image.png';
+import RegistrationModal from '@/components/RegistrationModal';
 
 // YouTube video embeds
 const youtubeVideos = [
@@ -31,6 +32,9 @@ const youtubeVideos = [
 ];
 
 const Home = () => {
+  // Registration Modal State
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
+
   const pastEvents = [
     {
       title: "National ATV Championship 2024",
@@ -97,10 +101,13 @@ const Home = () => {
                 Know about Us<ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="bg-white/20 backdrop-blur-md border-2 border-white/60 text-white hover:bg-white/30 hover:border-white hover:scale-105 text-base md:text-lg px-8 md:px-10 py-4 md:py-7 font-bold transition-all duration-300 shadow-2xl hover:shadow-white/20">
-              <Link to="/members">
-               Join Team
-              </Link>
+            <Button
+              onClick={() => setIsRegistrationModalOpen(true)}
+              variant="outline"
+              size="lg"
+              className="bg-white/20 backdrop-blur-md border-2 border-white/60 text-white hover:bg-white/30 hover:border-white hover:scale-105 text-base md:text-lg px-8 md:px-10 py-4 md:py-7 font-bold transition-all duration-300 shadow-2xl hover:shadow-white/20"
+            >
+              Join Team
             </Button>
           </div>
         </div>
@@ -272,6 +279,12 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Registration Modal */}
+      <RegistrationModal
+        open={isRegistrationModalOpen}
+        onOpenChange={setIsRegistrationModalOpen}
+      />
     </div>
   );
 };
