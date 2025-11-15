@@ -409,4 +409,168 @@
   .delay-500 {
     animation-delay: 0.5s;
   }
+
+  /* Modern Button Styles */
+  .btn-modern {
+    @apply relative overflow-hidden transition-all duration-300 ease-out;
+    @apply shadow-lg hover:shadow-xl active:scale-95;
+  }
+
+  .btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .btn-modern:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  /* Modern Card Styles */
+  .card-modern {
+    @apply bg-white dark:bg-card rounded-2xl shadow-card;
+    @apply border border-border/50 backdrop-blur-sm;
+    @apply transition-all duration-300 ease-out;
+    @apply hover:shadow-elegant hover:border-energy/30;
+  }
+
+  .card-modern-hover {
+    @apply card-modern hover:-translate-y-2 hover:scale-[1.02];
+  }
+
+  /* Modern Input Styles */
+  .input-modern {
+    @apply w-full px-4 py-3 rounded-xl border-2 border-border;
+    @apply bg-background/50 backdrop-blur-sm;
+    @apply transition-all duration-300 ease-out;
+    @apply focus:border-energy focus:ring-4 focus:ring-energy/20;
+    @apply focus:outline-none focus:bg-white dark:focus:bg-card;
+    @apply placeholder:text-muted-foreground/60;
+  }
+
+  .input-modern:hover {
+    @apply border-energy/50;
+  }
+
+  .input-modern.error {
+    @apply border-destructive focus:ring-destructive/20;
+  }
+
+  .input-modern.success {
+    @apply border-green-500 focus:ring-green-500/20;
+  }
+
+  /* Modern Badge Styles */
+  .badge-modern {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full;
+    @apply text-xs font-semibold tracking-wide uppercase;
+    @apply border backdrop-blur-sm transition-all duration-200;
+    @apply hover:scale-105 hover:shadow-md;
+  }
+
+  /* Loading Skeleton */
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .skeleton {
+    @apply bg-gradient-to-r from-muted via-muted-foreground/10 to-muted;
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
+  }
+
+  .skeleton-text {
+    @apply skeleton h-4 rounded-md;
+  }
+
+  .skeleton-title {
+    @apply skeleton h-8 rounded-md;
+  }
+
+  .skeleton-card {
+    @apply skeleton h-32 rounded-xl;
+  }
+
+  /* Modern Table Styles */
+  .table-modern {
+    @apply w-full border-separate border-spacing-0;
+  }
+
+  .table-modern thead {
+    @apply bg-muted/50 backdrop-blur-sm;
+  }
+
+  .table-modern th {
+    @apply px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider;
+    @apply text-muted-foreground border-b-2 border-border;
+    @apply first:rounded-tl-xl last:rounded-tr-xl;
+  }
+
+  .table-modern td {
+    @apply px-6 py-4 border-b border-border/50;
+    @apply transition-colors duration-200;
+  }
+
+  .table-modern tbody tr {
+    @apply hover:bg-muted/30 transition-colors duration-200;
+    @apply cursor-pointer;
+  }
+
+  .table-modern tbody tr:last-child td {
+    @apply first:rounded-bl-xl last:rounded-br-xl;
+  }
+
+  /* Gradient Backgrounds */
+  .gradient-mesh {
+    background:
+      radial-gradient(at 0% 0%, hsl(var(--energy) / 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsl(var(--steel) / 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsl(var(--energy) / 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsl(var(--steel) / 0.1) 0px, transparent 50%);
+  }
+
+  /* Accessibility - Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Focus Visible for Keyboard Navigation */
+  .focus-modern:focus-visible {
+    @apply outline-none ring-4 ring-energy/50 ring-offset-2 ring-offset-background;
+  }
+
+  /* Pulse Animation for Loading States */
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 20px hsl(var(--energy) / 0.4);
+    }
+    50% {
+      opacity: 0.8;
+      box-shadow: 0 0 40px hsl(var(--energy) / 0.6);
+    }
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
 }

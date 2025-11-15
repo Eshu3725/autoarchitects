@@ -95,7 +95,17 @@ const StudentRegistrations = () => {
       }
 
       toast.success(`Status updated to ${newStatus}`);
-      loadRegistrations(); // Reload data
+
+      // Reload all registrations
+      await loadRegistrations();
+
+      // Update the selected registration to show the new status in the dialog
+      if (selectedRegistration && selectedRegistration.id === id) {
+        setSelectedRegistration({
+          ...selectedRegistration,
+          status: newStatus
+        });
+      }
     } catch (error) {
       console.error('Error updating status:', error);
       toast.error('Failed to update status');
@@ -120,7 +130,15 @@ const StudentRegistrations = () => {
       }
 
       toast.success('Registration deleted successfully');
-      loadRegistrations(); // Reload data
+
+      // Close the detail dialog if it's open for this registration
+      if (selectedRegistration && selectedRegistration.id === id) {
+        setIsDetailDialogOpen(false);
+        setSelectedRegistration(null);
+      }
+
+      // Reload data to remove the deleted record from the table
+      loadRegistrations();
     } catch (error) {
       console.error('Error deleting registration:', error);
       toast.error('Failed to delete registration');
@@ -134,11 +152,11 @@ const StudentRegistrations = () => {
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      Pending: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20',
-      Approved: 'bg-green-500/10 text-green-700 border-green-500/20',
-      Rejected: 'bg-red-500/10 text-red-700 border-red-500/20',
+      Pending: 'badge-modern bg-yellow-500/10 text-yellow-700 border-yellow-500/30',
+      Approved: 'badge-modern bg-green-500/10 text-green-700 border-green-500/30',
+      Rejected: 'badge-modern bg-red-500/10 text-red-700 border-red-500/30',
     };
-    return variants[status as keyof typeof variants] || '';
+    return variants[status as keyof typeof variants] || 'badge-modern';
   };
 
   const getStatusIcon = (status: string) => {
@@ -236,47 +254,55 @@ const StudentRegistrations = () => {
         <section className="py-8 bg-background border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="border-0 shadow-card">
+              <Card className="card-modern-hover">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Total Applications</p>
-                      <p className="text-3xl font-bold text-steel-dark">{stats.total}</p>
+                      <p className="text-sm text-muted-foreground font-medium">Total Applications</p>
+                      <p className="text-3xl font-bold text-steel-dark mt-1">{stats.total}</p>
                     </div>
-                    <TrendingUp className="w-10 h-10 text-energy" />
+                    <div className="p-3 bg-energy/10 rounded-xl">
+                      <TrendingUp className="w-8 h-8 text-energy" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-card">
+              <Card className="card-modern-hover">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Pending</p>
-                      <p className="text-3xl font-bold text-yellow-600">{stats.pending}</p>
+                      <p className="text-sm text-muted-foreground font-medium">Pending</p>
+                      <p className="text-3xl font-bold text-yellow-600 mt-1">{stats.pending}</p>
                     </div>
-                    <Clock className="w-10 h-10 text-yellow-600" />
+                    <div className="p-3 bg-yellow-500/10 rounded-xl">
+                      <Clock className="w-8 h-8 text-yellow-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-card">
+              <Card className="card-modern-hover">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Approved</p>
-                      <p className="text-3xl font-bold text-green-600">{stats.approved}</p>
+                      <p className="text-sm text-muted-foreground font-medium">Approved</p>
+                      <p className="text-3xl font-bold text-green-600 mt-1">{stats.approved}</p>
                     </div>
-                    <CheckCircle className="w-10 h-10 text-green-600" />
+                    <div className="p-3 bg-green-500/10 rounded-xl">
+                      <CheckCircle className="w-8 h-8 text-green-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-card">
+              <Card className="card-modern-hover">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Rejected</p>
-                      <p className="text-3xl font-bold text-red-600">{stats.rejected}</p>
+                      <p className="text-sm text-muted-foreground font-medium">Rejected</p>
+                      <p className="text-3xl font-bold text-red-600 mt-1">{stats.rejected}</p>
                     </div>
-                    <XCircle className="w-10 h-10 text-red-600" />
+                    <div className="p-3 bg-red-500/10 rounded-xl">
+                      <XCircle className="w-8 h-8 text-red-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -337,8 +363,8 @@ const StudentRegistrations = () => {
                 </div>
 
                 {/* Table */}
-                <div className="rounded-md border">
-                  <Table>
+                <div className="rounded-xl border border-border/50 overflow-hidden bg-white dark:bg-card shadow-card">
+                  <Table className="table-modern">
                     <TableHeader>
                       <TableRow>
                         <TableHead>Name</TableHead>
@@ -354,9 +380,13 @@ const StudentRegistrations = () => {
                     <TableBody>
                       {isLoading ? (
                         <TableRow>
-                          <TableCell colSpan={8} className="text-center py-8">
-                            <div className="flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-energy"></div>
+                          <TableCell colSpan={8} className="text-center py-12">
+                            <div className="flex flex-col items-center justify-center gap-3">
+                              <div className="relative">
+                                <div className="animate-spin rounded-full h-12 w-12 border-4 border-energy/20"></div>
+                                <div className="animate-spin rounded-full h-12 w-12 border-4 border-energy border-t-transparent absolute top-0 left-0"></div>
+                              </div>
+                              <p className="text-muted-foreground font-medium">Loading registrations...</p>
                             </div>
                           </TableCell>
                         </TableRow>

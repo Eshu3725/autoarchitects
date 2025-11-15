@@ -96,7 +96,7 @@ const Home = () => {
             Where innovation meets adventure. Engineering the future of off-road vehicles.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up delay-300">
-            <Button asChild size="lg" className="energy-gradient hover-glow hover-shine transition-smooth text-base md:text-lg px-8 md:px-10 py-4 md:py-7 font-semibold shadow-2xl">
+            <Button asChild size="lg" className="btn-modern energy-gradient hover-glow text-base md:text-lg px-8 md:px-10 py-4 md:py-7 font-semibold shadow-2xl">
               <Link to="/about#our-journey">
                 Know about Us<ArrowRight className="ml-2 w-5 h-5" />
               </Link>
@@ -105,7 +105,7 @@ const Home = () => {
               onClick={() => setIsRegistrationModalOpen(true)}
               variant="outline"
               size="lg"
-              className="bg-white/20 backdrop-blur-md border-2 border-white/60 text-white hover:bg-white/30 hover:border-white hover:scale-105 text-base md:text-lg px-8 md:px-10 py-4 md:py-7 font-bold transition-all duration-300 shadow-2xl hover:shadow-white/20"
+              className="btn-modern bg-white/20 backdrop-blur-md border-2 border-white/60 text-white hover:bg-white/30 hover:border-white hover:scale-105 text-base md:text-lg px-8 md:px-10 py-4 md:py-7 font-bold shadow-2xl hover:shadow-white/20"
             >
               Join Team
             </Button>

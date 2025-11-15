@@ -243,7 +243,7 @@ const Members = () => {
       role: "Brakes",
       year: "4th Year",
       major: "Mechanical Engineering",
-      bio: "USN: 1SI24ME008",
+      bio: "USN: 1SI22ME008",
       email: "basavarajarakeri@zohomail.in",
       category: "technical"
     },
