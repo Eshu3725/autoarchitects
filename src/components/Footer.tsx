@@ -66,7 +66,9 @@ const Footer = () => {
                 <Facebook className="w-6 h-6 text-white/80 group-hover:text-white" />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/autoarchitects?igsh=cTZuNGdrcmM2M2I1"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 glass rounded-xl flex items-center justify-center hover:bg-energy hover-glow hover-scale transition-all duration-300 group border border-white/20 hover:border-energy/50"
               >
                 <Instagram className="w-6 h-6 text-white/80 group-hover:text-white" />

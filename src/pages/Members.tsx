@@ -631,31 +631,31 @@ const Members = () => {
 
       {/* Contact Us Modal */}
       <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
-        <DialogContent className="sm:max-w-[600px] glass-card border-2 border-white/20 shadow-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-display text-3xl font-bold text-steel-dark">
+        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto glass-card border-2 border-white/20 shadow-2xl p-4 sm:p-6">
+          <DialogHeader className="space-y-2 sm:space-y-3">
+            <DialogTitle className="font-display text-2xl sm:text-3xl font-bold text-steel-dark">
               Contact <span className="text-gradient-energy">Us</span>
             </DialogTitle>
-            <DialogDescription className="text-base text-muted-foreground">
+            <DialogDescription className="text-sm sm:text-base text-muted-foreground">
               Get in touch with the AutoArchitects team. We're here to help!
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6 py-4">
+          <div className="space-y-4 sm:space-y-6 py-3 sm:py-4">
             {/* Email */}
             <div className="group">
-              <div className="flex items-center space-x-4 p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
-                <div className="p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors">
-                  <Mail className="w-6 h-6 text-energy" />
+              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
+                <div className="p-2 sm:p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors flex-shrink-0">
+                  <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-energy" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-muted-foreground mb-1">Email Address</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs sm:text-sm font-semibold text-muted-foreground mb-1">Email Address</p>
                   <a
                     href="mailto:autoarchitects@gmail.com"
-                    className="text-steel-dark font-bold hover:text-energy transition-colors flex items-center gap-2"
+                    className="text-sm sm:text-base text-steel-dark font-bold hover:text-energy transition-colors flex items-center gap-1 sm:gap-2 break-all"
                   >
-                    autoarchitects@gmail.com
-                    <ExternalLink className="w-4 h-4" />
+                    <span className="truncate">autoarchitects@gmail.com</span>
+                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                   </a>
                 </div>
               </div>
@@ -663,18 +663,18 @@ const Members = () => {
 
             {/* Phone */}
             <div className="group">
-              <div className="flex items-center space-x-4 p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
-                <div className="p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors">
-                  <Phone className="w-6 h-6 text-energy" />
+              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
+                <div className="p-2 sm:p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors flex-shrink-0">
+                  <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-energy" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-muted-foreground mb-1">Phone Number</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs sm:text-sm font-semibold text-muted-foreground mb-1">Phone Number</p>
                   <a
                     href="tel:+916363852155"
-                    className="text-steel-dark font-bold hover:text-energy transition-colors flex items-center gap-2"
+                    className="text-sm sm:text-base text-steel-dark font-bold hover:text-energy transition-colors flex items-center gap-1 sm:gap-2"
                   >
                     +91 6363852155
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                   </a>
                 </div>
               </div>
@@ -682,47 +682,47 @@ const Members = () => {
 
             {/* Location */}
             <div className="group">
-              <div className="flex items-center space-x-4 p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
-                <div className="p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors">
-                  <MapPin className="w-6 h-6 text-energy" />
+              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
+                <div className="p-2 sm:p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors flex-shrink-0">
+                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-energy" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-muted-foreground mb-1">Location</p>
-                  <p className="text-steel-dark font-bold">Siddaganga Institute of Technology</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs sm:text-sm font-semibold text-muted-foreground mb-1">Location</p>
+                  <p className="text-sm sm:text-base text-steel-dark font-bold">Siddaganga Institute of Technology</p>
                 </div>
               </div>
             </div>
 
             {/* Social Media */}
             <div>
-              <p className="text-sm font-semibold text-muted-foreground mb-3">Follow Us On Social Media</p>
-              <div className="flex gap-3">
+              <p className="text-xs sm:text-sm font-semibold text-muted-foreground mb-3">Follow Us On Social Media</p>
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <a
-                  href="https://www.instagram.com/autoarchitects_sit/"
+                  href="https://www.instagram.com/autoarchitects?igsh=cTZuNGdrcmM2M2I1"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 p-4 rounded-xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 hover:from-pink-500/20 hover:to-purple-500/20 border border-pink-500/20 hover:border-pink-500/40 transition-all duration-300 group"
+                  className="flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 hover:from-pink-500/20 hover:to-purple-500/20 border border-pink-500/20 hover:border-pink-500/40 transition-all duration-300 group min-h-[48px]"
                 >
-                  <Instagram className="w-5 h-5 text-pink-600 group-hover:scale-110 transition-transform" />
-                  <span className="font-semibold text-pink-600">Instagram</span>
+                  <Instagram className="w-5 h-5 text-pink-600 group-hover:scale-110 transition-transform flex-shrink-0" />
+                  <span className="font-semibold text-sm sm:text-base text-pink-600">Instagram</span>
                 </a>
                 <a
                   href="https://www.facebook.com/autoarchitects.sit"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-600/10 hover:from-blue-500/20 hover:to-blue-600/20 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 group"
+                  className="flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-600/10 hover:from-blue-500/20 hover:to-blue-600/20 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 group min-h-[48px]"
                 >
-                  <Facebook className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
-                  <span className="font-semibold text-blue-600">Facebook</span>
+                  <Facebook className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform flex-shrink-0" />
+                  <span className="font-semibold text-sm sm:text-base text-blue-600">Facebook</span>
                 </a>
                 <a
                   href="https://twitter.com/autoarchitects_"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 p-4 rounded-xl bg-gradient-to-br from-sky-400/10 to-sky-500/10 hover:from-sky-400/20 hover:to-sky-500/20 border border-sky-400/20 hover:border-sky-400/40 transition-all duration-300 group"
+                  className="flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-sky-400/10 to-sky-500/10 hover:from-sky-400/20 hover:to-sky-500/20 border border-sky-400/20 hover:border-sky-400/40 transition-all duration-300 group min-h-[48px]"
                 >
-                  <Twitter className="w-5 h-5 text-sky-500 group-hover:scale-110 transition-transform" />
-                  <span className="font-semibold text-sky-500">Twitter</span>
+                  <Twitter className="w-5 h-5 text-sky-500 group-hover:scale-110 transition-transform flex-shrink-0" />
+                  <span className="font-semibold text-sm sm:text-base text-sky-500">Twitter</span>
                 </a>
               </div>
             </div>
