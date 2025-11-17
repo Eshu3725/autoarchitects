@@ -1,11 +1,21 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, Mail } from 'lucide-react';
+import { Users, Mail, Phone, Facebook, Instagram, Twitter, MapPin, ExternalLink } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useState } from 'react';
 
 const Members = () => {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -602,19 +612,123 @@ const Members = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <div className="glass-card p-12 md:p-16 rounded-3xl border-2 border-white/20 shadow-2xl animate-scale-in">
             <h2 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-white mb-6">
-              Join Our <span className="text-gradient-energy">Team</span>
+              Contact <span className="text-gradient-energy">Team</span>
             </h2>
             <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Ready to be part of something amazing? We're always looking for passionate
-              engineers and innovators to join our mission.
+              We are committed to providing timely and reliable support. Reach out to us with your queries, and our team will respond with the professionalism and clarity you deserve
             </p>
-            <Button size="lg" className="energy-gradient hover-glow hover-shine transition-all duration-300 text-lg px-10 py-7 font-semibold shadow-2xl hover:scale-105">
+            <Button
+              size="lg"
+              onClick={() => setIsContactModalOpen(true)}
+              className="energy-gradient hover-glow hover-shine transition-all duration-300 text-lg px-10 py-7 font-semibold shadow-2xl hover:scale-105"
+            >
               <Mail className="mr-2 w-6 h-6" />
-              Contact Us to Join
+              Contact Us
             </Button>
           </div>
         </div>
       </section>
+
+      {/* Contact Us Modal */}
+      <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
+        <DialogContent className="sm:max-w-[600px] glass-card border-2 border-white/20 shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-display text-3xl font-bold text-steel-dark">
+              Contact <span className="text-gradient-energy">Us</span>
+            </DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground">
+              Get in touch with the AutoArchitects team. We're here to help!
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* Email */}
+            <div className="group">
+              <div className="flex items-center space-x-4 p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
+                <div className="p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors">
+                  <Mail className="w-6 h-6 text-energy" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-muted-foreground mb-1">Email Address</p>
+                  <a
+                    href="mailto:autoarchitects@gmail.com"
+                    className="text-steel-dark font-bold hover:text-energy transition-colors flex items-center gap-2"
+                  >
+                    autoarchitects@gmail.com
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Phone */}
+            <div className="group">
+              <div className="flex items-center space-x-4 p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
+                <div className="p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors">
+                  <Phone className="w-6 h-6 text-energy" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-muted-foreground mb-1">Phone Number</p>
+                  <a
+                    href="tel:+916363852155"
+                    className="text-steel-dark font-bold hover:text-energy transition-colors flex items-center gap-2"
+                  >
+                    +91 6363852155
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Location */}
+            <div className="group">
+              <div className="flex items-center space-x-4 p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
+                <div className="p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors">
+                  <MapPin className="w-6 h-6 text-energy" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-muted-foreground mb-1">Location</p>
+                  <p className="text-steel-dark font-bold">Siddaganga Institute of Technology</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Social Media */}
+            <div>
+              <p className="text-sm font-semibold text-muted-foreground mb-3">Follow Us On Social Media</p>
+              <div className="flex gap-3">
+                <a
+                  href="https://www.instagram.com/autoarchitects_sit/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 p-4 rounded-xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 hover:from-pink-500/20 hover:to-purple-500/20 border border-pink-500/20 hover:border-pink-500/40 transition-all duration-300 group"
+                >
+                  <Instagram className="w-5 h-5 text-pink-600 group-hover:scale-110 transition-transform" />
+                  <span className="font-semibold text-pink-600">Instagram</span>
+                </a>
+                <a
+                  href="https://www.facebook.com/autoarchitects.sit"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-600/10 hover:from-blue-500/20 hover:to-blue-600/20 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 group"
+                >
+                  <Facebook className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
+                  <span className="font-semibold text-blue-600">Facebook</span>
+                </a>
+                <a
+                  href="https://twitter.com/autoarchitects_"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 p-4 rounded-xl bg-gradient-to-br from-sky-400/10 to-sky-500/10 hover:from-sky-400/20 hover:to-sky-500/20 border border-sky-400/20 hover:border-sky-400/40 transition-all duration-300 group"
+                >
+                  <Twitter className="w-5 h-5 text-sky-500 group-hover:scale-110 transition-transform" />
+                  <span className="font-semibold text-sky-500">Twitter</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
