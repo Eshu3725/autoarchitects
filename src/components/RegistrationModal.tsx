@@ -263,7 +263,7 @@ const RegistrationModal = ({ open, onOpenChange }: RegistrationModalProps) => {
           </div>
 
           {/* Right Side - Registration Form */}
-          <div className="w-full lg:w-[55%] overflow-y-auto p-6 sm:p-8">
+          <div className="w-full lg:w-[55%] overflow-y-auto p-6 sm:p-8 scroll-smooth">
             {/* Mobile ATV Animation - Only visible on mobile */}
             <div className="lg:hidden mb-6 h-40 bg-gradient-to-br from-steel-dark/10 via-steel/10 to-metallic/10 rounded-xl p-4 border border-steel/20">
               <AnimatedATV />
