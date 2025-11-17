@@ -21,6 +21,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { StudentRegistrationInsert } from '@/types/registration';
+import AnimatedATV from './AnimatedATV';
 
 interface RegistrationModalProps {
   open: boolean;
@@ -218,30 +219,79 @@ const RegistrationModal = ({ open, onOpenChange }: RegistrationModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto glass-card border-2 border-white/20 shadow-2xl">
-        <DialogHeader>
-          <DialogTitle className="font-display text-3xl font-bold text-steel-dark">
-            Join <span className="text-gradient-energy">AutoArchitects</span>
-          </DialogTitle>
-          <DialogDescription className="text-base text-muted-foreground">
-            Fill out the form below to register for the ATV Club. We'll get back to you soon!
-          </DialogDescription>
-        </DialogHeader>
-
-        {showSuccess ? (
-          <div className="py-12 text-center animate-fade-in-up">
-            <div className="relative inline-block mb-6">
-              <div className="absolute inset-0 bg-energy/20 rounded-full blur-xl animate-pulse" />
-              <CheckCircle2 className="w-20 h-20 text-energy mx-auto relative z-10" />
+      <DialogContent className="max-w-[95vw] lg:max-w-[1100px] max-h-[90vh] overflow-hidden glass-card border-2 border-white/20 shadow-2xl p-0">
+        <div className="flex flex-col lg:flex-row max-h-[90vh]">
+          {/* Left Side - Animated ATV (Hidden on mobile, visible on desktop) */}
+          <div className="hidden lg:flex lg:w-[45%] bg-gradient-to-br from-steel-dark via-steel to-metallic p-8 items-center justify-center relative overflow-hidden">
+            {/* Background decoration */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-energy rounded-full blur-3xl animate-pulse" />
+              <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-white rounded-full blur-3xl" />
             </div>
-            <h3 className="font-display font-bold text-2xl text-steel-dark mb-3">
-              Registration Successful!
-            </h3>
-            <p className="text-muted-foreground text-lg">
-              Thank you for your interest. We'll contact you soon!
-            </p>
+
+            {/* ATV Animation Container */}
+            <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
+              <div className="mb-6 text-center">
+                <h3 className="font-display font-bold text-3xl text-white mb-2">
+                  Rev Up Your <span className="text-energy">Future</span>
+                </h3>
+                <p className="text-white/80 text-sm">
+                  Join the ultimate ATV engineering experience
+                </p>
+              </div>
+
+              <div className="w-full max-w-md h-64 animate-fade-in-up">
+                <AnimatedATV />
+              </div>
+
+              {/* Stats or Features */}
+              <div className="mt-8 grid grid-cols-3 gap-4 w-full max-w-md">
+                <div className="text-center glass-card p-3 rounded-lg border border-white/10">
+                  <div className="font-display font-bold text-2xl text-energy">50+</div>
+                  <div className="text-white/70 text-xs">Members</div>
+                </div>
+                <div className="text-center glass-card p-3 rounded-lg border border-white/10">
+                  <div className="font-display font-bold text-2xl text-energy">10+</div>
+                  <div className="text-white/70 text-xs">Projects</div>
+                </div>
+                <div className="text-center glass-card p-3 rounded-lg border border-white/10">
+                  <div className="font-display font-bold text-2xl text-energy">5+</div>
+                  <div className="text-white/70 text-xs">Awards</div>
+                </div>
+              </div>
+            </div>
           </div>
-        ) : (
+
+          {/* Right Side - Registration Form */}
+          <div className="w-full lg:w-[55%] overflow-y-auto p-6 sm:p-8">
+            {/* Mobile ATV Animation - Only visible on mobile */}
+            <div className="lg:hidden mb-6 h-40 bg-gradient-to-br from-steel-dark/10 via-steel/10 to-metallic/10 rounded-xl p-4 border border-steel/20">
+              <AnimatedATV />
+            </div>
+
+            <DialogHeader className="mb-6">
+              <DialogTitle className="font-display text-2xl sm:text-3xl font-bold text-steel-dark">
+                Join <span className="text-gradient-energy">AutoArchitects</span>
+              </DialogTitle>
+              <DialogDescription className="text-sm sm:text-base text-muted-foreground">
+                Fill out the form below to register for the ATV Club. We'll get back to you soon!
+              </DialogDescription>
+            </DialogHeader>
+
+            {showSuccess ? (
+              <div className="py-12 text-center animate-fade-in-up">
+                <div className="relative inline-block mb-6">
+                  <div className="absolute inset-0 bg-energy/20 rounded-full blur-xl animate-pulse" />
+                  <CheckCircle2 className="w-20 h-20 text-energy mx-auto relative z-10" />
+                </div>
+                <h3 className="font-display font-bold text-2xl text-steel-dark mb-3">
+                  Registration Successful!
+                </h3>
+                <p className="text-muted-foreground text-lg">
+                  Thank you for your interest. We'll contact you soon!
+                </p>
+              </div>
+            ) : (
           <form onSubmit={handleSubmit} className="space-y-6 py-4">
             {/* Name Field */}
             <div className="space-y-2">
@@ -440,6 +490,8 @@ const RegistrationModal = ({ open, onOpenChange }: RegistrationModalProps) => {
             </div>
           </form>
         )}
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
