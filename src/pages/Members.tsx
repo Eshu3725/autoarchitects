@@ -197,8 +197,8 @@ const Members = () => {
       role: "Suspension",
       year: "3rd Year",
       major: "Mechanical Engineering",
-      bio: "USN: 1SI23ME000",
-      email: "prathikjaintn12@gmail.com",
+      bio: "USN: 1SI23ME070",
+      email: "prathikjaintn21@gmail.com",
       category: "technical"
     },
     {
