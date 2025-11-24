@@ -126,9 +126,32 @@ const BulkAttendance = () => {
       setIsSaving(true);
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
+      console.log('=== BULK ATTENDANCE SAVE DEBUG ===');
       console.log('Saving attendance for date:', dateStr);
-      console.log('User ID:', user.id);
+      console.log('Current user object:', user);
+      console.log('User ID (created_by):', user.id);
+      console.log('User email:', user.email);
+      console.log('User role:', user.role);
       console.log('Team members count:', teamMembers.length);
+
+      // Verify the user exists in the database
+      const { data: userCheck, error: userCheckError } = await supabase
+        .from('users')
+        .select('id, email, name, role')
+        .eq('id', user.id)
+        .single();
+
+      console.log('User verification in database:', userCheck);
+      console.log('User verification error:', userCheckError);
+
+      if (userCheckError || !userCheck) {
+        console.error('CRITICAL: Logged-in user does not exist in database!');
+        console.error('User ID from auth:', user.id);
+        console.error('Error:', userCheckError);
+        toast.error('Authentication error: Your user account is not properly set up in the database. Please contact an administrator.');
+        setIsSaving(false);
+        return;
+      }
 
       // Separate records into updates and inserts
       const recordsToUpdate = [];
