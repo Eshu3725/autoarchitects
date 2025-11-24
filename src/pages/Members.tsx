@@ -279,7 +279,7 @@ const Members = () => {
       name: "Shashi Kumar",
       role: "Brakes",
       year: "2nd Year",
-      major: "Mechanical Engineering",
+      major: "Chemical Engineering",
       bio: "USN: 1SI24CH045",
       email: "shashi60835@gmail.com",
       category: "technical"

@@ -248,7 +248,7 @@ const AdminDashboard = () => {
         <section className="py-6 bg-background border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-lg font-semibold text-steel-dark mb-4">Quick Access</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card
                 className="border-0 shadow-card cursor-pointer hover:shadow-lg transition-shadow"
                 onClick={() => navigate('/admin/registrations')}
@@ -263,11 +263,25 @@ const AdminDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
+              <Card
+                className="border-0 shadow-card cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => navigate('/admin/bulk-attendance')}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Bulk Attendance</p>
+                      <p className="text-lg font-semibold text-steel-dark">Mark by Date (Recommended)</p>
+                    </div>
+                    <Users className="w-10 h-10 text-energy" />
+                  </div>
+                </CardContent>
+              </Card>
               <Card className="border-0 shadow-card">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Attendance Management</p>
+                      <p className="text-sm text-muted-foreground mb-1">Individual Records</p>
                       <p className="text-lg font-semibold text-steel-dark">Current Page</p>
                     </div>
                     <ClipboardList className="w-10 h-10 text-steel" />

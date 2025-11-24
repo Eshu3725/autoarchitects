@@ -13,6 +13,7 @@ import Members from "./pages/Members";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import StudentRegistrations from "./pages/StudentRegistrations";
+import BulkAttendance from "./pages/BulkAttendance";
 import UserDashboard from "./pages/UserDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -46,6 +47,14 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="admin">
                   <StudentRegistrations />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/bulk-attendance"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <BulkAttendance />
                 </ProtectedRoute>
               }
             />
