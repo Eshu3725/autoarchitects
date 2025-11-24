@@ -168,7 +168,7 @@ const Members = () => {
       year: "2nd Year",
       major: "Mechanical Engineering",
       bio: "USN: 1SI24ME046",
-      email: "karthikkarthik19370@gmail.com",
+      email: "karthikkarthi19370@gmail.com",
       category: "technical"
     },
     {
