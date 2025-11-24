@@ -11,7 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus } from 'lucide-react';
+import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import Layout from '@/components/Layout';
@@ -214,11 +215,52 @@ const AdminDashboard = () => {
   };
 
   // Filter records
-  const filteredRecords = attendanceRecords.filter(record => {
-    const matchesStatus = filterStatus === 'all' || record.status === filterStatus;
-    const matchesSearch = record.userName.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+  const filteredRecords = attendanceRecords
+    .filter(record => {
+      const matchesStatus = filterStatus === 'all' || record.status === filterStatus;
+      const matchesSearch = record.userName.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesStatus && matchesSearch;
+    })
+    .sort((a, b) => {
+      // Sort by date in descending order (most recent first)
+      // Date format is 'YYYY-MM-DD', so string comparison works correctly
+      return b.date.localeCompare(a.date);
+    });
+
+  // Group records by date
+  const groupedByDate = filteredRecords.reduce((groups, record) => {
+    const date = record.date;
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(record);
+    return groups;
+  }, {} as Record<string, AttendanceRecord[]>);
+
+  // Get sorted dates (most recent first)
+  const sortedDates = Object.keys(groupedByDate).sort((a, b) => b.localeCompare(a));
+
+  // Calculate statistics per date
+  const getDateStats = (records: AttendanceRecord[]) => {
+    return {
+      total: records.length,
+      present: records.filter(r => r.status === 'present').length,
+      absent: records.filter(r => r.status === 'absent').length,
+      late: records.filter(r => r.status === 'late').length,
+      leave: records.filter(r => r.status === 'leave').length,
+    };
+  };
+
+  // Format date for display
+  const formatDateHeader = (dateStr: string) => {
+    const date = new Date(dateStr + 'T00:00:00'); // Add time to avoid timezone issues
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   // Calculate statistics
   const stats = {
@@ -460,55 +502,94 @@ const AdminDashboard = () => {
                   </Select>
                 </div>
 
-                {/* Table */}
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Check In</TableHead>
-                        <TableHead>Check Out</TableHead>
-                        <TableHead>Notes</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredRecords.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                            No attendance records found
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        filteredRecords.map((record) => (
-                          <TableRow key={record.id}>
-                            <TableCell className="font-medium">{record.userName}</TableCell>
-                            <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
-                            <TableCell>
-                              <Badge className={getStatusBadge(record.status)}>
-                                {record.status}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>{record.checkInTime || '-'}</TableCell>
-                            <TableCell>{record.checkOutTime || '-'}</TableCell>
-                            <TableCell className="max-w-xs truncate">{record.notes || '-'}</TableCell>
-                            <TableCell>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openEditDialog(record)}
-                              >
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                {/* Date-Based Sections */}
+                {filteredRecords.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-12 border rounded-lg bg-muted/30">
+                    <Calendar className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
+                    <p className="text-lg font-medium">No attendance records found</p>
+                    <p className="text-sm mt-2">Try adjusting your filters or add new attendance records</p>
+                  </div>
+                ) : (
+                  <Accordion type="multiple" className="space-y-4">
+                    {sortedDates.map((date) => {
+                      const dateRecords = groupedByDate[date];
+                      const dateStats = getDateStats(dateRecords);
+
+                      return (
+                        <AccordionItem
+                          key={date}
+                          value={date}
+                          className="border-0 shadow-card rounded-lg overflow-hidden"
+                        >
+                          <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center justify-between w-full pr-4">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 energy-gradient rounded-lg flex items-center justify-center shadow-glow">
+                                  <Calendar className="w-6 h-6 text-white" />
+                                </div>
+                                <div className="text-left">
+                                  <h3 className="font-display font-bold text-lg text-steel-dark">
+                                    {formatDateHeader(date)}
+                                  </h3>
+                                  <p className="text-sm text-muted-foreground mt-1">
+                                    {dateStats.total} members:
+                                    <span className="text-green-600 font-medium ml-2">{dateStats.present} present</span>
+                                    {dateStats.absent > 0 && <span className="text-red-600 font-medium ml-2">{dateStats.absent} absent</span>}
+                                    {dateStats.late > 0 && <span className="text-yellow-600 font-medium ml-2">{dateStats.late} late</span>}
+                                    {dateStats.leave > 0 && <span className="text-blue-600 font-medium ml-2">{dateStats.leave} on leave</span>}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="px-6 pb-4">
+                            <div className="space-y-2 mt-2">
+                              {dateRecords.map((record) => (
+                                <div
+                                  key={record.id}
+                                  className="flex items-center justify-between p-4 rounded-lg border bg-background hover:bg-muted/30 transition-colors"
+                                >
+                                  <div className="flex items-center gap-4 flex-1">
+                                    <div className="flex-1">
+                                      <p className="font-medium text-steel-dark">{record.userName}</p>
+                                      <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
+                                        <span className="flex items-center gap-1">
+                                          <Badge className={getStatusBadge(record.status)}>
+                                            {record.status}
+                                          </Badge>
+                                        </span>
+                                        {record.checkInTime && (
+                                          <span>In: {record.checkInTime}</span>
+                                        )}
+                                        {record.checkOutTime && (
+                                          <span>Out: {record.checkOutTime}</span>
+                                        )}
+                                      </div>
+                                      {record.notes && (
+                                        <p className="text-sm text-muted-foreground mt-2 italic">
+                                          {record.notes}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => openEditDialog(record)}
+                                    className="ml-4"
+                                  >
+                                    <Edit className="w-4 h-4 mr-2" />
+                                    Edit
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      );
+                    })}
+                  </Accordion>
+                )}
               </CardContent>
             </Card>
           </div>
