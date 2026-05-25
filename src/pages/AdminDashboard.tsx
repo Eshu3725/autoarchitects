@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight, Trash2, Download, Check, X } from 'lucide-react';
+import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight, Trash2, Download, Check, X, FileText } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
@@ -32,6 +32,17 @@ interface LeaveRequest {
   designation?: string;
 }
 
+interface Notice {
+  id: string;
+  title: string;
+  description: string | null;
+  fileName: string | null;
+  fileType: string | null;
+  fileData: string | null;
+  createdAt: string;
+  createdBy: string | null;
+}
+
 const AdminDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -46,6 +57,20 @@ const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [isLeavesLoading, setIsLeavesLoading] = useState(true);
+
+  // Notices states
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [isNoticesLoading, setIsNoticesLoading] = useState(true);
+  const [isPublishingNotice, setIsPublishingNotice] = useState(false);
+  const [noticeFormData, setNoticeFormData] = useState({
+    title: '',
+    description: ''
+  });
+  const [noticeFile, setNoticeFile] = useState<{
+    name: string;
+    type: string;
+    data: string;
+  } | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -77,6 +102,7 @@ const AdminDashboard = () => {
     loadTeamMembers();
     loadAttendanceRecords();
     loadLeaveRequests();
+    loadNotices();
   }, []);
 
   const loadTeamMembers = async () => {
@@ -297,6 +323,146 @@ const AdminDashboard = () => {
     } catch (error: any) {
       console.error('Error handling leave rejection:', error);
       toast.error('Failed to process leave rejection');
+    }
+  };
+
+  const loadNotices = async () => {
+    try {
+      setIsNoticesLoading(true);
+      const { data, error } = await supabase
+        .from('notices')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading notices:', error);
+        toast.error('Failed to load notices');
+        return;
+      }
+
+      const transformedData: Notice[] = (data || []).map(n => ({
+        id: n.id,
+        title: n.title,
+        description: n.description,
+        fileName: n.file_name,
+        fileType: n.file_type,
+        fileData: n.file_data,
+        createdAt: n.created_at,
+        createdBy: n.created_by
+      }));
+
+      setNotices(transformedData);
+    } catch (error) {
+      console.error('Error loading notices:', error);
+    } finally {
+      setIsNoticesLoading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setNoticeFile(null);
+      return;
+    }
+
+    // Limit to 5 MB
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File is too large. Maximum size is 5MB.');
+      e.target.value = '';
+      setNoticeFile(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const resultStr = reader.result as string;
+      const extension = file.name.split('.').pop()?.toLowerCase();
+      let docType = 'txt';
+      if (extension === 'pdf') docType = 'pdf';
+      else if (extension === 'doc' || extension === 'docx') docType = 'word';
+      else if (extension === 'csv') docType = 'csv';
+
+      setNoticeFile({
+        name: file.name,
+        type: docType,
+        data: resultStr
+      });
+    };
+    reader.onerror = () => {
+      toast.error('Failed to read the file.');
+      setNoticeFile(null);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handlePublishNotice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!noticeFormData.title.trim()) {
+      toast.error('Please enter a notice title');
+      return;
+    }
+
+    try {
+      setIsPublishingNotice(true);
+      
+      const insertData = {
+        title: noticeFormData.title.trim(),
+        description: noticeFormData.description.trim() || null,
+        file_name: noticeFile ? noticeFile.name : null,
+        file_type: noticeFile ? noticeFile.type : null,
+        file_data: noticeFile ? noticeFile.data : null,
+        created_by: user?.id || null
+      };
+
+      const { error } = await supabase
+        .from('notices')
+        .insert(insertData);
+
+      if (error) {
+        console.error('Error publishing notice:', error);
+        toast.error('Failed to publish notice: ' + error.message);
+        return;
+      }
+
+      toast.success('Notice published successfully');
+      setNoticeFormData({ title: '', description: '' });
+      setNoticeFile(null);
+      
+      const fileInput = document.getElementById('notice-file-input') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+
+      loadNotices();
+    } catch (error) {
+      console.error('Error publishing notice:', error);
+      toast.error('Failed to publish notice');
+    } finally {
+      setIsPublishingNotice(false);
+    }
+  };
+
+  const handleDeleteNotice = async (id: string, title: string) => {
+    if (!confirm(`Are you sure you want to delete the notice "${title}"?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('notices')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error deleting notice:', error);
+        toast.error('Failed to delete notice: ' + error.message);
+        return;
+      }
+
+      toast.success('Notice deleted successfully');
+      loadNotices();
+    } catch (error) {
+      console.error('Error deleting notice:', error);
+      toast.error('Failed to delete notice');
     }
   };
 
@@ -1089,10 +1255,11 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent className="pt-6">
                 <Tabs defaultValue="daily" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 mb-6 max-w-lg bg-zinc-900 border border-white/5 p-1 rounded-xl">
+                  <TabsList className="grid w-full grid-cols-4 mb-6 max-w-2xl bg-zinc-900 border border-white/5 p-1 rounded-xl">
                     <TabsTrigger value="daily" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Daily Records</TabsTrigger>
                     <TabsTrigger value="summary" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Member Summary</TabsTrigger>
                     <TabsTrigger value="leaves" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Leave Requests</TabsTrigger>
+                    <TabsTrigger value="notices" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Notices</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="daily" className="space-y-4">
@@ -1447,6 +1614,159 @@ const AdminDashboard = () => {
                         </div>
                       </div>
                     )}
+                  </TabsContent>
+
+                  <TabsContent value="notices" className="space-y-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                      {/* Notice Form (Left 1 Col) */}
+                      <div className="lg:col-span-1">
+                        <Card className="glass-panel border-white/5 shadow-2xl rounded-2xl overflow-hidden bg-zinc-900/10">
+                          <CardHeader className="border-b border-white/5 bg-black/10">
+                            <CardTitle className="font-display font-bold text-lg text-white uppercase tracking-wider">
+                              Publish New Notice
+                            </CardTitle>
+                            <p className="text-xs text-zinc-400 mt-1">
+                              Broadcast a message or distribute documents to all team members.
+                            </p>
+                          </CardHeader>
+                          <CardContent className="p-6">
+                            <form onSubmit={handlePublishNotice} className="space-y-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="noticeTitle" className="text-zinc-300">Notice Title *</Label>
+                                <Input
+                                  id="noticeTitle"
+                                  placeholder="e.g. Mandatory Briefing Session"
+                                  value={noticeFormData.title}
+                                  onChange={(e) => setNoticeFormData({ ...noticeFormData, title: e.target.value })}
+                                  className="bg-zinc-900/50 border-white/10 text-white placeholder-zinc-500 focus:border-energy focus:ring-energy/20"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="noticeDesc" className="text-zinc-300">Description / Details</Label>
+                                <Textarea
+                                  id="noticeDesc"
+                                  placeholder="Provide description or links..."
+                                  value={noticeFormData.description}
+                                  onChange={(e) => setNoticeFormData({ ...noticeFormData, description: e.target.value })}
+                                  rows={4}
+                                  className="bg-zinc-900/50 border-white/10 text-white placeholder-zinc-500 focus:border-energy focus:ring-energy/20"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-zinc-300">Document Attachment (Optional)</Label>
+                                <div className="relative border border-dashed border-white/10 hover:border-energy/40 bg-zinc-950/40 p-4 rounded-xl text-center cursor-pointer transition-all duration-300">
+                                  <input
+                                    id="notice-file-input"
+                                    type="file"
+                                    onChange={handleFileChange}
+                                    accept=".pdf,.doc,.docx,.csv,.txt"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                  />
+                                  <FileText className="w-8 h-8 mx-auto text-zinc-500 mb-2 group-hover:text-energy transition-colors" />
+                                  <p className="text-xs font-semibold text-zinc-300">
+                                    {noticeFile ? noticeFile.name : 'Choose File or Drag & Drop'}
+                                  </p>
+                                  <p className="text-xxs text-zinc-500 mt-1">
+                                    PDF, Word, CSV, TXT (Max 5MB)
+                                  </p>
+                                </div>
+                                {noticeFile && (
+                                  <div className="flex items-center justify-between mt-2 p-2 bg-zinc-900/50 rounded-lg border border-white/5">
+                                    <span className="text-xs text-zinc-400 truncate max-w-[200px]">{noticeFile.name}</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setNoticeFile(null)}
+                                      className="text-red-400 hover:text-red-500 hover:bg-transparent h-6 px-2"
+                                    >
+                                      Remove
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                              <Button
+                                type="submit"
+                                disabled={isPublishingNotice}
+                                className="w-full energy-gradient hover-glow text-white font-bold"
+                              >
+                                {isPublishingNotice ? 'Publishing...' : 'Publish Notice'}
+                              </Button>
+                            </form>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      {/* Notices List (Right 2 Cols) */}
+                      <div className="lg:col-span-2 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
+                            Active Board Notices ({notices.length})
+                          </h4>
+                        </div>
+
+                        {isNoticesLoading ? (
+                          <div className="text-center text-zinc-500 py-12 border border-white/5 rounded-xl bg-zinc-900/10">
+                            <div className="animate-spin w-8 h-8 border-2 border-energy border-t-transparent rounded-full mx-auto mb-4" />
+                            <p className="text-sm">Loading notices...</p>
+                          </div>
+                        ) : notices.length === 0 ? (
+                          <div className="text-center text-zinc-500 py-12 border border-white/5 rounded-xl bg-zinc-900/10">
+                            <FileText className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
+                            <p className="text-lg font-medium text-white">No notices published</p>
+                            <p className="text-sm mt-2 text-zinc-400">Broadcast updates will display here</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-4">
+                            {notices.map((notice) => (
+                              <div
+                                key={notice.id}
+                                className="flex flex-col md:flex-row md:items-start justify-between p-5 rounded-xl border border-white/5 bg-zinc-900/20 hover:bg-zinc-900/40 transition-all duration-300 gap-4"
+                              >
+                                <div className="flex-1 space-y-2">
+                                  <div className="flex items-center flex-wrap gap-2">
+                                    <p className="font-bold text-white text-lg">{notice.title}</p>
+                                    {notice.fileName && (
+                                      <Badge className="badge-modern bg-energy/10 text-energy border-energy/20 text-xxs uppercase font-bold">
+                                        Attachment: {notice.fileType}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  {notice.description && (
+                                    <p className="text-sm text-zinc-300 whitespace-pre-wrap">{notice.description}</p>
+                                  )}
+                                  {notice.fileName && notice.fileData && (
+                                    <div className="flex items-center gap-2 mt-2">
+                                      <FileText className="w-4 h-4 text-energy" />
+                                      <a
+                                        href={notice.fileData}
+                                        download={notice.fileName}
+                                        className="text-xs text-energy hover:underline font-semibold flex items-center gap-1"
+                                      >
+                                        {notice.fileName}
+                                        <Download className="w-3.5 h-3.5" />
+                                      </a>
+                                    </div>
+                                  )}
+                                  <p className="text-xxs text-zinc-500">
+                                    Published on {new Date(notice.createdAt).toLocaleDateString()} at {new Date(notice.createdAt).toLocaleTimeString()}
+                                  </p>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteNotice(notice.id, notice.title)}
+                                  className="text-red-500 hover:text-red-400 hover:bg-red-500/10 md:self-start self-end"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Delete
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>

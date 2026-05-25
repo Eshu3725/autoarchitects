@@ -161,6 +161,38 @@ export interface Database {
           reviewed_at?: string | null;
         };
       };
+      notices: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          file_name: string | null;
+          file_type: string | null;
+          file_data: string | null;
+          created_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          file_name?: string | null;
+          file_type?: string | null;
+          file_data?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string | null;
+          file_name?: string | null;
+          file_type?: string | null;
+          file_data?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+        };
+      };
     };
   };
 }

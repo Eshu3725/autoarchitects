@@ -4,7 +4,7 @@ import { AttendanceRecord } from '@/types/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, ClipboardList, TrendingUp, Clock } from 'lucide-react';
+import { Calendar, ClipboardList, TrendingUp, Clock, FileText, Download } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import Layout from '@/components/Layout';
@@ -23,6 +23,16 @@ interface LeaveRequest {
   createdAt: string;
 }
 
+interface Notice {
+  id: string;
+  title: string;
+  description: string | null;
+  fileName: string | null;
+  fileType: string | null;
+  fileData: string | null;
+  createdAt: string;
+}
+
 const UserDashboard = () => {
   const { user } = useAuth();
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
@@ -32,12 +42,15 @@ const UserDashboard = () => {
   const [leaveReason, setLeaveReason] = useState('');
   const [isSubmittingLeave, setIsSubmittingLeave] = useState(false);
   const [isRequestsLoading, setIsRequestsLoading] = useState(true);
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [isNoticesLoading, setIsNoticesLoading] = useState(true);
 
   // Load attendance records from Supabase
   useEffect(() => {
     if (user?.id) {
       loadAttendanceRecords();
       loadLeaveRequests();
+      loadNotices();
     }
   }, [user?.id]);
 
@@ -163,6 +176,37 @@ const UserDashboard = () => {
       toast.error('Failed to submit leave request');
     } finally {
       setIsSubmittingLeave(false);
+    }
+  };
+
+  const loadNotices = async () => {
+    try {
+      setIsNoticesLoading(true);
+      const { data, error } = await supabase
+        .from('notices')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading notices:', error);
+        return;
+      }
+
+      const transformedData: Notice[] = (data || []).map(n => ({
+        id: n.id,
+        title: n.title,
+        description: n.description,
+        fileName: n.file_name,
+        fileType: n.file_type,
+        fileData: n.file_data,
+        createdAt: n.created_at
+      }));
+
+      setNotices(transformedData);
+    } catch (error) {
+      console.error('Error loading notices:', error);
+    } finally {
+      setIsNoticesLoading(false);
     }
   };
 
@@ -462,6 +506,91 @@ const UserDashboard = () => {
               </div>
 
             </div>
+          </div>
+        </section>
+
+        {/* Notice Board Section */}
+        <section className="py-8 relative z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Card className="glass-panel border-white/5 shadow-2xl rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-white/5 bg-black/10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="font-display font-black text-xl text-white uppercase tracking-wider">
+                      Official Notice Board
+                    </CardTitle>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      Check the latest club broadcasts, schedules, and document releases from administrators.
+                    </p>
+                  </div>
+                  <FileText className="w-8 h-8 text-energy" />
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                {isNoticesLoading ? (
+                  <div className="text-center text-zinc-500 py-8">
+                    <div className="animate-spin w-6 h-6 border-2 border-energy border-t-transparent rounded-full mx-auto mb-2" />
+                    <p className="text-xs">Checking notice updates...</p>
+                  </div>
+                ) : notices.length === 0 ? (
+                  <div className="text-center text-zinc-500 py-12 border border-white/5 rounded-xl bg-zinc-900/10">
+                    <FileText className="w-12 h-12 mx-auto mb-4 text-zinc-700" />
+                    <p className="text-md font-bold text-zinc-400">Notice Board Empty</p>
+                    <p className="text-xs mt-1 text-zinc-500">There are no notices posted by the administration at the moment.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {notices.map((notice) => (
+                      <div
+                        key={notice.id}
+                        className="flex flex-col justify-between p-5 rounded-xl border border-white/5 bg-zinc-900/20 hover:bg-zinc-900/30 hover:border-zinc-700/50 transition-all duration-300 gap-4"
+                      >
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <h4 className="font-bold text-white text-lg leading-snug">{notice.title}</h4>
+                            <span className="text-[10px] text-zinc-500 font-semibold flex-shrink-0">
+                              {new Date(notice.createdAt).toLocaleDateString(undefined, {
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                          {notice.description && (
+                            <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">{notice.description}</p>
+                          )}
+                        </div>
+
+                        {notice.fileName && notice.fileData && (
+                          <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <FileText className="w-4 h-4 text-energy flex-shrink-0" />
+                              <span className="text-xs text-zinc-400 truncate max-w-[200px]" title={notice.fileName}>
+                                {notice.fileName}
+                              </span>
+                            </div>
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="sm"
+                              className="border-energy/40 text-energy hover:bg-energy hover:text-white transition-all duration-300 btn-modern h-8"
+                            >
+                              <a
+                                href={notice.fileData}
+                                download={notice.fileName}
+                                className="flex items-center gap-1.5"
+                              >
+                                <Download className="w-3.5 h-3.5" />
+                                Download
+                              </a>
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </section>
 
