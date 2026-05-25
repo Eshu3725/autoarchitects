@@ -61,10 +61,10 @@ const UserDashboard = () => {
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      present: 'bg-green-500/10 text-green-700 border-green-500/20',
-      absent: 'bg-red-500/10 text-red-700 border-red-500/20',
-      late: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20',
-      leave: 'bg-blue-500/10 text-blue-700 border-blue-500/20'
+      present: 'bg-green-500/15 text-green-400 border-green-500/20',
+      absent: 'bg-red-500/15 text-red-400 border-red-500/20',
+      late: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20',
+      leave: 'bg-blue-500/15 text-blue-400 border-blue-500/20'
     };
     return variants[status as keyof typeof variants] || '';
   };
@@ -84,76 +84,82 @@ const UserDashboard = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-muted/30">
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        {/* Tech Grid Overlay */}
+        <div className="absolute inset-0 grid-background opacity-10 pointer-events-none" />
+
         {/* Header */}
-        <section className="hero-gradient py-12 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="hero-gradient py-12 text-white relative border-b border-white/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="font-display font-bold text-4xl mb-2">My Attendance</h1>
-                <p className="text-white/90">Welcome back, {user?.name}</p>
+                <span className="inline-block px-3 py-1 bg-energy/10 border border-energy/30 text-energy text-xs font-bold uppercase tracking-widest rounded-md mb-2">
+                  Portal Dashboard
+                </span>
+                <h1 className="font-display font-black text-4xl uppercase tracking-tight mb-2">My Attendance</h1>
+                <p className="text-zinc-300">Welcome back, <span className="text-white font-bold">{user?.name}</span></p>
               </div>
-              <ClipboardList className="w-16 h-16 text-energy" />
+              <ClipboardList className="w-12 h-12 text-energy" />
             </div>
           </div>
         </section>
 
         {/* Statistics */}
-        <section className="py-8 bg-background border-b border-border">
+        <section className="py-8 bg-background/50 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Total Days</p>
-                      <p className="text-3xl font-bold text-steel-dark">{stats.totalDays}</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider">Total Days</p>
+                      <p className="text-3xl font-black text-white mt-1">{stats.totalDays}</p>
                     </div>
-                    <Calendar className="w-10 h-10 text-energy" />
+                    <Calendar className="w-8 h-8 text-energy" />
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Present</p>
-                      <p className="text-3xl font-bold text-green-600">{stats.present}</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider">Present</p>
+                      <p className="text-3xl font-black text-green-400 mt-1">{stats.present}</p>
                     </div>
-                    <TrendingUp className="w-10 h-10 text-green-600" />
+                    <TrendingUp className="w-8 h-8 text-green-400" />
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Absent</p>
-                      <p className="text-3xl font-bold text-red-600">{stats.absent}</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider">Absent</p>
+                      <p className="text-3xl font-black text-red-400 mt-1">{stats.absent}</p>
                     </div>
-                    <Calendar className="w-10 h-10 text-red-600" />
+                    <Calendar className="w-8 h-8 text-red-400" />
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Late</p>
-                      <p className="text-3xl font-bold text-yellow-600">{stats.late}</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider">Late</p>
+                      <p className="text-3xl font-black text-yellow-400 mt-1">{stats.late}</p>
                     </div>
-                    <Clock className="w-10 h-10 text-yellow-600" />
+                    <Clock className="w-8 h-8 text-yellow-400" />
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Attendance %</p>
-                      <p className="text-3xl font-bold text-energy">{attendancePercentage}%</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider">Attendance %</p>
+                      <p className="text-3xl font-black text-energy mt-1">{attendancePercentage}%</p>
                     </div>
-                    <TrendingUp className="w-10 h-10 text-energy" />
+                    <TrendingUp className="w-8 h-8 text-energy" />
                   </div>
                 </CardContent>
               </Card>
@@ -162,34 +168,34 @@ const UserDashboard = () => {
         </section>
 
         {/* Attendance Records */}
-        <section className="py-8">
+        <section className="py-8 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Card className="border-0 shadow-card">
-              <CardHeader>
-                <CardTitle className="font-display text-2xl text-steel-dark">
-                  My Attendance Records
+            <Card className="glass-panel border-white/5 shadow-2xl rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-white/5 bg-black/10">
+                <CardTitle className="font-display font-bold text-xl text-white uppercase tracking-wider">
+                  Telemetry Attendance Records
                 </CardTitle>
-                <p className="text-sm text-muted-foreground mt-2">
-                  View-only access to your attendance history
+                <p className="text-xs text-zinc-400 mt-1">
+                  View-only access to your personal attendance history
                 </p>
               </CardHeader>
-              <CardContent>
-                <div className="rounded-md border">
+              <CardContent className="p-6">
+                <div className="rounded-xl border border-white/5 overflow-hidden">
                   <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Check In</TableHead>
-                        <TableHead>Check Out</TableHead>
-                        <TableHead>Notes</TableHead>
-                        <TableHead>Last Updated</TableHead>
+                    <TableHeader className="bg-white/5">
+                      <TableRow className="border-b border-white/5 hover:bg-transparent">
+                        <TableHead className="text-zinc-300 font-bold uppercase tracking-wider text-xs">Date</TableHead>
+                        <TableHead className="text-zinc-300 font-bold uppercase tracking-wider text-xs">Status</TableHead>
+                        <TableHead className="text-zinc-300 font-bold uppercase tracking-wider text-xs">Check In</TableHead>
+                        <TableHead className="text-zinc-300 font-bold uppercase tracking-wider text-xs">Check Out</TableHead>
+                        <TableHead className="text-zinc-300 font-bold uppercase tracking-wider text-xs">Notes</TableHead>
+                        <TableHead className="text-zinc-300 font-bold uppercase tracking-wider text-xs">Last Updated</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {attendanceRecords.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                        <TableRow className="hover:bg-transparent">
+                          <TableCell colSpan={6} className="text-center text-zinc-500 py-12">
                             No attendance records found
                           </TableCell>
                         </TableRow>
@@ -197,8 +203,8 @@ const UserDashboard = () => {
                         attendanceRecords
                           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                           .map((record) => (
-                            <TableRow key={record.id}>
-                              <TableCell className="font-medium">
+                            <TableRow key={record.id} className="border-b border-white/5 hover:bg-white/5">
+                              <TableCell className="font-medium text-white">
                                 {new Date(record.date).toLocaleDateString('en-US', {
                                   weekday: 'short',
                                   year: 'numeric',
@@ -207,16 +213,16 @@ const UserDashboard = () => {
                                 })}
                               </TableCell>
                               <TableCell>
-                                <Badge className={getStatusBadge(record.status)}>
-                                  {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                                <Badge className={`font-semibold border rounded-md uppercase tracking-wider text-[10px] ${getStatusBadge(record.status)}`}>
+                                  {record.status}
                                 </Badge>
                               </TableCell>
-                              <TableCell>{record.checkInTime || '-'}</TableCell>
-                              <TableCell>{record.checkOutTime || '-'}</TableCell>
-                              <TableCell className="max-w-xs truncate">
+                              <TableCell className="text-zinc-300">{record.checkInTime || '-'}</TableCell>
+                              <TableCell className="text-zinc-300">{record.checkOutTime || '-'}</TableCell>
+                              <TableCell className="max-w-xs truncate text-zinc-400">
                                 {record.notes || '-'}
                               </TableCell>
-                              <TableCell className="text-sm text-muted-foreground">
+                              <TableCell className="text-xs text-zinc-500">
                                 {new Date(record.updatedAt).toLocaleDateString()}
                               </TableCell>
                             </TableRow>
@@ -227,24 +233,24 @@ const UserDashboard = () => {
                 </div>
 
                 {attendanceRecords.length > 0 && (
-                  <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-                    <h3 className="font-semibold text-steel-dark mb-2">Summary</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Present Days:</span>
-                        <span className="ml-2 font-semibold text-green-600">{stats.present}</span>
+                  <div className="mt-8 p-6 bg-black/20 border border-white/5 rounded-xl">
+                    <h3 className="font-bold text-white text-xs uppercase tracking-wider mb-4">Summary</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-semibold uppercase tracking-wider">
+                      <div className="flex items-center gap-2">
+                        <span className="text-zinc-500">Present:</span>
+                        <span className="text-green-400">{stats.present} Days</span>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">Absent Days:</span>
-                        <span className="ml-2 font-semibold text-red-600">{stats.absent}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-zinc-500">Absent:</span>
+                        <span className="text-red-400">{stats.absent} Days</span>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">Late Days:</span>
-                        <span className="ml-2 font-semibold text-yellow-600">{stats.late}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-zinc-500">Late:</span>
+                        <span className="text-yellow-400">{stats.late} Days</span>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">Leave Days:</span>
-                        <span className="ml-2 font-semibold text-blue-600">{stats.leave}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-zinc-500">Leave:</span>
+                        <span className="text-blue-400">{stats.leave} Days</span>
                       </div>
                     </div>
                   </div>
@@ -255,21 +261,21 @@ const UserDashboard = () => {
         </section>
 
         {/* Info Section */}
-        <section className="py-8">
+        <section className="py-8 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Card className="border-0 shadow-card bg-energy/5">
+            <Card className="glass-panel border-white/5 shadow-2xl bg-energy/5 hover:border-energy/20 transition-all duration-300">
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-energy/10 rounded-full flex items-center justify-center">
+                    <div className="w-12 h-12 bg-energy/10 rounded-xl flex items-center justify-center">
                       <ClipboardList className="w-6 h-6 text-energy" />
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-steel-dark mb-2">About Your Attendance</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Your attendance records are managed by the admin team. If you notice any discrepancies 
-                      or have questions about your attendance, please contact the admin or your team lead.
+                    <h3 className="font-bold text-white uppercase text-sm tracking-wider mb-2">About Your Attendance</h3>
+                    <p className="text-sm text-zinc-400 leading-relaxed">
+                      Your attendance records are managed by the team administration. If you notice any telemetry discrepancies 
+                      or have questions about check-in/out timestamps, please contact your respective subteam lead.
                     </p>
                   </div>
                 </div>

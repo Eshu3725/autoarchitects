@@ -233,42 +233,48 @@ const BulkAttendance = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-muted/30">
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        {/* Tech Grid Overlay */}
+        <div className="absolute inset-0 grid-background opacity-10 pointer-events-none" />
+
         {/* Header */}
-        <section className="hero-gradient py-12 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="hero-gradient py-12 text-white relative border-b border-white/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="font-display font-bold text-4xl mb-2">Bulk Attendance</h1>
-                <p className="text-white/90">Mark attendance for all members on a specific date</p>
+                <span className="inline-block px-3 py-1 bg-energy/10 border border-energy/30 text-energy text-xs font-bold uppercase tracking-widest rounded-md mb-2">
+                  Telemetry Management
+                </span>
+                <h1 className="font-display font-black text-4xl uppercase tracking-tight mb-2">Bulk Attendance</h1>
+                <p className="text-zinc-300">Mark attendance for all team members on a specific date</p>
               </div>
-              <Users className="w-16 h-16 text-energy" />
+              <Users className="w-12 h-12 text-energy animate-pulse" />
             </div>
           </div>
         </section>
 
         {/* Date Selection & Stats */}
-        <section className="py-8 bg-background border-b border-border">
+        <section className="py-8 bg-background/50 border-b border-white/5 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {/* Date Picker */}
-              <Card className="border-0 shadow-card md:col-span-1">
+              <Card className="glass-panel border-white/5 shadow-2xl md:col-span-1">
                 <CardContent className="p-6">
-                  <Label className="text-sm font-semibold mb-3 block">Select Date</Label>
+                  <Label className="text-sm font-semibold mb-3 block text-zinc-300">Select Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !selectedDate && "text-muted-foreground"
+                          "w-full justify-start text-left font-normal border-white/10 bg-zinc-900/50 hover:bg-zinc-800/50 text-white hover:text-white",
+                          !selectedDate && "text-zinc-400"
                         )}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="mr-2 h-4 w-4 text-energy" />
                         {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0 bg-zinc-950 border-white/10" align="start">
                       <Calendar
                         mode="single"
                         selected={selectedDate}
@@ -281,38 +287,38 @@ const BulkAttendance = () => {
               </Card>
 
               {/* Stats Cards */}
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl hover:border-energy/30 hover:scale-[1.01] transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Total Members</p>
-                      <p className="text-3xl font-bold text-steel-dark">{stats.total}</p>
+                      <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Total Members</p>
+                      <p className="text-3xl font-black text-white mt-1">{stats.total}</p>
                     </div>
                     <Users className="w-10 h-10 text-energy" />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl hover:border-green-500/30 hover:scale-[1.01] transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Present</p>
-                      <p className="text-3xl font-bold text-green-600">{stats.present}</p>
+                      <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Present</p>
+                      <p className="text-3xl font-black text-green-400 mt-1">{stats.present}</p>
                     </div>
-                    <CheckCircle2 className="w-10 h-10 text-green-600" />
+                    <CheckCircle2 className="w-10 h-10 text-green-400" />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl hover:border-red-500/30 hover:scale-[1.01] transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Absent</p>
-                      <p className="text-3xl font-bold text-red-600">{stats.absent}</p>
+                      <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Absent</p>
+                      <p className="text-3xl font-black text-red-400 mt-1">{stats.absent}</p>
                     </div>
-                    <XCircle className="w-10 h-10 text-red-600" />
+                    <XCircle className="w-10 h-10 text-red-400" />
                   </div>
                 </CardContent>
               </Card>
@@ -321,26 +327,30 @@ const BulkAttendance = () => {
         </section>
 
         {/* Members List */}
-        <section className="py-8">
+        <section className="py-8 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Card className="border-0 shadow-card">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="font-display text-2xl text-steel-dark">
-                  Team Members - {format(selectedDate, 'MMMM dd, yyyy')}
+            <Card className="glass-panel border-white/5 shadow-2xl">
+              <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 pb-6">
+                <CardTitle className="font-display font-black text-2xl text-white uppercase tracking-tight">
+                  Team Members <span className="text-zinc-400 font-normal">| {format(selectedDate, 'MMMM dd, yyyy')}</span>
                 </CardTitle>
                 <Button
                   onClick={saveAttendance}
                   disabled={isSaving}
-                  className="energy-gradient hover-glow"
+                  className="bg-energy hover:bg-energy-light text-white font-bold transition-all duration-300 hover:shadow-glow hover:scale-[1.03] btn-modern px-6"
                 >
                   <Save className="mr-2 h-4 w-4" />
                   {isSaving ? 'Saving...' : 'Save Attendance'}
                 </Button>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 {isLoading ? (
                   <div className="text-center py-12">
-                    <p className="text-muted-foreground">Loading team members...</p>
+                    <div className="relative inline-block mb-3">
+                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-energy/20"></div>
+                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-energy border-t-transparent absolute top-0 left-0"></div>
+                    </div>
+                    <p className="text-zinc-400 font-medium">Loading team members...</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -352,22 +362,23 @@ const BulkAttendance = () => {
                         <div
                           key={member.id}
                           className={cn(
-                            "flex items-center justify-between p-4 rounded-lg border-2 transition-all duration-200",
+                            "flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-300",
                             isPresent
-                              ? "bg-green-50 border-green-200 hover:border-green-300"
-                              : "bg-red-50 border-red-200 hover:border-red-300"
+                              ? "bg-green-500/5 border-green-500/20 hover:border-green-500/40 hover:bg-green-500/10 shadow-lg shadow-green-950/20"
+                              : "bg-red-500/5 border-red-500/20 hover:border-red-500/40 hover:bg-red-500/10 shadow-lg shadow-red-950/20"
                           )}
                         >
                           <div className="flex-1 min-w-0 mr-4">
-                            <p className="font-semibold text-steel-dark truncate">{member.name}</p>
-                            <p className="text-sm text-muted-foreground truncate">{member.email}</p>
+                            <p className="font-bold text-white truncate">{member.name}</p>
+                            <p className="text-xs text-zinc-400 truncate">{member.email}</p>
                           </div>
                           <div className="flex items-center gap-3">
                             <Badge
-                              variant={isPresent ? "default" : "destructive"}
                               className={cn(
-                                "font-semibold",
-                                isPresent ? "bg-green-600" : "bg-red-600"
+                                "font-bold badge-modern",
+                                isPresent 
+                                  ? "bg-green-500/10 text-green-400 border-green-500/30 hover:bg-green-500/20" 
+                                  : "bg-red-500/10 text-red-400 border-red-500/30 hover:bg-red-500/20"
                               )}
                             >
                               {isPresent ? 'Present' : 'Absent'}
@@ -376,8 +387,8 @@ const BulkAttendance = () => {
                               checked={isPresent}
                               onCheckedChange={() => toggleAttendance(member.id)}
                               className={cn(
-                                "data-[state=checked]:bg-green-600",
-                                "data-[state=unchecked]:bg-red-600"
+                                "data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500",
+                                "border border-white/10"
                               )}
                             />
                           </div>

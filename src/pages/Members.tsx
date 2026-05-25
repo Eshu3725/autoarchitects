@@ -410,74 +410,80 @@ const Members = () => {
   const digitalMembers = teamMembers.filter(m => m.role.includes('Digital') && m.category !== 'leadership');
   const graphicsMembers = teamMembers.filter(m => m.role.includes('Graphics') && m.category !== 'leadership');
 
-  const getRoleColor = (role: string) => {
-    if (role.includes('President') || role.includes('Captain')) return 'energy';
-    if (role.includes('Lead') || role.includes('Director')) return 'steel';
-    return 'metallic';
-  };
+  const renderMemberCard = (member: typeof teamMembers[0], index: number) => {
+    // Determine category styling
+    const isLeadership = member.category === 'leadership' || member.role.includes('Captain');
+    const isOperations = member.category === 'operations' || member.role.includes('Digital') || member.role.includes('Graphics');
+    
+    let accentBg = 'bg-energy/10 text-energy border-energy/20';
+    let cardBorder = 'hover:border-energy/40';
+    if (!isLeadership && isOperations) {
+      accentBg = 'bg-amber/10 text-amber border-amber/20';
+      cardBorder = 'hover:border-amber/40';
+    } else if (!isLeadership && !isOperations) {
+      accentBg = 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
+      cardBorder = 'hover:border-cyan-500/40';
+    }
 
-  // Render member card component for carousel
-  const renderMemberCard = (member: typeof teamMembers[0], index: number) => (
-    <div key={index} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%] px-8">
-      <Card className="group glass-card border-2 border-white/10 shadow-2xl hover-lift transition-all duration-500 overflow-hidden hover:border-energy/30 hover:shadow-energy/10 h-full">
-        <CardContent className="p-0">
-          {/* Avatar Section */}
-          <div className="h-52 metallic-gradient flex items-center justify-center relative overflow-hidden">
-            {/* Animated gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-energy/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
-
-            <div className="relative z-10">
-              <div className="w-28 h-28 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-4 border-white/30 group-hover:border-energy/50 transition-all duration-300 group-hover:scale-110 shadow-2xl">
-                <span className="font-display font-bold text-4xl text-white">
-                  {member.name.split(' ').map(n => n[0]).join('')}
-                </span>
+    return (
+      <div key={index} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%] px-4 sm:px-6">
+        <Card className={`group glass-panel border border-white/5 shadow-2xl transition-all duration-500 overflow-hidden ${cardBorder} h-full flex flex-col justify-between hover:scale-[1.02]`}>
+          <CardContent className="p-0 flex-1 flex flex-col justify-between">
+            {/* Avatar Section */}
+            <div className="h-44 bg-gradient-to-br from-zinc-900 to-zinc-950 flex items-center justify-center relative overflow-hidden border-b border-white/5">
+              {/* Telemetry Grid Line Overlay */}
+              <div className="absolute inset-0 grid-background opacity-20 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+              
+              <div className="relative z-10">
+                <div className="w-24 h-24 bg-white/5 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/10 group-hover:border-energy transition-all duration-500 group-hover:scale-110 shadow-2xl relative">
+                  <span className="font-display font-black text-3xl text-white">
+                    {member.name.split(' ').map(n => n[0]).join('')}
+                  </span>
+                  {/* Neon pulsing ring */}
+                  <div className="absolute -inset-1 rounded-full border border-energy/30 opacity-0 group-hover:opacity-100 group-hover:animate-ping pointer-events-none" />
+                </div>
               </div>
             </div>
 
-            <div className="absolute inset-0 bg-gradient-to-t from-steel-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
-          </div>
+            {/* Content Section */}
+            <div className="p-6 flex-1 flex flex-col justify-between">
+              <div className="text-center mb-4">
+                <h3 className="font-display font-bold text-xl text-white mb-2 group-hover:text-energy transition-colors">
+                  {member.name}
+                </h3>
+                <Badge
+                  variant="secondary"
+                  className={`mb-3 font-semibold px-3 py-1 text-xs uppercase tracking-wider rounded-md border ${accentBg}`}
+                >
+                  {member.role}
+                </Badge>
+                <p className="text-xs text-zinc-400 font-semibold uppercase tracking-widest">
+                  {member.year} • {member.major}
+                </p>
+              </div>
 
-          {/* Content Section */}
-          <div className="p-6 bg-gradient-to-b from-background/95 to-background">
-            <div className="text-center mb-4">
-              <h3 className="font-display font-bold text-xl text-steel-dark mb-2 group-hover:text-energy transition-colors">
-                {member.name}
-              </h3>
-              <Badge
-                variant="secondary"
-                className={`mb-3 font-semibold transition-all duration-300 ${
-                  getRoleColor(member.role) === 'energy'
-                    ? 'bg-energy/10 text-energy border border-energy/20 group-hover:bg-energy group-hover:text-white'
-                    : getRoleColor(member.role) === 'steel'
-                    ? 'bg-steel/10 text-steel border border-steel/20 group-hover:bg-steel group-hover:text-white'
-                    : 'bg-metallic/10 text-metallic border border-metallic/20 group-hover:bg-metallic group-hover:text-white'
-                }`}
-              >
-                {member.role}
-              </Badge>
-              <p className="text-sm text-muted-foreground font-medium">
-                {member.year} • {member.major}
-              </p>
+              {member.bio && (
+                <p className="text-xs text-zinc-500 text-center mb-6 leading-relaxed italic">
+                  {member.bio}
+                </p>
+              )}
+
+              {/* Contact Links */}
+              <div className="flex justify-center pt-4 border-t border-white/5">
+                <a
+                  href={`mailto:${member.email}`}
+                  className="w-10 h-10 glass rounded-lg flex items-center justify-center hover:bg-energy hover:text-white transition-all duration-300 group/btn border border-white/10"
+                >
+                  <Mail className="w-4 h-4 text-zinc-400 group-hover/btn:text-white transition-colors" />
+                </a>
+              </div>
             </div>
-
-            <p className="text-sm text-muted-foreground text-center mb-4 leading-relaxed">
-              {member.bio}
-            </p>
-
-            {/* Contact Links */}
-            <div className="flex justify-center pt-4 border-t border-border/50">
-              <a
-                href={`mailto:${member.email}`}
-                className="w-12 h-12 glass rounded-full flex items-center justify-center hover:bg-energy hover-glow transition-all duration-300 group/btn border border-white/20 hover:border-energy/50 hover:scale-110"
-              >
-                <Mail className="w-5 h-5 text-steel group-hover/btn:text-white transition-colors" />
-              </a>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
 
   // Carousel component for team sections
   const TeamCarousel = ({ members, sectionId, title }: { members: typeof teamMembers, sectionId: string, title: string }) => {
@@ -492,7 +498,7 @@ const Members = () => {
     );
 
     return (
-      <section id={sectionId} className="py-24 bg-gradient-to-b from-muted/30 via-background to-muted/20 relative overflow-hidden scroll-mt-24">
+      <section id={sectionId} className="py-24 bg-gradient-to-b from-background via-background to-muted/20 relative overflow-hidden scroll-mt-24 border-b border-white/5">
         {/* Background decoration */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-energy rounded-full blur-3xl" />
@@ -500,16 +506,16 @@ const Members = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16 animate-fade-in-up">
-            <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl text-steel-dark mb-4">
+            <h2 className="font-display font-black text-3xl md:text-4xl lg:text-5xl text-white uppercase tracking-tight mb-4">
               {title} <span className="text-gradient-energy">Team</span>
             </h2>
-            <p className="text-muted-foreground text-lg">
-              {members.length} {members.length === 1 ? 'Member' : 'Members'}
+            <p className="text-zinc-400 text-sm uppercase tracking-wider font-semibold">
+              {members.length} {members.length === 1 ? 'Engineer' : 'Engineers'}
             </p>
           </div>
 
-          {/* Carousel - Wrapper with padding and background to prevent section background visibility */}
-          <div className="relative py-8 px-4 -mx-4 bg-background/50 backdrop-blur-sm rounded-2xl">
+          {/* Carousel */}
+          <div className="relative py-8 px-4 -mx-4 bg-black/10 backdrop-blur-sm rounded-2xl border border-white/5">
             <div className="overflow-hidden -mx-4" ref={emblaRef}>
               <div className="flex">
                 {members.map((member, index) => renderMemberCard(member, index))}
@@ -522,107 +528,107 @@ const Members = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative bg-background">
+      {/* Tech Grid Overlay */}
+      <div className="absolute inset-0 grid-background opacity-10 pointer-events-none" />
+
       {/* Hero Section */}
-      <section className="relative hero-gradient py-24 md:py-32 text-white overflow-hidden">
-        {/* Animated background decoration */}
+      <section className="relative hero-gradient py-24 md:py-32 text-white overflow-hidden border-b border-white/5">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-energy rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white rounded-full blur-3xl" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-energy rounded-full blur-3xl" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <div className="inline-block mb-6 animate-scale-in">
             <div className="relative">
-              <div className="absolute inset-0 bg-energy/30 rounded-full blur-2xl" />
-              <Users className="w-20 h-20 mx-auto text-energy relative z-10" />
+              <div className="absolute -inset-2 bg-energy/30 rounded-full blur-2xl" />
+              <Users className="w-16 h-16 mx-auto text-energy relative z-10" />
             </div>
           </div>
-          <h1 className="font-display font-bold text-5xl md:text-6xl lg:text-7xl mb-6 animate-fade-in-up">
-            Our <span className="text-gradient-energy">Team</span>
+          <h1 className="font-display font-black text-5xl md:text-7xl mb-6 uppercase tracking-tight">
+            OUR <span className="text-gradient-energy">TEAM</span>
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed animate-fade-in-up delay-200">
-            Meet the passionate engineers and innovators driving AutoArchitects forward
+          <p className="text-xl text-zinc-300 max-w-3xl mx-auto leading-relaxed animate-fade-in-up">
+            Meet the engineers and innovators driving AutoArchitects to the top step of the podium
           </p>
         </div>
       </section>
 
-      {/* Scroll Navigation - Optimized for mobile */}
-      <section className="py-2 md:py-4 lg:py-6 bg-gradient-to-b from-background to-muted/20 border-b border-border/50 sticky top-16 z-40 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-          {/* Mobile: Horizontal scroll, Desktop: Wrap */}
-          <div className="flex md:flex-wrap gap-1 md:gap-2 justify-start md:justify-center overflow-x-auto scrollbar-hide pb-1 md:pb-0">
+      {/* Scroll Navigation */}
+      <section className="py-4 bg-background/90 border-b border-white/5 sticky top-20 z-40 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex md:flex-wrap gap-2 justify-start md:justify-center overflow-x-auto scrollbar-hide pb-1 md:pb-0">
             <Button
               variant="outline"
               size="sm"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
+              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
             >
-              All <span className="ml-1 opacity-70 hidden sm:inline">({teamMembers.length})</span>
+              All ({teamMembers.length})
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('leadership-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
+              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
             >
-              Leadership <span className="ml-1 opacity-70 hidden sm:inline">({leadershipMembers.length})</span>
+              Leadership ({leadershipMembers.length})
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('steering-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
+              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
             >
-              Steering <span className="ml-1 opacity-70 hidden sm:inline">({steeringMembers.length})</span>
+              Steering ({steeringMembers.length})
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('transmission-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
+              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
             >
-              Transmission <span className="ml-1 opacity-70 hidden sm:inline">({transmissionMembers.length})</span>
+              Transmission ({transmissionMembers.length})
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('suspension-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
+              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
             >
-              Suspension <span className="ml-1 opacity-70 hidden sm:inline">({suspensionMembers.length})</span>
+              Suspension ({suspensionMembers.length})
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('brakes-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
+              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
             >
-              Brakes <span className="ml-1 opacity-70 hidden sm:inline">({brakesMembers.length})</span>
+              Brakes ({brakesMembers.length})
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('chassis-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
+              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
             >
-              Chassis/CAE <span className="ml-1 opacity-70 hidden sm:inline">({chassisMembers.length})</span>
+              Chassis/CAE ({chassisMembers.length})
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('digital-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
+              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
             >
-              Digital <span className="ml-1 opacity-70 hidden sm:inline">({digitalMembers.length})</span>
+              Digital ({digitalMembers.length})
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scrollToSection('graphics-team')}
-              className="transition-all duration-300 hover-scale glass-card border-steel/20 text-steel hover:bg-energy/10 hover:text-energy hover:border-energy/30 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap flex-shrink-0"
+              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
             >
-              Graphics <span className="ml-1 opacity-70 hidden sm:inline">({graphicsMembers.length})</span>
+              Graphics ({graphicsMembers.length})
             </Button>
           </div>
         </div>

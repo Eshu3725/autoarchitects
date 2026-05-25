@@ -152,9 +152,9 @@ const StudentRegistrations = () => {
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      Pending: 'badge-modern bg-yellow-500/10 text-yellow-700 border-yellow-500/30',
-      Approved: 'badge-modern bg-green-500/10 text-green-700 border-green-500/30',
-      Rejected: 'badge-modern bg-red-500/10 text-red-700 border-red-500/30',
+      Pending: 'badge-modern bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
+      Approved: 'badge-modern bg-green-500/10 text-green-400 border-green-500/30',
+      Rejected: 'badge-modern bg-red-500/10 text-red-400 border-red-500/30',
     };
     return variants[status as keyof typeof variants] || 'badge-modern';
   };
@@ -236,30 +236,36 @@ const StudentRegistrations = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-muted/30">
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        {/* Tech Grid Overlay */}
+        <div className="absolute inset-0 grid-background opacity-10 pointer-events-none" />
+
         {/* Header */}
-        <section className="hero-gradient py-12 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="hero-gradient py-12 text-white relative border-b border-white/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="font-display font-bold text-4xl mb-2">Student Registrations</h1>
-                <p className="text-white/90">Manage student registration applications</p>
+                <span className="inline-block px-3 py-1 bg-energy/10 border border-energy/30 text-energy text-xs font-bold uppercase tracking-widest rounded-md mb-2">
+                  Control Panel
+                </span>
+                <h1 className="font-display font-black text-4xl uppercase tracking-tight mb-2">Student Registrations</h1>
+                <p className="text-zinc-300">Manage student registration applications</p>
               </div>
-              <Users className="w-16 h-16 text-energy" />
+              <Users className="w-12 h-12 text-energy animate-pulse" />
             </div>
           </div>
         </section>
 
         {/* Statistics */}
-        <section className="py-8 bg-background border-b border-border">
+        <section className="py-8 bg-background/50 border-b border-white/5 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="card-modern-hover">
+              <Card className="glass-panel border-white/5 shadow-2xl hover:border-energy/30 hover:scale-[1.01] transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground font-medium">Total Applications</p>
-                      <p className="text-3xl font-bold text-steel-dark mt-1">{stats.total}</p>
+                      <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Total Applications</p>
+                      <p className="text-3xl font-black text-white mt-1">{stats.total}</p>
                     </div>
                     <div className="p-3 bg-energy/10 rounded-xl">
                       <TrendingUp className="w-8 h-8 text-energy" />
@@ -267,41 +273,44 @@ const StudentRegistrations = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="card-modern-hover">
+
+              <Card className="glass-panel border-white/5 shadow-2xl hover:border-yellow-500/30 hover:scale-[1.01] transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground font-medium">Pending</p>
-                      <p className="text-3xl font-bold text-yellow-600 mt-1">{stats.pending}</p>
+                      <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Pending</p>
+                      <p className="text-3xl font-black text-yellow-400 mt-1">{stats.pending}</p>
                     </div>
                     <div className="p-3 bg-yellow-500/10 rounded-xl">
-                      <Clock className="w-8 h-8 text-yellow-600" />
+                      <Clock className="w-8 h-8 text-yellow-400 animate-pulse" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="card-modern-hover">
+
+              <Card className="glass-panel border-white/5 shadow-2xl hover:border-green-500/30 hover:scale-[1.01] transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground font-medium">Approved</p>
-                      <p className="text-3xl font-bold text-green-600 mt-1">{stats.approved}</p>
+                      <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Approved</p>
+                      <p className="text-3xl font-black text-green-400 mt-1">{stats.approved}</p>
                     </div>
                     <div className="p-3 bg-green-500/10 rounded-xl">
-                      <CheckCircle className="w-8 h-8 text-green-600" />
+                      <CheckCircle className="w-8 h-8 text-green-400" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="card-modern-hover">
+
+              <Card className="glass-panel border-white/5 shadow-2xl hover:border-red-500/30 hover:scale-[1.01] transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground font-medium">Rejected</p>
-                      <p className="text-3xl font-bold text-red-600 mt-1">{stats.rejected}</p>
+                      <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Rejected</p>
+                      <p className="text-3xl font-black text-red-400 mt-1">{stats.rejected}</p>
                     </div>
                     <div className="p-3 bg-red-500/10 rounded-xl">
-                      <XCircle className="w-8 h-8 text-red-600" />
+                      <XCircle className="w-8 h-8 text-red-400" />
                     </div>
                   </div>
                 </CardContent>
@@ -311,38 +320,37 @@ const StudentRegistrations = () => {
         </section>
 
         {/* Main Content */}
-        <section className="py-8">
+        <section className="py-8 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Card className="border-0 shadow-card">
-              <CardHeader>
+            <Card className="glass-panel border-white/5 shadow-2xl">
+              <CardHeader className="border-b border-white/5 pb-6">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <CardTitle className="font-display text-2xl text-steel-dark">
+                  <CardTitle className="font-display font-black text-2xl text-white uppercase tracking-tight">
                     Registration Applications
                   </CardTitle>
                   <Button
                     onClick={exportToCSV}
-                    variant="outline"
-                    className="border-energy text-energy hover:bg-energy hover:text-white"
+                    className="border border-energy/50 text-energy bg-energy/5 hover:bg-energy hover:text-white hover:border-energy hover:shadow-glow hover:scale-[1.03] transition-all duration-300 btn-modern px-6"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Export CSV
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 {/* Filters */}
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                   <Input
                     placeholder="Search by name, USN, or email..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="md:w-80"
+                    className="md:w-80 bg-zinc-900/50 border-white/10 text-white placeholder-zinc-500 focus:border-energy focus:ring-energy/20"
                   />
                   <Select value={filterStatus} onValueChange={setFilterStatus}>
-                    <SelectTrigger className="md:w-48">
+                    <SelectTrigger className="md:w-48 bg-zinc-900/50 border-white/10 text-white">
                       <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-zinc-950 border-white/10 text-white">
                       <SelectItem value="all">All Status</SelectItem>
                       <SelectItem value="Pending">Pending</SelectItem>
                       <SelectItem value="Approved">Approved</SelectItem>
@@ -350,10 +358,10 @@ const StudentRegistrations = () => {
                     </SelectContent>
                   </Select>
                   <Select value={filterRole} onValueChange={setFilterRole}>
-                    <SelectTrigger className="md:w-48">
+                    <SelectTrigger className="md:w-48 bg-zinc-900/50 border-white/10 text-white">
                       <SelectValue placeholder="Filter by role" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-zinc-950 border-white/10 text-white">
                       <SelectItem value="all">All Roles</SelectItem>
                       {roles.map(role => (
                         <SelectItem key={role} value={role}>{role}</SelectItem>
@@ -363,18 +371,18 @@ const StudentRegistrations = () => {
                 </div>
 
                 {/* Table */}
-                <div className="rounded-xl border border-border/50 overflow-hidden bg-white dark:bg-card shadow-card">
+                <div className="rounded-xl border border-white/5 overflow-hidden bg-zinc-900/20 backdrop-blur-md shadow-2xl">
                   <Table className="table-modern">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>USN</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Phone</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Actions</TableHead>
+                    <TableHeader className="bg-zinc-950/80">
+                      <TableRow className="border-b border-white/5">
+                        <TableHead className="text-zinc-400 font-bold">Name</TableHead>
+                        <TableHead className="text-zinc-400 font-bold">USN</TableHead>
+                        <TableHead className="text-zinc-400 font-bold">Email</TableHead>
+                        <TableHead className="text-zinc-400 font-bold">Phone</TableHead>
+                        <TableHead className="text-zinc-400 font-bold">Role</TableHead>
+                        <TableHead className="text-zinc-400 font-bold">Status</TableHead>
+                        <TableHead className="text-zinc-400 font-bold">Date</TableHead>
+                        <TableHead className="text-zinc-400 font-bold">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -386,39 +394,40 @@ const StudentRegistrations = () => {
                                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-energy/20"></div>
                                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-energy border-t-transparent absolute top-0 left-0"></div>
                               </div>
-                              <p className="text-muted-foreground font-medium">Loading registrations...</p>
+                              <p className="text-zinc-400 font-medium">Loading registrations...</p>
                             </div>
                           </TableCell>
                         </TableRow>
                       ) : filteredRegistrations.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                          <TableCell colSpan={8} className="text-center text-zinc-500 py-8">
                             No registrations found
                           </TableCell>
                         </TableRow>
                       ) : (
                         filteredRegistrations.map((reg) => (
-                          <TableRow key={reg.id}>
-                            <TableCell className="font-medium">{reg.name}</TableCell>
-                            <TableCell>{reg.usn}</TableCell>
-                            <TableCell>{reg.email}</TableCell>
-                            <TableCell>{reg.phone}</TableCell>
-                            <TableCell>{reg.role_interested}</TableCell>
+                          <TableRow key={reg.id} className="border-b border-white/5 hover:bg-white/5">
+                            <TableCell className="font-bold text-white">{reg.name}</TableCell>
+                            <TableCell className="text-zinc-300">{reg.usn}</TableCell>
+                            <TableCell className="text-zinc-300">{reg.email}</TableCell>
+                            <TableCell className="text-zinc-300">{reg.phone}</TableCell>
+                            <TableCell className="text-zinc-300 font-semibold">{reg.role_interested}</TableCell>
                             <TableCell>
                               <Badge className={getStatusBadge(reg.status)}>
-                                <span className="flex items-center gap-1">
+                                <span className="flex items-center gap-1.5 font-bold">
                                   {getStatusIcon(reg.status)}
                                   {reg.status}
                                 </span>
                               </Badge>
                             </TableCell>
-                            <TableCell>{new Date(reg.created_at).toLocaleDateString()}</TableCell>
+                            <TableCell className="text-zinc-400">{new Date(reg.created_at).toLocaleDateString()}</TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <Button
                                   variant="outline"
                                   size="sm"
                                   onClick={() => openDetailDialog(reg)}
+                                  className="border-white/10 hover:bg-zinc-800 text-zinc-300 hover:text-white"
                                 >
                                   <Eye className="w-4 h-4" />
                                 </Button>
@@ -426,10 +435,10 @@ const StudentRegistrations = () => {
                                   value={reg.status}
                                   onValueChange={(value: any) => handleStatusUpdate(reg.id, value)}
                                 >
-                                  <SelectTrigger className="w-32 h-8">
+                                  <SelectTrigger className="w-32 h-8 bg-zinc-900/50 border-white/10 text-white">
                                     <SelectValue />
                                   </SelectTrigger>
-                                  <SelectContent>
+                                  <SelectContent className="bg-zinc-950 border-white/10 text-white">
                                     <SelectItem value="Pending">Pending</SelectItem>
                                     <SelectItem value="Approved">Approve</SelectItem>
                                     <SelectItem value="Rejected">Reject</SelectItem>
@@ -450,68 +459,70 @@ const StudentRegistrations = () => {
 
         {/* Detail Dialog */}
         <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl bg-zinc-950 border-white/10 text-white">
             <DialogHeader>
-              <DialogTitle>Registration Details</DialogTitle>
+              <DialogTitle className="font-display font-black text-2xl text-white uppercase tracking-tight">Registration Details</DialogTitle>
             </DialogHeader>
             {selectedRegistration && (
-              <div className="space-y-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-6 py-4">
+                <div className="grid grid-cols-2 gap-6 bg-zinc-900/30 p-6 rounded-xl border border-white/5">
                   <div>
-                    <Label className="text-muted-foreground">Name</Label>
-                    <p className="font-medium">{selectedRegistration.name}</p>
+                    <Label className="text-zinc-500 text-xs font-bold uppercase tracking-wider">Name</Label>
+                    <p className="font-bold text-white text-base mt-1">{selectedRegistration.name}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground">USN</Label>
-                    <p className="font-medium">{selectedRegistration.usn}</p>
+                    <Label className="text-zinc-500 text-xs font-bold uppercase tracking-wider">USN</Label>
+                    <p className="font-bold text-white text-base mt-1">{selectedRegistration.usn}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground">Email</Label>
-                    <p className="font-medium">{selectedRegistration.email}</p>
+                    <Label className="text-zinc-500 text-xs font-bold uppercase tracking-wider">Email</Label>
+                    <p className="font-bold text-white text-base mt-1">{selectedRegistration.email}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground">Phone</Label>
-                    <p className="font-medium">{selectedRegistration.phone}</p>
+                    <Label className="text-zinc-500 text-xs font-bold uppercase tracking-wider">Phone</Label>
+                    <p className="font-bold text-white text-base mt-1">{selectedRegistration.phone}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground">Role Interested In</Label>
-                    <p className="font-medium">{selectedRegistration.role_interested}</p>
+                    <Label className="text-zinc-500 text-xs font-bold uppercase tracking-wider">Role Interested In</Label>
+                    <p className="font-bold text-white text-base mt-1">{selectedRegistration.role_interested}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground">Part of Other Club</Label>
-                    <p className="font-medium">{selectedRegistration.part_of_other_club === 'yes' ? 'Yes' : 'No'}</p>
+                    <Label className="text-zinc-500 text-xs font-bold uppercase tracking-wider">Part of Other Club</Label>
+                    <p className="font-bold text-white text-base mt-1">{selectedRegistration.part_of_other_club === 'yes' ? 'Yes' : 'No'}</p>
                   </div>
                   {selectedRegistration.part_of_other_club === 'yes' && (
                     <div className="col-span-2">
-                      <Label className="text-muted-foreground">Other Club Name</Label>
-                      <p className="font-medium">{selectedRegistration.other_club_name || 'N/A'}</p>
+                      <Label className="text-zinc-500 text-xs font-bold uppercase tracking-wider">Other Club Name</Label>
+                      <p className="font-bold text-white text-base mt-1">{selectedRegistration.other_club_name || 'N/A'}</p>
                     </div>
                   )}
                   <div>
-                    <Label className="text-muted-foreground">Status</Label>
-                    <Badge className={getStatusBadge(selectedRegistration.status)}>
-                      <span className="flex items-center gap-1">
-                        {getStatusIcon(selectedRegistration.status)}
-                        {selectedRegistration.status}
-                      </span>
-                    </Badge>
+                    <Label className="text-zinc-500 text-xs font-bold uppercase tracking-wider">Status</Label>
+                    <div className="mt-1">
+                      <Badge className={getStatusBadge(selectedRegistration.status)}>
+                        <span className="flex items-center gap-1.5 font-bold">
+                          {getStatusIcon(selectedRegistration.status)}
+                          {selectedRegistration.status}
+                        </span>
+                      </Badge>
+                    </div>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground">Registration Date</Label>
-                    <p className="font-medium">{new Date(selectedRegistration.created_at).toLocaleString()}</p>
+                    <Label className="text-zinc-500 text-xs font-bold uppercase tracking-wider">Registration Date</Label>
+                    <p className="font-bold text-white text-base mt-1">{new Date(selectedRegistration.created_at).toLocaleString()}</p>
                   </div>
                 </div>
-                <div className="flex gap-2 pt-4">
+                <div className="flex gap-3 pt-4">
                   <Button
                     onClick={() => handleStatusUpdate(selectedRegistration.id, 'Approved')}
-                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold transition-all duration-300 hover:scale-[1.02]"
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
                     Approve
                   </Button>
                   <Button
                     onClick={() => handleStatusUpdate(selectedRegistration.id, 'Rejected')}
-                    className="flex-1 bg-red-600 hover:bg-red-700"
+                    className="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold transition-all duration-300 hover:scale-[1.02]"
                   >
                     <XCircle className="w-4 h-4 mr-2" />
                     Reject
@@ -519,7 +530,7 @@ const StudentRegistrations = () => {
                   <Button
                     onClick={() => handleDelete(selectedRegistration.id)}
                     variant="outline"
-                    className="border-red-500 text-red-500 hover:bg-red-50"
+                    className="border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 hover:scale-[1.02]"
                   >
                     Delete
                   </Button>

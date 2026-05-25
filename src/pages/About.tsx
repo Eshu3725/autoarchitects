@@ -36,59 +36,68 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative overflow-hidden bg-background">
+      {/* Tech Grid Overlay */}
+      <div className="absolute inset-0 grid-background opacity-10 pointer-events-none" />
+
       {/* Hero Section */}
-      <section className="hero-gradient py-16 md:py-20 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="font-display font-bold text-4xl sm:text-5xl md:text-6xl mb-4 md:mb-6">
-            About AutoArchitects
+      <section className="hero-gradient py-24 md:py-32 text-white relative overflow-hidden border-b border-white/5">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-energy rounded-full blur-3xl" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="inline-block mb-4 px-4 py-1.5 rounded-full bg-energy/10 border border-energy/30 text-energy text-xs font-bold uppercase tracking-widest">
+            About Team AutoArchitects
+          </div>
+          <h1 className="font-display font-black text-5xl sm:text-7xl mb-6 tracking-tight uppercase">
+            WHO WE <span className="text-gradient-energy">ARE</span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl text-zinc-300 max-w-3xl mx-auto leading-relaxed">
             Driving innovation in off-road vehicle engineering through passion,
-            dedication, and cutting-edge technology.
+            dedication, and cutting-edge automotive tech.
           </p>
         </div>
       </section>
 
       {/* Mission, Vision, Values */}
-      <section className="py-20 bg-background">
+      <section className="py-24 bg-background border-b border-white/5 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="text-center p-8 border-0 shadow-card hover-lift transition-smooth">
+            <Card className="text-center p-8 glass-panel hover-neon-border border border-white/5 hover:border-energy/30 transition-all duration-500 hover:-translate-y-2">
               <CardContent className="pt-6">
-                <div className="w-16 h-16 energy-gradient rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow">
+                <div className="w-16 h-16 energy-gradient rounded-xl flex items-center justify-center mx-auto mb-6 shadow-glow border border-white/10">
                   <Target className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="font-display font-bold text-2xl text-steel-dark mb-4">Mission</h3>
-                <p className="text-muted-foreground">
+                <h3 className="font-display font-bold text-2xl text-white mb-4 uppercase tracking-tight">Mission</h3>
+                <p className="text-zinc-400 text-sm leading-relaxed">
                   To foster innovation in ATV engineering while providing students with
-                  hands-on experience in design, manufacturing, and competitive racing.
+                  hands-on experience in design, manufacturing, testing, and competitive national racing.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="text-center p-8 border-0 shadow-card hover-lift transition-smooth">
+            <Card className="text-center p-8 glass-panel hover-neon-border border border-white/5 hover:border-energy/30 transition-all duration-500 hover:-translate-y-2">
               <CardContent className="pt-6">
-                <div className="w-16 h-16 energy-gradient rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow">
+                <div className="w-16 h-16 energy-gradient rounded-xl flex items-center justify-center mx-auto mb-6 shadow-glow border border-white/10">
                   <Eye className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="font-display font-bold text-2xl text-steel-dark mb-4">Vision</h3>
-                <p className="text-muted-foreground">
+                <h3 className="font-display font-bold text-2xl text-white mb-4 uppercase tracking-tight">Vision</h3>
+                <p className="text-zinc-400 text-sm leading-relaxed">
                   To be the leading university ATV club, pioneering sustainable
-                  off-road vehicle technologies and inspiring the next generation of engineers.
+                  off-road vehicle technologies and inspiring the next generation of global engineers.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="text-center p-8 border-0 shadow-card hover-lift transition-smooth">
+            <Card className="text-center p-8 glass-panel hover-neon-border border border-white/5 hover:border-energy/30 transition-all duration-500 hover:-translate-y-2">
               <CardContent className="pt-6">
-                <div className="w-16 h-16 energy-gradient rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow">
+                <div className="w-16 h-16 energy-gradient rounded-xl flex items-center justify-center mx-auto mb-6 shadow-glow border border-white/10">
                   <Heart className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="font-display font-bold text-2xl text-steel-dark mb-4">Values</h3>
-                <p className="text-muted-foreground">
-                  Excellence in engineering, teamwork, innovation, safety,
-                  and sustainable practices in all our projects and competitions.
+                <h3 className="font-display font-bold text-2xl text-white mb-4 uppercase tracking-tight">Values</h3>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  Excellence in engineering design, collaborative teamwork, innovation, safety,
+                  and sustainable green practices in all our projects.
                 </p>
               </CardContent>
             </Card>
@@ -97,38 +106,34 @@ const About = () => {
       </section>
 
       {/* Achievements */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-24 bg-gradient-to-b from-background to-muted/20 border-b border-white/5 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="font-display font-bold text-4xl md:text-5xl text-steel-dark mb-6">
-              Our Achievements
+            <h2 className="font-display font-black text-4xl md:text-5xl text-white uppercase tracking-tight mb-4">
+              Our <span className="text-gradient-energy">Achievements</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Recognition of our commitment to excellence and innovation
+            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+              National recognition of our commitment to engineering perfection and innovation
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {achievements.map((achievement, index) => (
-              <Card key={index} className="p-6 border-0 shadow-card hover-lift transition-smooth">
-                <CardContent className="pt-6">
-                  <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 energy-gradient rounded-lg flex items-center justify-center shadow-glow flex-shrink-0">
-                      <achievement.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <span className="text-sm font-bold text-energy bg-energy/10 px-3 py-1 rounded-full">
-                          {achievement.year}
-                        </span>
-                      </div>
-                      <h3 className="font-display font-bold text-xl text-steel-dark mb-3">
-                        {achievement.title}
-                      </h3>
-                      <p className="text-muted-foreground">
-                        {achievement.description}
-                      </p>
-                    </div>
+              <Card key={index} className="p-6 glass-panel hover-neon-border border border-white/5 hover:border-energy/30 transition-all duration-500 hover:scale-[1.02] flex flex-col justify-between">
+                <CardContent className="pt-6 flex-1 flex flex-col">
+                  <div className="w-12 h-12 energy-gradient rounded-lg flex items-center justify-center shadow-glow border border-white/10 mb-6">
+                    <achievement.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-black text-energy bg-energy/10 border border-energy/20 px-3 py-1 rounded-full uppercase tracking-widest mb-3 inline-block">
+                      Season {achievement.year}
+                    </span>
+                    <h3 className="font-display font-bold text-xl text-white mb-3">
+                      {achievement.title}
+                    </h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed">
+                      {achievement.description}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -138,49 +143,46 @@ const About = () => {
       </section>
 
       {/* Faculty Advisors */}
-      <section className="py-20 bg-background">
+      <section className="py-24 bg-background border-b border-white/5 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="font-display font-bold text-4xl md:text-5xl text-steel-dark mb-6">
-              Faculty Advisors
+            <h2 className="font-display font-black text-4xl md:text-5xl text-white uppercase tracking-tight mb-4">
+              Faculty <span className="text-gradient-energy">Advisors</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Meet the dedicated faculty members guiding our engineering journey
+            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+              Meet the mentors guiding our team towards technical excellence
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            <Card className="p-8 border-0 shadow-elegant">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <Card className="p-8 glass-panel border border-white/5 hover:border-energy/20 transition-all duration-500">
               <CardContent className="pt-6">
-                <div className="flex flex-col items-center text-center">
-                  <div className="relative w-40 h-40 mb-6">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6">
+                  <div className="relative w-36 h-36 flex-shrink-0">
                     <img
                       src={sunilImage}
-                      alt="Dr. Sunil Kumar"
-                      className="w-full h-full object-cover rounded-xl shadow-card"
+                      alt="Dr. B Sunil"
+                      className="w-full h-full object-cover rounded-xl shadow-2xl border border-white/10"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-steel-dark/20 to-transparent rounded-xl" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl" />
                   </div>
 
-                  <div>
-                    <h3 className="font-display font-bold text-2xl text-steel-dark mb-1">
+                  <div className="flex-1">
+                    <h3 className="font-display font-black text-2xl text-white mb-1 uppercase tracking-tight">
                       Dr. B Sunil
                     </h3>
-                    <p className="text-energy font-semibold text-md mb-4">
+                    <p className="text-energy font-bold text-xs uppercase tracking-wider mb-3">
                       Professor of Mechanical Engineering
                     </p>
-                    <p className="text-muted-foreground text-sm mb-4">
-                      He has brings over 15 years of experience in automotive engineering and vehicle dynamics. His expertise has been instrumental in our club's success.
+                    <p className="text-zinc-400 text-sm mb-4 leading-relaxed">
+                      Brings over 15 years of expert guidance in vehicle dynamics and automotive structures.
                     </p>
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      <span className="bg-energy/10 text-energy px-3 py-1 rounded-full text-xs font-medium">
-                        PhD Mechanical Engineering
+                    <div className="flex flex-wrap gap-2">
+                      <span className="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                        PhD
                       </span>
-                      <span className="bg-energy/10 text-energy px-3 py-1 rounded-full text-xs font-medium">
-                        15+ Years Experience
-                      </span>
-                      <span className="bg-energy/10 text-energy px-3 py-1 rounded-full text-xs font-medium">
-                        Automotive Expert
+                      <span className="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                        15+ Yrs Exp
                       </span>
                     </div>
                   </div>
@@ -188,36 +190,33 @@ const About = () => {
               </CardContent>
             </Card>
 
-            <Card className="p-8 border-0 shadow-elegant">
+            <Card className="p-8 glass-panel border border-white/5 hover:border-energy/20 transition-all duration-500">
               <CardContent className="pt-6">
-                <div className="flex flex-col items-center text-center">
-                  <div className="relative w-40 h-40 mb-6">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6">
+                  <div className="relative w-36 h-36 flex-shrink-0">
                     <img
                       src={nareshImage}
-                      alt="Dr. Naresh Sharma"
-                      className="w-full h-full object-cover object-top rounded-xl shadow-card"
+                      alt="Dr. Naresh H"
+                      className="w-full h-full object-cover object-top rounded-xl shadow-2xl border border-white/10"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-steel-dark/20 to-transparent rounded-xl" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl" />
                   </div>
 
-                  <div>
-                    <h3 className="font-display font-bold text-2xl text-steel-dark mb-1">
+                  <div className="flex-1">
+                    <h3 className="font-display font-black text-2xl text-white mb-1 uppercase tracking-tight">
                       Dr. Naresh H
                     </h3>
-                    <p className="text-energy font-semibold text-md mb-4">
+                    <p className="text-energy font-bold text-xs uppercase tracking-wider mb-3">
                       Assistant Professor of Mechanical Engineering
                     </p>
-                    <p className="text-muted-foreground text-sm mb-4">
-                      He is specializes in embedded systems and battery technology, guiding our transition to electric and autonomous ATV development.
+                    <p className="text-zinc-400 text-sm mb-4 leading-relaxed">
+                      Specializes in power systems and automotive control setups, guiding hybrid technology.
                     </p>
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      <span className="bg-energy/10 text-energy px-3 py-1 rounded-full text-xs font-medium">
-                        PhD Mechanical Engineering
+                    <div className="flex flex-wrap gap-2">
+                      <span className="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                        PhD
                       </span>
-                      <span className="bg-energy/10 text-energy px-3 py-1 rounded-full text-xs font-medium">
-                        Automotive Expert
-                      </span>
-                      <span className="bg-energy/10 text-energy px-3 py-1 rounded-full text-xs font-medium">
+                      <span className="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
                         EV Specialist
                       </span>
                     </div>
@@ -230,46 +229,46 @@ const About = () => {
       </section>
 
       {/* Timeline */}
-      <section id="our-journey" className="py-20 bg-muted/30">
+      <section id="our-journey" className="py-24 bg-gradient-to-b from-background to-zinc-950/40 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-display font-bold text-4xl md:text-5xl text-steel-dark mb-6">
-              Our Journey
+          <div className="text-center mb-20">
+            <h2 className="font-display font-black text-4xl md:text-5xl text-white uppercase tracking-tight mb-4">
+              Our <span className="text-gradient-energy">Journey</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Milestones that shaped our club's growth and success
+            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+              Milestones that map out our team's history, expansion, and victories
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              {/* Timeline line */}
-              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-energy/30" />
+          <div className="max-w-3xl mx-auto relative">
+            {/* Steering line representing racetrack track */}
+            <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-energy via-zinc-800 to-energy rounded-full" />
 
-              <div className="space-y-8">
-                {milestones.map((milestone, index) => (
-                  <div key={index} className="relative flex items-center">
-                    <div className="w-16 h-16 energy-gradient rounded-full flex items-center justify-center shadow-glow z-10">
-                      <Calendar className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="ml-8 flex-1">
-                      <Card className="p-6 border-0 shadow-card hover-lift transition-smooth">
-                        <CardContent className="pt-6">
-                          <div className="flex items-center justify-between mb-3">
-                            <h3 className="font-display font-bold text-xl text-steel-dark">
-                              {milestone.event}
-                            </h3>
-                            <div className="text-right">
-                              <span className="text-2xl font-bold text-energy">{milestone.year}</span>
-                              <p className="text-sm text-muted-foreground">{milestone.members} members</p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
+            <div className="space-y-12">
+              {milestones.map((milestone, index) => (
+                <div key={index} className="relative flex items-center group animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                  {/* Milestones Pulse Indicator */}
+                  <div className="w-16 h-16 rounded-full bg-zinc-900 border-4 border-zinc-800 flex items-center justify-center z-10 transition-all duration-300 group-hover:border-energy group-hover:scale-110 shadow-2xl">
+                    <span className="text-xs font-extrabold text-white group-hover:text-energy">{milestone.year}</span>
                   </div>
-                ))}
-              </div>
+
+                  {/* Milestone Card */}
+                  <div className="ml-8 flex-1">
+                    <Card className="p-6 glass-panel border border-white/5 hover:border-energy/20 transition-all duration-300">
+                      <CardContent className="pt-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <h3 className="font-display font-bold text-lg text-white uppercase tracking-tight">
+                            {milestone.event}
+                          </h3>
+                          <span className="text-xs font-black text-energy uppercase tracking-widest bg-energy/10 border border-energy/20 px-3 py-1 rounded-md self-start sm:self-auto">
+                            {milestone.members} Members
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

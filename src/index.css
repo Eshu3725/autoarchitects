@@ -2,91 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ATV Club Design System - Industrial/Automotive Theme */
+/* ATV Club Design System - Premium Industrial/Automotive Theme (Default Dark) */
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 30% 15%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 220 30% 15%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 30% 15%;
-
-    --primary: 220 70% 25%;
-    --primary-foreground: 210 20% 98%;
-
-    --secondary: 220 15% 88%;
-    --secondary-foreground: 220 30% 20%;
-
-    --muted: 220 15% 94%;
-    --muted-foreground: 220 12% 48%;
-
-    --accent: 355 100% 45%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 220 15% 90%;
-    --input: 220 15% 90%;
-    --ring: 355 100% 45%;
-
-    --radius: 0.75rem;
-
-    /* Custom ATV Club Colors - Racing Red & Navy Blue Palette */
-    --steel: 220 45% 28%;
-    --steel-light: 220 30% 62%;
-    --steel-dark: 220 55% 16%;
-
-    --metallic: 215 25% 42%;
-    --metallic-light: 215 18% 72%;
-
-    --energy: 355 100% 45%;
-    --energy-light: 355 100% 62%;
-    --energy-dark: 355 100% 35%;
-
-    --amber: 0 0% 95%;
-    --amber-light: 0 0% 98%;
-    --amber-dark: 0 0% 88%;
-
-    /* Gradients - Racing Inspired */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--steel-dark)) 0%, hsl(220 50% 22%) 50%, hsl(var(--steel)) 100%);
-    --gradient-metallic: linear-gradient(145deg, hsl(var(--metallic-light)) 0%, hsl(var(--metallic)) 50%, hsl(215 30% 35%) 100%);
-    --gradient-energy: linear-gradient(135deg, hsl(var(--energy)) 0%, hsl(var(--energy-dark)) 100%);
-    --gradient-amber: linear-gradient(135deg, hsl(0 0% 95%) 0%, hsl(0 0% 88%) 100%);
-
-    /* Shadows - Racing Depth */
-    --shadow-elegant: 0 10px 40px -12px hsl(var(--steel) / 0.4);
-    --shadow-glow: 0 0 50px hsl(var(--energy) / 0.6);
-    --shadow-card: 0 4px 24px -6px hsl(var(--steel) / 0.3);
-    --shadow-amber-glow: 0 0 40px hsl(0 0% 90% / 0.5);
-
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 220 35% 10%;
+    --background: 220 35% 8%;
     --foreground: 210 20% 95%;
 
     --card: 220 30% 12%;
@@ -95,13 +15,13 @@
     --popover: 220 30% 12%;
     --popover-foreground: 210 20% 95%;
 
-    --primary: 355 100% 45%;
+    --primary: 355 100% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 25% 22%;
+    --secondary: 220 25% 18%;
     --secondary-foreground: 210 20% 95%;
 
-    --muted: 220 25% 18%;
+    --muted: 220 25% 14%;
     --muted-foreground: 220 15% 68%;
 
     --accent: 355 100% 58%;
@@ -110,33 +30,102 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 25% 22%;
-    --input: 220 25% 20%;
-    --ring: 355 100% 45%;
+    --border: 220 25% 18%;
+    --input: 220 25% 16%;
+    --ring: 355 100% 55%;
 
-    /* Custom ATV Club Colors - Dark Mode Racing */
-    --steel: 220 28% 68%;
-    --steel-light: 220 22% 80%;
-    --steel-dark: 220 32% 58%;
+    --radius: 1rem;
 
-    --metallic: 215 18% 65%;
-    --metallic-light: 215 14% 75%;
+    /* Custom ATV Club Colors - Racing Red & Gold Palette */
+    --steel: 220 25% 75%;
+    --steel-light: 220 20% 85%;
+    --steel-dark: 220 30% 60%;
 
-    --energy: 355 100% 58%;
-    --energy-light: 355 100% 70%;
-    --energy-dark: 355 100% 48%;
+    --metallic: 215 15% 70%;
+    --metallic-light: 215 12% 80%;
 
-    --amber: 0 0% 92%;
-    --amber-light: 0 0% 96%;
-    --amber-dark: 0 0% 85%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --energy: 355 100% 55%;
+    --energy-light: 355 100% 65%;
+    --energy-dark: 355 100% 45%;
+
+    --amber: 45 90% 55%;
+    --amber-light: 45 95% 65%;
+    --amber-dark: 35 90% 45%;
+
+    /* Gradients - Racing Inspired */
+    --gradient-hero: linear-gradient(135deg, hsl(220 35% 6%) 0%, hsl(220 25% 12%) 50%, hsl(220 30% 10%) 100%);
+    --gradient-metallic: linear-gradient(145deg, hsl(220 20% 16%) 0%, hsl(220 15% 22%) 50%, hsl(220 25% 12%) 100%);
+    --gradient-energy: linear-gradient(135deg, hsl(var(--energy)) 0%, hsl(var(--energy-dark)) 100%);
+    --gradient-amber: linear-gradient(135deg, hsl(var(--amber)) 0%, hsl(var(--amber-dark)) 100%);
+
+    /* Shadows - Racing Depth */
+    --shadow-elegant: 0 10px 40px -12px rgba(0, 0, 0, 0.7);
+    --shadow-glow: 0 0 40px hsl(var(--energy) / 0.5);
+    --shadow-card: 0 8px 32px -6px rgba(0, 0, 0, 0.5);
+    --shadow-amber-glow: 0 0 30px hsl(var(--amber) / 0.4);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 220 35% 8%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 355 100% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 220 25% 14%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 220 25% 18%;
+    --sidebar-ring: 355 100% 55%;
+  }
+
+  .dark {
+    /* Retain dark variables inside .dark so library dark styling is identical */
+    --background: 220 35% 8%;
+    --foreground: 210 20% 95%;
+    --card: 220 30% 12%;
+    --card-foreground: 210 20% 95%;
+    --popover: 220 30% 12%;
+    --popover-foreground: 210 20% 95%;
+    --primary: 355 100% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 25% 18%;
+    --secondary-foreground: 210 20% 95%;
+    --muted: 220 25% 14%;
+    --muted-foreground: 220 15% 68%;
+    --accent: 355 100% 58%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 25% 18%;
+    --input: 220 25% 16%;
+    --ring: 355 100% 55%;
+  }
+  
+  .light {
+    --background: 210 20% 98%;
+    --foreground: 220 30% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 15%;
+    --primary: 220 70% 25%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 15% 88%;
+    --secondary-foreground: 220 30% 20%;
+    --muted: 220 15% 94%;
+    --muted-foreground: 220 12% 48%;
+    --accent: 355 100% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 15% 90%;
+    --input: 220 15% 90%;
+    --ring: 355 100% 45%;
+    --steel: 220 45% 28%;
+    --steel-light: 220 30% 62%;
+    --steel-dark: 220 55% 16%;
+    --metallic: 215 25% 42%;
+    --metallic-light: 215 18% 72%;
   }
 }
 
@@ -151,6 +140,15 @@
 }
 
 @layer components {
+  /* Tech Grid Overlay */
+  .grid-background {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center;
+  }
+
   /* Hero Section */
   .hero-gradient {
     background: var(--gradient-hero);
@@ -187,25 +185,41 @@
 
   /* Modern Glassmorphism */
   .glass {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .glass-dark {
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.02);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  .glass-panel {
+    background: rgba(10, 15, 30, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
+  
+  .glass-panel-glow {
+    background: rgba(10, 15, 30, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.08), inset 0 0 15px rgba(255, 255, 255, 0.02);
   }
 
   /* Animations */

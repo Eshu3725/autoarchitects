@@ -325,10 +325,10 @@ const AdminDashboard = () => {
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      present: 'bg-green-500/10 text-green-700 border-green-500/20',
-      absent: 'bg-red-500/10 text-red-700 border-red-500/20',
-      late: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20',
-      leave: 'bg-blue-500/10 text-blue-700 border-blue-500/20'
+      present: 'bg-green-500/15 text-green-400 border-green-500/20',
+      absent: 'bg-red-500/15 text-red-400 border-red-500/20',
+      late: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20',
+      leave: 'bg-blue-500/15 text-blue-400 border-blue-500/20'
     };
     return variants[status as keyof typeof variants] || '';
   };
@@ -391,61 +391,67 @@ const AdminDashboard = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-muted/30">
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        {/* Tech Grid Overlay */}
+        <div className="absolute inset-0 grid-background opacity-10 pointer-events-none" />
+
         {/* Header */}
-        <section className="hero-gradient py-12 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="hero-gradient py-12 text-white relative border-b border-white/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="font-display font-bold text-4xl mb-2">Admin Dashboard</h1>
-                <p className="text-white/90">Welcome back, {user?.name}</p>
+                <span className="inline-block px-3 py-1 bg-energy/10 border border-energy/30 text-energy text-xs font-bold uppercase tracking-widest rounded-md mb-2">
+                  Control Panel
+                </span>
+                <h1 className="font-display font-black text-4xl uppercase tracking-tight mb-2">Admin Dashboard</h1>
+                <p className="text-zinc-300">Welcome back, <span className="text-white font-bold">{user?.name}</span></p>
               </div>
-              <ClipboardList className="w-16 h-16 text-energy" />
+              <ClipboardList className="w-12 h-12 text-energy" />
             </div>
           </div>
         </section>
 
         {/* Quick Access */}
-        <section className="py-6 bg-background border-b border-border">
+        <section className="py-8 bg-background/50 border-b border-white/5 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-lg font-semibold text-steel-dark mb-4">Quick Access</h2>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">Quick Access</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card
-                className="border-0 shadow-card cursor-pointer hover:shadow-lg transition-shadow"
+                className="glass-panel border-white/5 shadow-2xl cursor-pointer hover:border-energy/30 hover:scale-[1.01] transition-all duration-300"
                 onClick={() => navigate('/admin/registrations')}
               >
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Student Registrations</p>
-                      <p className="text-lg font-semibold text-steel-dark">View & Manage Applications</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">Student Registrations</p>
+                      <p className="text-lg font-bold text-white uppercase tracking-tight">View & Manage Applications</p>
                     </div>
                     <UserPlus className="w-10 h-10 text-energy" />
                   </div>
                 </CardContent>
               </Card>
               <Card
-                className="border-0 shadow-card cursor-pointer hover:shadow-lg transition-shadow"
+                className="glass-panel border-white/5 shadow-2xl cursor-pointer hover:border-energy/30 hover:scale-[1.01] transition-all duration-300"
                 onClick={() => navigate('/admin/bulk-attendance')}
               >
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Bulk Attendance</p>
-                      <p className="text-lg font-semibold text-steel-dark">Mark by Date (Recommended)</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">Bulk Attendance</p>
+                      <p className="text-lg font-bold text-white uppercase tracking-tight">Mark by Date (Recommended)</p>
                     </div>
                     <Users className="w-10 h-10 text-energy" />
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Individual Records</p>
-                      <p className="text-lg font-semibold text-steel-dark">Current Page</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">Individual Records</p>
+                      <p className="text-lg font-bold text-white uppercase tracking-tight">Current Page</p>
                     </div>
-                    <ClipboardList className="w-10 h-10 text-steel" />
+                    <ClipboardList className="w-10 h-10 text-zinc-500" />
                   </div>
                 </CardContent>
               </Card>
@@ -454,51 +460,51 @@ const AdminDashboard = () => {
         </section>
 
         {/* Statistics */}
-        <section className="py-8 bg-background border-b border-border">
+        <section className="py-8 bg-background/30 border-b border-white/5 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-lg font-semibold text-steel-dark mb-4">Attendance Statistics</h2>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">Attendance Statistics</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Total Records</p>
-                      <p className="text-3xl font-bold text-steel-dark">{stats.totalRecords}</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider">Total Records</p>
+                      <p className="text-3xl font-black text-white mt-1">{stats.totalRecords}</p>
                     </div>
-                    <TrendingUp className="w-10 h-10 text-energy" />
+                    <TrendingUp className="w-8 h-8 text-energy" />
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Present</p>
-                      <p className="text-3xl font-bold text-green-600">{stats.present}</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider">Present</p>
+                      <p className="text-3xl font-black text-green-400 mt-1">{stats.present}</p>
                     </div>
-                    <Users className="w-10 h-10 text-green-600" />
+                    <Users className="w-8 h-8 text-green-400" />
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Absent</p>
-                      <p className="text-3xl font-bold text-red-600">{stats.absent}</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider">Absent</p>
+                      <p className="text-3xl font-black text-red-400 mt-1">{stats.absent}</p>
                     </div>
-                    <Users className="w-10 h-10 text-red-600" />
+                    <Users className="w-8 h-8 text-red-400" />
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-card">
+              <Card className="glass-panel border-white/5 shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Late</p>
-                      <p className="text-3xl font-bold text-yellow-600">{stats.late}</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider">Late</p>
+                      <p className="text-3xl font-black text-yellow-400 mt-1">{stats.late}</p>
                     </div>
-                    <Calendar className="w-10 h-10 text-yellow-600" />
+                    <Calendar className="w-8 h-8 text-yellow-400" />
                   </div>
                 </CardContent>
               </Card>
@@ -507,12 +513,12 @@ const AdminDashboard = () => {
         </section>
 
         {/* Main Content */}
-        <section className="py-8">
+        <section className="py-8 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Card className="border-0 shadow-card">
-              <CardHeader>
+            <Card className="glass-panel border-white/5 shadow-2xl rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-white/5 bg-black/10">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <CardTitle className="font-display text-2xl text-steel-dark">
+                  <CardTitle className="font-display font-bold text-xl text-white uppercase tracking-wider">
                     Attendance Records
                   </CardTitle>
                   <div className="flex flex-wrap gap-2">
