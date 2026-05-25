@@ -18,21 +18,21 @@ const STATIC_MEMBERS = [
   // Leadership Team
   {
     name: "Kushal M.V",
-    role: "Captain (Steering)",
+    role: "Steering",
     year: "4th Year",
     major: "Mechanical Engineering",
     bio: "USN: 1SI23ME426",
     email: "kushalmvkushi2@gmail.com",
-    category: "leadership"
+    category: "technical"
   },
   {
     name: "Tejashree P",
-    role: "Vice Captain (Chassis) CAE",
+    role: "Chassis (CAE)",
     year: "4th Year",
     major: "Mechanical Engineering",
     bio: "USN: 1SI22ME059",
     email: "tejashree62005@gmail.com",
-    category: "leadership"
+    category: "technical"
   },
 
   // Steering Team
@@ -112,12 +112,12 @@ const STATIC_MEMBERS = [
   },
   {
     name: "Darshan H.S",
-    role: "Transmission",
+    role: "Captain (Transmission)",
     year: "3rd Year",
     major: "Mechanical Engineering",
     bio: "USN: 1SI23ME016",
     email: "darshanvaibhav2@gmail.com",
-    category: "technical"
+    category: "leadership"
   },
   {
     name: "Sharadhi Simha Chi Na",
@@ -186,12 +186,12 @@ const STATIC_MEMBERS = [
   },
   {
     name: "Mithan Yadav H.R",
-    role: "Suspension",
+    role: "Vice Captain (Suspension)",
     year: "3rd Year",
     major: "Mechanical Engineering",
     bio: "USN: 1SI23ME057",
     email: "mithunyadavhr@gmail.com",
-    category: "technical"
+    category: "leadership"
   },
   {
     name: "Vivek J",
@@ -401,12 +401,12 @@ const Members = () => {
   // Group members by technical domain
   const leadershipMembers = teamMembers.filter(m => m.category === 'leadership');
   const steeringMembers = teamMembers.filter(m => m.role.includes('Steering') && m.category !== 'leadership');
-  const transmissionMembers = teamMembers.filter(m => m.role.includes('Transmission'));
-  const suspensionMembers = teamMembers.filter(m => m.role.includes('Suspension'));
-  const brakesMembers = teamMembers.filter(m => m.role.includes('Brakes'));
-  const chassisMembers = teamMembers.filter(m => m.role.includes('Chassis') || m.role.includes('CAE'));
-  const digitalMembers = teamMembers.filter(m => m.role.includes('Digital'));
-  const graphicsMembers = teamMembers.filter(m => m.role.includes('Graphics'));
+  const transmissionMembers = teamMembers.filter(m => m.role.includes('Transmission') && m.category !== 'leadership');
+  const suspensionMembers = teamMembers.filter(m => m.role.includes('Suspension') && m.category !== 'leadership');
+  const brakesMembers = teamMembers.filter(m => m.role.includes('Brakes') && m.category !== 'leadership');
+  const chassisMembers = teamMembers.filter(m => (m.role.includes('Chassis') || m.role.includes('CAE')) && m.category !== 'leadership');
+  const digitalMembers = teamMembers.filter(m => m.role.includes('Digital') && m.category !== 'leadership');
+  const graphicsMembers = teamMembers.filter(m => m.role.includes('Graphics') && m.category !== 'leadership');
 
   const getRoleColor = (role: string) => {
     if (role.includes('President') || role.includes('Captain')) return 'energy';
