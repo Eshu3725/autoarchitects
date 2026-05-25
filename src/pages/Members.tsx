@@ -362,7 +362,7 @@ const Members = () => {
     }
   };
 
-  const [teamMembers, setTeamMembers] = useState<any[]>(STATIC_MEMBERS);
+  const [teamMembers, setTeamMembers] = useState<any[]>(STATIC_MEMBERS.filter(m => m.year !== '4th Year'));
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -378,15 +378,17 @@ const Members = () => {
         }
 
         if (data && data.length > 0) {
-          const mappedMembers = data.map(u => ({
-            name: u.name,
-            role: u.designation || (u.role === 'admin' ? 'Admin' : 'Team Member'),
-            year: u.year || '1st Year',
-            major: u.major || 'Mechanical Engineering',
-            bio: u.bio || '',
-            email: u.email,
-            category: u.category || 'technical'
-          }));
+          const mappedMembers = data
+            .filter(u => u.year !== '4th Year')
+            .map(u => ({
+              name: u.name,
+              role: u.designation || (u.role === 'admin' ? 'Admin' : 'Team Member'),
+              year: u.year || '1st Year',
+              major: u.major || 'Mechanical Engineering',
+              bio: u.bio || '',
+              email: u.email,
+              category: u.category || 'technical'
+            }));
           
           setTeamMembers(mappedMembers);
         }
