@@ -126,6 +126,41 @@ export interface Database {
           status?: 'Pending' | 'Approved' | 'Rejected';
         };
       };
+      leave_requests: {
+        Row: {
+          id: string;
+          user_id: string;
+          user_name: string;
+          date: string;
+          reason: string;
+          status: 'Pending' | 'Approved' | 'Rejected';
+          created_at: string;
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          user_name: string;
+          date: string;
+          reason: string;
+          status?: 'Pending' | 'Approved' | 'Rejected';
+          created_at?: string;
+          reviewed_by?: string | null;
+          reviewed_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          user_name?: string;
+          date?: string;
+          reason?: string;
+          status?: 'Pending' | 'Approved' | 'Rejected';
+          created_at?: string;
+          reviewed_by?: string | null;
+          reviewed_at?: string | null;
+        };
+      };
     };
   };
 }

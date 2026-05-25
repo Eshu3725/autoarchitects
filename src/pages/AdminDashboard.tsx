@@ -11,13 +11,26 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight, Trash2, Download } from 'lucide-react';
+import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight, Trash2, Download, Check, X } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import Layout from '@/components/Layout';
 import { jsPDF } from 'jspdf';
+
+interface LeaveRequest {
+  id: string;
+  userId: string;
+  userName: string;
+  date: string;
+  reason: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  createdAt: string;
+  reviewedBy?: string | null;
+  reviewedAt?: string | null;
+  designation?: string;
+}
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -31,6 +44,8 @@ const AdminDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [summarySearchQuery, setSummarySearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
+  const [isLeavesLoading, setIsLeavesLoading] = useState(true);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -61,6 +76,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     loadTeamMembers();
     loadAttendanceRecords();
+    loadLeaveRequests();
   }, []);
 
   const loadTeamMembers = async () => {
@@ -143,6 +159,144 @@ const AdminDashboard = () => {
       toast.error('Failed to load attendance records');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadLeaveRequests = async () => {
+    try {
+      setIsLeavesLoading(true);
+      const { data, error } = await supabase
+        .from('leave_requests')
+        .select('*')
+        .order('date', { ascending: false });
+
+      if (error) {
+        console.error('Error loading leave requests:', error);
+        toast.error('Failed to load leave requests');
+        return;
+      }
+
+      const transformedData: LeaveRequest[] = (data || []).map(r => ({
+        id: r.id,
+        userId: r.user_id,
+        userName: r.user_name,
+        date: r.date,
+        reason: r.reason,
+        status: r.status as 'Pending' | 'Approved' | 'Rejected',
+        createdAt: r.created_at,
+        reviewedBy: r.reviewed_by,
+        reviewedAt: r.reviewed_at
+      }));
+
+      setLeaveRequests(transformedData);
+    } catch (error) {
+      console.error('Error loading leave requests:', error);
+    } finally {
+      setIsLeavesLoading(false);
+    }
+  };
+
+  const handleApproveLeave = async (request: LeaveRequest) => {
+    try {
+      // 1. Update the leave request status to Approved
+      const { error: requestError } = await supabase
+        .from('leave_requests')
+        .update({
+          status: 'Approved',
+          reviewed_by: user?.id || null,
+          reviewed_at: new Date().toISOString()
+        })
+        .eq('id', request.id);
+
+      if (requestError) {
+        console.error('Error approving leave request:', requestError);
+        toast.error('Failed to approve leave request: ' + requestError.message);
+        return;
+      }
+
+      // 2. Check if attendance record exists for this user on this date
+      const { data: existingRecords, error: checkError } = await supabase
+        .from('attendance_records')
+        .select('id')
+        .eq('user_id', request.userId)
+        .eq('date', request.date);
+
+      if (checkError) {
+        console.error('Error checking existing attendance:', checkError);
+        toast.error('Leave approved, but failed to check attendance records');
+        loadLeaveRequests();
+        return;
+      }
+
+      if (existingRecords && existingRecords.length > 0) {
+        // Update existing record to 'leave'
+        const { error: updateError } = await supabase
+          .from('attendance_records')
+          .update({
+            status: 'leave',
+            notes: `Leave Approved: ${request.reason}`,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingRecords[0].id);
+
+        if (updateError) {
+          console.error('Error updating attendance record:', updateError);
+          toast.error('Leave approved, but failed to update attendance record');
+        } else {
+          toast.success('Leave request approved and attendance record updated');
+        }
+      } else {
+        // Insert new record
+        const { error: insertError } = await supabase
+          .from('attendance_records')
+          .insert({
+            user_id: request.userId,
+            user_name: request.userName,
+            date: request.date,
+            status: 'leave',
+            notes: `Leave Approved: ${request.reason}`,
+            created_by: user?.id || ''
+          });
+
+        if (insertError) {
+          console.error('Error inserting attendance record:', insertError);
+          toast.error('Leave approved, but failed to create attendance record');
+        } else {
+          toast.success('Leave request approved and attendance record created');
+        }
+      }
+
+      // Refresh data
+      loadLeaveRequests();
+      loadAttendanceRecords();
+    } catch (error: any) {
+      console.error('Error handling leave approval:', error);
+      toast.error('Failed to process leave approval');
+    }
+  };
+
+  const handleRejectLeave = async (request: LeaveRequest) => {
+    try {
+      const { error } = await supabase
+        .from('leave_requests')
+        .update({
+          status: 'Rejected',
+          reviewed_by: user?.id || null,
+          reviewed_at: new Date().toISOString()
+        })
+        .eq('id', request.id);
+
+      if (error) {
+        console.error('Error rejecting leave request:', error);
+        toast.error('Failed to reject leave request: ' + error.message);
+        return;
+      }
+
+      toast.success('Leave request rejected successfully');
+      loadLeaveRequests();
+    } catch (error: any) {
+      console.error('Error handling leave rejection:', error);
+      toast.error('Failed to process leave rejection');
     }
   };
 
@@ -935,9 +1089,10 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent className="pt-6">
                 <Tabs defaultValue="daily" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-6 max-w-md bg-zinc-900 border border-white/5 p-1 rounded-xl">
+                  <TabsList className="grid w-full grid-cols-3 mb-6 max-w-lg bg-zinc-900 border border-white/5 p-1 rounded-xl">
                     <TabsTrigger value="daily" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Daily Records</TabsTrigger>
                     <TabsTrigger value="summary" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Member Summary</TabsTrigger>
+                    <TabsTrigger value="leaves" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Leave Requests</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="daily" className="space-y-4">
@@ -1131,6 +1286,167 @@ const AdminDashboard = () => {
                         </TableBody>
                       </Table>
                     </div>
+                  </TabsContent>
+
+                  <TabsContent value="leaves" className="space-y-6">
+                    {/* Header/Filters for leaves */}
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                      <div>
+                        <h3 className="text-lg font-bold text-white uppercase tracking-wider font-display">
+                          Leave Requests Control Center
+                        </h3>
+                        <p className="text-xs text-zinc-400 mt-1">
+                          Review, approve, or reject leave requests from team members. Approved requests will automatically register as leave in the attendance system.
+                        </p>
+                      </div>
+                    </div>
+
+                    {isLeavesLoading ? (
+                      <div className="text-center text-zinc-500 py-12 border border-white/5 rounded-xl bg-zinc-900/10">
+                        <div className="animate-spin w-8 h-8 border-2 border-energy border-t-transparent rounded-full mx-auto mb-4" />
+                        <p className="text-lg font-medium text-white">Loading leave requests...</p>
+                      </div>
+                    ) : leaveRequests.length === 0 ? (
+                      <div className="text-center text-zinc-500 py-12 border border-white/5 rounded-xl bg-zinc-900/10">
+                        <ClipboardList className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
+                        <p className="text-lg font-medium text-white">No leave requests found</p>
+                        <p className="text-sm mt-2 text-zinc-400">All submitted leave requests will appear here</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        {/* Pending Requests Section */}
+                        {leaveRequests.filter(r => r.status === 'Pending').length > 0 && (
+                          <div className="space-y-4">
+                            <h4 className="text-xs font-bold uppercase tracking-widest text-yellow-400 flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+                              Pending Action Required ({leaveRequests.filter(r => r.status === 'Pending').length})
+                            </h4>
+                            <div className="grid grid-cols-1 gap-4">
+                              {leaveRequests
+                                .filter(r => r.status === 'Pending')
+                                .map((request) => {
+                                  const member = teamMembers.find(m => m.id === request.userId);
+                                  return (
+                                    <div
+                                      key={request.id}
+                                      className="flex flex-col md:flex-row md:items-center justify-between p-5 rounded-xl border border-yellow-500/20 bg-yellow-500/5 hover:bg-yellow-500/10 transition-all duration-300 gap-4"
+                                    >
+                                      <div className="flex-1 space-y-2">
+                                        <div className="flex items-center flex-wrap gap-2">
+                                          <p className="font-bold text-white text-lg">{request.userName}</p>
+                                          <Badge className="badge-modern bg-yellow-500/10 text-yellow-400 border-yellow-500/20">
+                                            {member?.designation || 'Team Member'}
+                                          </Badge>
+                                          <Badge className="badge-modern bg-zinc-800 text-zinc-300 border-zinc-700">
+                                            {member?.year || '1st Year'}
+                                          </Badge>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs text-zinc-400">
+                                          <span className="font-bold text-energy uppercase tracking-wider">Leave Date:</span>
+                                          <span className="text-white font-semibold">{formatDateHeader(request.date)}</span>
+                                        </div>
+                                        <p className="text-sm text-zinc-300 bg-black/20 p-3 rounded-lg border border-white/5 italic">
+                                          "{request.reason}"
+                                        </p>
+                                        <p className="text-xxs text-zinc-500">
+                                          Requested on {new Date(request.createdAt).toLocaleDateString()} at {new Date(request.createdAt).toLocaleTimeString()}
+                                        </p>
+                                      </div>
+                                      <div className="flex items-center gap-3 md:self-center self-end">
+                                        <Button
+                                          onClick={() => handleRejectLeave(request)}
+                                          className="border border-red-500/50 text-red-400 bg-red-500/5 hover:bg-red-600 hover:text-white hover:border-red-600 hover:shadow-glow hover:scale-[1.02] transition-all duration-300 btn-modern px-4 py-2"
+                                        >
+                                          <X className="w-4 h-4 mr-2" />
+                                          Reject
+                                        </Button>
+                                        <Button
+                                          onClick={() => handleApproveLeave(request)}
+                                          className="bg-green-600 hover:bg-green-500 hover:shadow-glow hover:scale-[1.02] text-white font-bold transition-all duration-300 btn-modern px-4 py-2"
+                                        >
+                                          <Check className="w-4 h-4 mr-2" />
+                                          Approve
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* History Log Section */}
+                        <div className="space-y-4">
+                          <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-500">
+                            Historical Records ({leaveRequests.filter(r => r.status !== 'Pending').length})
+                          </h4>
+                          <div className="rounded-xl border border-white/5 overflow-hidden bg-zinc-900/20 shadow-2xl">
+                            <Table className="table-modern">
+                              <TableHeader className="bg-zinc-950/80">
+                                <TableRow className="border-b border-white/5">
+                                  <TableHead className="text-zinc-400 font-bold">Member</TableHead>
+                                  <TableHead className="text-zinc-400 font-bold">Leave Date</TableHead>
+                                  <TableHead className="text-zinc-400 font-bold">Reason</TableHead>
+                                  <TableHead className="text-zinc-400 font-bold text-center">Status</TableHead>
+                                  <TableHead className="text-zinc-400 font-bold">Reviewed By</TableHead>
+                                  <TableHead className="text-zinc-400 font-bold">Reviewed At</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {leaveRequests.filter(r => r.status !== 'Pending').length === 0 ? (
+                                  <TableRow>
+                                    <TableCell colSpan={6} className="text-center text-zinc-500 py-6">
+                                      No historical requests recorded.
+                                    </TableCell>
+                                  </TableRow>
+                                ) : (
+                                  leaveRequests
+                                    .filter(r => r.status !== 'Pending')
+                                    .map((request) => {
+                                      const reviewerName = request.reviewedBy === user?.id 
+                                        ? user?.name 
+                                        : 'Admin';
+                                      return (
+                                        <TableRow key={request.id} className="border-b border-white/5 hover:bg-white/5">
+                                          <TableCell>
+                                            <div>
+                                              <p className="font-bold text-white">{request.userName}</p>
+                                              <p className="text-xxs text-zinc-500 mt-0.5">
+                                                Sub: {new Date(request.createdAt).toLocaleDateString()}
+                                              </p>
+                                            </div>
+                                          </TableCell>
+                                          <TableCell className="text-zinc-300 font-semibold">
+                                            {new Date(request.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                          </TableCell>
+                                          <TableCell className="max-w-xs truncate text-zinc-400 italic" title={request.reason}>
+                                            "{request.reason}"
+                                          </TableCell>
+                                          <TableCell className="text-center">
+                                            <Badge 
+                                              className={
+                                                request.status === 'Approved'
+                                                  ? "badge-modern bg-green-500/10 text-green-400 border-green-500/30"
+                                                  : "badge-modern bg-red-500/10 text-red-400 border-red-500/30"
+                                              }
+                                            >
+                                              {request.status}
+                                            </Badge>
+                                          </TableCell>
+                                          <TableCell className="text-zinc-400">{reviewerName}</TableCell>
+                                          <TableCell className="text-zinc-500 text-xs">
+                                            {request.reviewedAt ? new Date(request.reviewedAt).toLocaleDateString() : 'N/A'}
+                                          </TableCell>
+                                        </TableRow>
+                                      );
+                                    })
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </TabsContent>
                 </Tabs>
               </CardContent>
