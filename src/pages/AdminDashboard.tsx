@@ -11,12 +11,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
+import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight, Trash2, Download } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import Layout from '@/components/Layout';
+import { jsPDF } from 'jspdf';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -28,6 +29,7 @@ const AdminDashboard = () => {
   const [selectedRecord, setSelectedRecord] = useState<AttendanceRecord | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [summarySearchQuery, setSummarySearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   // Form state
@@ -387,6 +389,171 @@ const AdminDashboard = () => {
     present: attendanceRecords.filter(r => r.status === 'present').length,
     absent: attendanceRecords.filter(r => r.status === 'absent').length,
     late: attendanceRecords.filter(r => r.status === 'late').length
+  };
+
+  // Calculate attendance summaries for each member
+  const memberSummaries = teamMembers.map(member => {
+    const memberRecords = attendanceRecords.filter(r => r.userId === member.id);
+    const present = memberRecords.filter(r => r.status === 'present').length;
+    const absent = memberRecords.filter(r => r.status === 'absent').length;
+    const late = memberRecords.filter(r => r.status === 'late').length;
+    const leave = memberRecords.filter(r => r.status === 'leave').length;
+    const total = memberRecords.length;
+    
+    // Attendance rate formula: (present + late) / total * 100
+    const percentage = total > 0 
+      ? Math.round(((present + late) / total) * 1000) / 10 
+      : 100.0;
+
+    return {
+      id: member.id,
+      name: member.name,
+      designation: (member as any).designation || 'Team Member',
+      total,
+      present,
+      absent,
+      late,
+      leave,
+      percentage
+    };
+  });
+
+  const filteredSummaries = memberSummaries.filter(s => 
+    s.name.toLowerCase().includes(summarySearchQuery.toLowerCase()) ||
+    s.designation.toLowerCase().includes(summarySearchQuery.toLowerCase())
+  );
+
+  const handleExportCSV = () => {
+    const headers = ["Member Name", "Designation", "Total Sessions", "Present", "Absent", "Late", "Leave", "Attendance Percentage"];
+    const rows = filteredSummaries.map(row => [
+      row.name,
+      row.designation,
+      row.total,
+      row.present,
+      row.absent,
+      row.late,
+      row.leave,
+      row.total > 0 ? `${row.percentage}%` : "N/A"
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `attendance_summary_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    toast.success('CSV exported successfully');
+  };
+
+  const handleExportPDF = () => {
+    try {
+      const doc = new jsPDF();
+      
+      // Page setup - Sleek header card style
+      doc.setFillColor(10, 15, 30); // Dark background header
+      doc.rect(0, 0, 210, 45, "F");
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(22);
+      doc.setTextColor(255, 255, 255);
+      doc.text("AUTOARCHITECTS ATV CLUB", 14, 20);
+      
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(239, 68, 68); // Crimson Energy accent
+      doc.text("Attendance Summary Report", 14, 28);
+      
+      doc.setFontSize(9);
+      doc.setTextColor(161, 161, 170); // zinc-400
+      doc.text(`Generated on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 14, 35);
+      
+      // Draw line
+      doc.setDrawColor(63, 63, 70); // zinc-700
+      doc.setLineWidth(0.5);
+      doc.line(14, 45, 196, 45);
+      
+      // Table headers
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(10, 15, 30);
+      
+      const headers = ["Member Name", "Designation", "Total", "Present", "Absent", "Late", "Leave", "Rate (%)"];
+      const colPositions = [14, 60, 105, 118, 133, 148, 163, 178];
+      
+      // Draw header row background
+      doc.setFillColor(244, 244, 245); // zinc-100
+      doc.rect(14, 50, 182, 8, "F");
+      
+      headers.forEach((header, index) => {
+        doc.text(header, colPositions[index], 55);
+      });
+      
+      // Table rows
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(39, 39, 42); // zinc-800
+      let y = 65;
+      
+      filteredSummaries.forEach((row, i) => {
+        // Page overflow control
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+          
+          // Re-draw headers on new page
+          doc.setFillColor(244, 244, 245);
+          doc.rect(14, y - 5, 182, 8, "F");
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(10, 15, 30);
+          headers.forEach((header, index) => {
+            doc.text(header, colPositions[index], y);
+          });
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(39, 39, 42);
+          y += 10;
+        }
+        
+        // Zebra striping
+        if (i % 2 === 0) {
+          doc.setFillColor(250, 250, 250);
+          doc.rect(14, y - 4, 182, 6, "F");
+        }
+        
+        doc.text(row.name.substring(0, 22), colPositions[0], y);
+        doc.text((row.designation || "Team Member").substring(0, 20), colPositions[1], y);
+        doc.text(row.total.toString(), colPositions[2], y);
+        doc.text(row.present.toString(), colPositions[3], y);
+        doc.text(row.absent.toString(), colPositions[4], y);
+        doc.text(row.late.toString(), colPositions[5], y);
+        doc.text(row.leave.toString(), colPositions[6], y);
+        
+        // Highlight low attendance in red, high in green
+        if (row.total > 0) {
+          if (row.percentage < 75) {
+            doc.setTextColor(220, 38, 38); // red-600
+          } else {
+            doc.setTextColor(22, 163, 74); // green-600
+          }
+          doc.text(`${row.percentage}%`, colPositions[7], y);
+          doc.setTextColor(39, 39, 42); // Reset to default
+        } else {
+          doc.text("N/A", colPositions[7], y);
+        }
+        
+        y += 7;
+      });
+      
+      doc.save(`attendance_summary_${new Date().toISOString().split('T')[0]}.pdf`);
+      toast.success('PDF exported successfully');
+    } catch (err: any) {
+      console.error('Error generating PDF:', err);
+      toast.error('Failed to generate PDF report: ' + err.message);
+    }
   };
 
   return (
@@ -766,117 +933,206 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                {/* Filters */}
-                <div className="flex flex-col md:flex-row gap-4 mb-6">
-                  <Input
-                    placeholder="Search by name..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="md:w-64"
-                  />
-                  <Select value={filterStatus} onValueChange={setFilterStatus}>
-                    <SelectTrigger className="md:w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="present">Present</SelectItem>
-                      <SelectItem value="absent">Absent</SelectItem>
-                      <SelectItem value="late">Late</SelectItem>
-                      <SelectItem value="leave">Leave</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <CardContent className="pt-6">
+                <Tabs defaultValue="daily" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-6 max-w-md bg-zinc-900 border border-white/5 p-1 rounded-xl">
+                    <TabsTrigger value="daily" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Daily Records</TabsTrigger>
+                    <TabsTrigger value="summary" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Member Summary</TabsTrigger>
+                  </TabsList>
 
-                {/* Date-Based Sections */}
-                {filteredRecords.length === 0 ? (
-                  <div className="text-center text-muted-foreground py-12 border rounded-lg bg-muted/30">
-                    <Calendar className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-                    <p className="text-lg font-medium">No attendance records found</p>
-                    <p className="text-sm mt-2">Try adjusting your filters or add new attendance records</p>
-                  </div>
-                ) : (
-                  <Accordion type="multiple" className="space-y-4">
-                    {sortedDates.map((date) => {
-                      const dateRecords = groupedByDate[date];
-                      const dateStats = getDateStats(dateRecords);
+                  <TabsContent value="daily" className="space-y-4">
+                    {/* Filters */}
+                    <div className="flex flex-col md:flex-row gap-4 mb-6">
+                      <Input
+                        placeholder="Search by name..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="md:w-64 bg-zinc-900/50 border-white/10 text-white placeholder-zinc-500 focus:border-energy focus:ring-energy/20"
+                      />
+                      <Select value={filterStatus} onValueChange={setFilterStatus}>
+                        <SelectTrigger className="md:w-48 bg-zinc-900/50 border-white/10 text-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-zinc-950 border-white/10 text-white">
+                          <SelectItem value="all">All Status</SelectItem>
+                          <SelectItem value="present">Present</SelectItem>
+                          <SelectItem value="absent">Absent</SelectItem>
+                          <SelectItem value="late">Late</SelectItem>
+                          <SelectItem value="leave">Leave</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                      return (
-                        <AccordionItem
-                          key={date}
-                          value={date}
-                          className="border-0 shadow-card rounded-lg overflow-hidden"
-                        >
-                          <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/50 transition-colors">
-                            <div className="flex items-center justify-between w-full pr-4">
-                              <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 energy-gradient rounded-lg flex items-center justify-center shadow-glow">
-                                  <Calendar className="w-6 h-6 text-white" />
-                                </div>
-                                <div className="text-left">
-                                  <h3 className="font-display font-bold text-lg text-steel-dark">
-                                    {formatDateHeader(date)}
-                                  </h3>
-                                  <p className="text-sm text-muted-foreground mt-1">
-                                    {dateStats.total} members:
-                                    <span className="text-green-600 font-medium ml-2">{dateStats.present} present</span>
-                                    {dateStats.absent > 0 && <span className="text-red-600 font-medium ml-2">{dateStats.absent} absent</span>}
-                                    {dateStats.late > 0 && <span className="text-yellow-600 font-medium ml-2">{dateStats.late} late</span>}
-                                    {dateStats.leave > 0 && <span className="text-blue-600 font-medium ml-2">{dateStats.leave} on leave</span>}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent className="px-6 pb-4">
-                            <div className="space-y-2 mt-2">
-                              {dateRecords.map((record) => (
-                                <div
-                                  key={record.id}
-                                  className="flex items-center justify-between p-4 rounded-lg border bg-background hover:bg-muted/30 transition-colors"
-                                >
-                                  <div className="flex items-center gap-4 flex-1">
-                                    <div className="flex-1">
-                                      <p className="font-medium text-steel-dark">{record.userName}</p>
-                                      <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
-                                        <span className="flex items-center gap-1">
-                                          <Badge className={getStatusBadge(record.status)}>
-                                            {record.status}
-                                          </Badge>
-                                        </span>
-                                        {record.checkInTime && (
-                                          <span>In: {record.checkInTime}</span>
-                                        )}
-                                        {record.checkOutTime && (
-                                          <span>Out: {record.checkOutTime}</span>
-                                        )}
-                                      </div>
-                                      {record.notes && (
-                                        <p className="text-sm text-muted-foreground mt-2 italic">
-                                          {record.notes}
-                                        </p>
-                                      )}
+                    {/* Date-Based Sections */}
+                    {filteredRecords.length === 0 ? (
+                      <div className="text-center text-zinc-500 py-12 border border-white/5 rounded-xl bg-zinc-900/10">
+                        <Calendar className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
+                        <p className="text-lg font-medium text-white">No attendance records found</p>
+                        <p className="text-sm mt-2 text-zinc-400">Try adjusting your filters or add new attendance records</p>
+                      </div>
+                    ) : (
+                      <Accordion type="multiple" className="space-y-4">
+                        {sortedDates.map((date) => {
+                          const dateRecords = groupedByDate[date];
+                          const dateStats = getDateStats(dateRecords);
+
+                          return (
+                            <AccordionItem
+                              key={date}
+                              value={date}
+                              className="border border-white/5 rounded-xl overflow-hidden glass-panel"
+                            >
+                              <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-white/5 transition-colors">
+                                <div className="flex items-center justify-between w-full pr-4">
+                                  <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 energy-gradient rounded-lg flex items-center justify-center shadow-glow">
+                                      <Calendar className="w-6 h-6 text-white" />
+                                    </div>
+                                    <div className="text-left">
+                                      <h3 className="font-display font-black text-lg text-white uppercase tracking-tight">
+                                        {formatDateHeader(date)}
+                                      </h3>
+                                      <p className="text-xs text-zinc-400 mt-1 uppercase font-bold tracking-wider">
+                                        {dateStats.total} members:
+                                        <span className="text-green-400 font-bold ml-2">{dateStats.present} present</span>
+                                        {dateStats.absent > 0 && <span className="text-red-400 font-bold ml-2">{dateStats.absent} absent</span>}
+                                        {dateStats.late > 0 && <span className="text-yellow-400 font-bold ml-2">{dateStats.late} late</span>}
+                                        {dateStats.leave > 0 && <span className="text-blue-400 font-bold ml-2">{dateStats.leave} on leave</span>}
+                                      </p>
                                     </div>
                                   </div>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => openEditDialog(record)}
-                                    className="ml-4"
-                                  >
-                                    <Edit className="w-4 h-4 mr-2" />
-                                    Edit
-                                  </Button>
                                 </div>
-                              ))}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      );
-                    })}
-                  </Accordion>
-                )}
+                              </AccordionTrigger>
+                              <AccordionContent className="px-6 pb-4">
+                                <div className="space-y-2 mt-2">
+                                  {dateRecords.map((record) => (
+                                    <div
+                                      key={record.id}
+                                      className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-zinc-900/10 hover:bg-white/5 transition-colors"
+                                    >
+                                      <div className="flex items-center gap-4 flex-1">
+                                        <div className="flex-1">
+                                          <p className="font-bold text-white">{record.userName}</p>
+                                          <div className="flex items-center gap-3 mt-1 text-xs text-zinc-400">
+                                            <span className="flex items-center gap-1">
+                                              <Badge className={getStatusBadge(record.status)}>
+                                                {record.status}
+                                              </Badge>
+                                            </span>
+                                            {record.checkInTime && (
+                                              <span className="font-semibold">In: {record.checkInTime}</span>
+                                            )}
+                                            {record.checkOutTime && (
+                                              <span className="font-semibold">Out: {record.checkOutTime}</span>
+                                            )}
+                                          </div>
+                                          {record.notes && (
+                                            <p className="text-xs text-zinc-500 mt-2 italic">
+                                              Notes: {record.notes}
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => openEditDialog(record)}
+                                        className="ml-4 border-white/10 hover:bg-zinc-800 text-zinc-300 hover:text-white"
+                                      >
+                                        <Edit className="w-4 h-4 mr-2" />
+                                        Edit
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          );
+                        })}
+                      </Accordion>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="summary" className="space-y-4">
+                    {/* Summary Filters & Exports */}
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                      <Input
+                        placeholder="Search members by name or designation..."
+                        value={summarySearchQuery}
+                        onChange={(e) => setSummarySearchQuery(e.target.value)}
+                        className="md:w-80 bg-zinc-900/50 border-white/10 text-white placeholder-zinc-500 focus:border-energy focus:ring-energy/20"
+                      />
+                      <div className="flex items-center gap-3">
+                        <Button
+                          onClick={handleExportCSV}
+                          className="border border-energy/50 text-energy bg-energy/5 hover:bg-energy hover:text-white hover:border-energy hover:shadow-glow hover:scale-[1.03] transition-all duration-300 btn-modern px-4"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Export CSV
+                        </Button>
+                        <Button
+                          onClick={handleExportPDF}
+                          className="bg-energy hover:bg-energy-light text-white font-bold transition-all duration-300 hover:shadow-glow hover:scale-[1.03] btn-modern px-4"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Export PDF
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Summary Grid Table */}
+                    <div className="rounded-xl border border-white/5 overflow-hidden bg-zinc-900/20 backdrop-blur-md shadow-2xl">
+                      <Table className="table-modern">
+                        <TableHeader className="bg-zinc-950/80">
+                          <TableRow className="border-b border-white/5">
+                            <TableHead className="text-zinc-400 font-bold">Name</TableHead>
+                            <TableHead className="text-zinc-400 font-bold">Designation</TableHead>
+                            <TableHead className="text-zinc-400 font-bold text-center">Total Sessions</TableHead>
+                            <TableHead className="text-zinc-400 font-bold text-center text-green-400">Present</TableHead>
+                            <TableHead className="text-zinc-400 font-bold text-center text-red-400">Absent</TableHead>
+                            <TableHead className="text-zinc-400 font-bold text-center text-yellow-400">Late</TableHead>
+                            <TableHead className="text-zinc-400 font-bold text-center text-blue-400">Leave</TableHead>
+                            <TableHead className="text-zinc-400 font-bold text-center">Attendance %</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredSummaries.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={8} className="text-center text-zinc-500 py-8">
+                                No members found
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            filteredSummaries.map((summary) => (
+                              <TableRow key={summary.id} className="border-b border-white/5 hover:bg-white/5">
+                                <TableCell className="font-bold text-white">{summary.name}</TableCell>
+                                <TableCell className="text-zinc-300">{summary.designation}</TableCell>
+                                <TableCell className="text-center text-white font-medium">{summary.total}</TableCell>
+                                <TableCell className="text-center text-green-400 font-medium">{summary.present}</TableCell>
+                                <TableCell className="text-center text-red-400 font-medium">{summary.absent}</TableCell>
+                                <TableCell className="text-center text-yellow-400 font-medium">{summary.late}</TableCell>
+                                <TableCell className="text-center text-blue-400 font-medium">{summary.leave}</TableCell>
+                                <TableCell className="text-center">
+                                  <Badge 
+                                    className={
+                                      summary.total === 0 
+                                        ? "badge-modern bg-zinc-500/10 text-zinc-400 border-zinc-500/30"
+                                        : summary.percentage >= 75
+                                          ? "badge-modern bg-green-500/10 text-green-400 border-green-500/30 font-bold"
+                                          : "badge-modern bg-red-500/10 text-red-400 border-red-500/30 font-bold"
+                                    }
+                                  >
+                                    {summary.total > 0 ? `${summary.percentage}%` : 'N/A'}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
