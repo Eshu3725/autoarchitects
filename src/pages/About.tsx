@@ -31,7 +31,8 @@ const About = () => {
     { year: "2010", event: "First Competition", members: "25+" },
     { year: "2016", event: "National Recognition", members: "30+" },
     { year: "2020", event: "Champions of champions", members: "30+" },
-    { year: "2025", event: "BAJA SAE INDIA 2025", members: "30+" }
+    { year: "2025", event: "BAJA SAE INDIA 2025", members: "30+" },
+    { year: "2026", event: "ATVC INDIA 2026", members: "30+" }
   ];
 
   return (
@@ -43,7 +44,7 @@ const About = () => {
             About AutoArchitects
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
-            Driving innovation in off-road vehicle engineering through passion, 
+            Driving innovation in off-road vehicle engineering through passion,
             dedication, and cutting-edge technology.
           </p>
         </div>
@@ -60,9 +61,9 @@ const About = () => {
                 </div>
                 <h3 className="font-display font-bold text-2xl text-steel-dark mb-4">Mission</h3>
                 <p className="text-muted-foreground">
-                  To foster innovation in ATV engineering while providing students with 
+                  To foster innovation in ATV engineering while providing students with
                   hands-on experience in design, manufacturing, and competitive racing.
-                </p> 
+                </p>
               </CardContent>
             </Card>
 
@@ -73,7 +74,7 @@ const About = () => {
                 </div>
                 <h3 className="font-display font-bold text-2xl text-steel-dark mb-4">Vision</h3>
                 <p className="text-muted-foreground">
-                  To be the leading university ATV club, pioneering sustainable 
+                  To be the leading university ATV club, pioneering sustainable
                   off-road vehicle technologies and inspiring the next generation of engineers.
                 </p>
               </CardContent>
@@ -86,7 +87,7 @@ const About = () => {
                 </div>
                 <h3 className="font-display font-bold text-2xl text-steel-dark mb-4">Values</h3>
                 <p className="text-muted-foreground">
-                  Excellence in engineering, teamwork, innovation, safety, 
+                  Excellence in engineering, teamwork, innovation, safety,
                   and sustainable practices in all our projects and competitions.
                 </p>
               </CardContent>
@@ -153,14 +154,14 @@ const About = () => {
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center text-center">
                   <div className="relative w-40 h-40 mb-6">
-                    <img 
-                      src={sunilImage} 
-                      alt="Dr. Sunil Kumar" 
+                    <img
+                      src={sunilImage}
+                      alt="Dr. Sunil Kumar"
                       className="w-full h-full object-cover rounded-xl shadow-card"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-steel-dark/20 to-transparent rounded-xl" />
                   </div>
-                  
+
                   <div>
                     <h3 className="font-display font-bold text-2xl text-steel-dark mb-1">
                       Dr. B Sunil
@@ -191,14 +192,14 @@ const About = () => {
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center text-center">
                   <div className="relative w-40 h-40 mb-6">
-                    <img 
-                      src={nareshImage} 
-                      alt="Dr. Naresh Sharma" 
+                    <img
+                      src={nareshImage}
+                      alt="Dr. Naresh Sharma"
                       className="w-full h-full object-cover object-top rounded-xl shadow-card"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-steel-dark/20 to-transparent rounded-xl" />
                   </div>
-                  
+
                   <div>
                     <h3 className="font-display font-bold text-2xl text-steel-dark mb-1">
                       Dr. Naresh H
@@ -244,7 +245,7 @@ const About = () => {
             <div className="relative">
               {/* Timeline line */}
               <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-energy/30" />
-              
+
               <div className="space-y-8">
                 {milestones.map((milestone, index) => (
                   <div key={index} className="relative flex items-center">

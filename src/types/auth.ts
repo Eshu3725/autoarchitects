@@ -6,6 +6,11 @@ export interface User {
   email: string;
   role: UserRole;
   password: string; // In production, this should be hashed
+  designation?: string;
+  year?: string;
+  major?: string;
+  bio?: string;
+  category?: 'leadership' | 'technical' | 'operations';
 }
 
 export interface AttendanceRecord {

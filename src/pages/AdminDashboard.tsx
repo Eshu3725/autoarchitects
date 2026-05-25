@@ -11,8 +11,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight } from 'lucide-react';
+import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import Layout from '@/components/Layout';
@@ -40,6 +41,20 @@ const AdminDashboard = () => {
     notes: ''
   });
 
+  const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState(false);
+  const [isCreatingMember, setIsCreatingMember] = useState(false);
+  const [memberFormData, setMemberFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'user' as 'admin' | 'user',
+    designation: 'Team Member',
+    year: '1st Year',
+    major: 'Mechanical Engineering',
+    bio: '',
+    category: 'technical' as 'leadership' | 'technical' | 'operations'
+  });
+
   // Load team members and attendance records from Supabase
   useEffect(() => {
     loadTeamMembers();
@@ -48,15 +63,40 @@ const AdminDashboard = () => {
 
   const loadTeamMembers = async () => {
     try {
+      // First try to load all columns (including new ones)
       const { data, error } = await supabase
         .from('users')
-        .select('id, name, email')
+        .select('id, name, email, designation, year, major, bio, category')
         .eq('role', 'user')
         .order('name');
 
       if (error) {
-        console.error('Error loading team members:', error);
-        toast.error('Failed to load team members');
+        console.warn('Failed to load all columns, falling back to core columns:', error);
+        
+        // Fallback: Query only core columns that exist for sure
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('users')
+          .select('id, name, email')
+          .eq('role', 'user')
+          .order('name');
+          
+        if (fallbackError) {
+          console.error('Error loading fallback team members:', fallbackError);
+          toast.error('Failed to load team members');
+          return;
+        }
+        
+        // Map fallback data with default values for new columns
+        const mappedData = (fallbackData || []).map(member => ({
+          ...member,
+          designation: 'Team Member',
+          year: '1st Year',
+          major: 'Mechanical Engineering',
+          bio: '',
+          category: 'technical' as const
+        }));
+        
+        setTeamMembers(mappedData);
         return;
       }
 
@@ -143,6 +183,85 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error adding attendance:', error);
       toast.error('Failed to add attendance record');
+    }
+  };
+
+  const handleAddMember = async () => {
+    if (!memberFormData.name || !memberFormData.email || !memberFormData.password) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      setIsCreatingMember(true);
+      const { data, error } = await supabase
+        .from('users')
+        .insert([
+          {
+            name: memberFormData.name,
+            email: memberFormData.email,
+            password: memberFormData.password,
+            role: memberFormData.role,
+            designation: memberFormData.designation,
+            year: memberFormData.year,
+            major: memberFormData.major,
+            bio: memberFormData.bio,
+            category: memberFormData.category
+          }
+        ])
+        .select();
+
+      if (error) {
+        console.error('Error adding team member:', error);
+        toast.error(`Failed to add team member: ${error.message}`);
+        return;
+      }
+
+      setIsAddMemberDialogOpen(false);
+      setMemberFormData({
+        name: '',
+        email: '',
+        password: '',
+        role: 'user',
+        designation: 'Team Member',
+        year: '1st Year',
+        major: 'Mechanical Engineering',
+        bio: '',
+        category: 'technical'
+      });
+      toast.success(`Team member "${memberFormData.name}" added successfully!`);
+      loadTeamMembers(); // Reload members list
+    } catch (error) {
+      console.error('Error adding team member:', error);
+      toast.error('Failed to add team member');
+    } finally {
+      setIsCreatingMember(false);
+    }
+  };
+
+  const handleDeleteMember = async (memberId: string, memberName: string) => {
+    if (!confirm(`Are you sure you want to delete ${memberName}? This will also delete all their attendance records.`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', memberId);
+
+      if (error) {
+        console.error('Error deleting team member:', error);
+        toast.error(`Failed to delete team member: ${error.message}`);
+        return;
+      }
+
+      toast.success(`Team member "${memberName}" deleted successfully`);
+      loadTeamMembers(); // Reload members list
+      loadAttendanceRecords(); // Reload attendance records
+    } catch (error) {
+      console.error('Error deleting team member:', error);
+      toast.error('Failed to delete team member');
     }
   };
 
@@ -396,87 +515,249 @@ const AdminDashboard = () => {
                   <CardTitle className="font-display text-2xl text-steel-dark">
                     Attendance Records
                   </CardTitle>
-                  <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button className="energy-gradient hover-glow" onClick={resetForm}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Attendance
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Add Attendance Record</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                          <Label>Team Member *</Label>
-                          <Select value={formData.userId} onValueChange={(value) => setFormData({ ...formData, userId: value })}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select member" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {teamMembers.map(member => (
-                                <SelectItem key={member.id} value={member.id}>
-                                  {member.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Date *</Label>
-                          <Input
-                            type="date"
-                            value={formData.date}
-                            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Status *</Label>
-                          <Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="present">Present</SelectItem>
-                              <SelectItem value="absent">Absent</SelectItem>
-                              <SelectItem value="late">Late</SelectItem>
-                              <SelectItem value="leave">Leave</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>Check In</Label>
-                            <Input
-                              type="time"
-                              value={formData.checkInTime}
-                              onChange={(e) => setFormData({ ...formData, checkInTime: e.target.value })}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Check Out</Label>
-                            <Input
-                              type="time"
-                              value={formData.checkOutTime}
-                              onChange={(e) => setFormData({ ...formData, checkOutTime: e.target.value })}
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Notes</Label>
-                          <Textarea
-                            value={formData.notes}
-                            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                            placeholder="Add any notes..."
-                          />
-                        </div>
-                        <Button onClick={handleAddAttendance} className="w-full energy-gradient">
-                          Add Record
+                  <div className="flex flex-wrap gap-2">
+                    <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button className="energy-gradient hover-glow" onClick={resetForm}>
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Attendance
                         </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Add Attendance Record</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <Label>Team Member *</Label>
+                            <Select value={formData.userId} onValueChange={(value) => setFormData({ ...formData, userId: value })}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select member" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {teamMembers.map(member => (
+                                  <SelectItem key={member.id} value={member.id}>
+                                    {member.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Date *</Label>
+                            <Input
+                              type="date"
+                              value={formData.date}
+                              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Status *</Label>
+                            <Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="present">Present</SelectItem>
+                                <SelectItem value="absent">Absent</SelectItem>
+                                <SelectItem value="late">Late</SelectItem>
+                                <SelectItem value="leave">Leave</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Check In</Label>
+                              <Input
+                                type="time"
+                                value={formData.checkInTime}
+                                onChange={(e) => setFormData({ ...formData, checkInTime: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Check Out</Label>
+                              <Input
+                                type="time"
+                                value={formData.checkOutTime}
+                                onChange={(e) => setFormData({ ...formData, checkOutTime: e.target.value })}
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Notes</Label>
+                            <Textarea
+                              value={formData.notes}
+                              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                              placeholder="Add any notes..."
+                            />
+                          </div>
+                          <Button onClick={handleAddAttendance} className="w-full energy-gradient">
+                            Add Record
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+
+                    <Dialog open={isAddMemberDialogOpen} onOpenChange={setIsAddMemberDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="border-energy text-energy hover:bg-energy hover:text-white" onClick={() => setMemberFormData({ name: '', email: '', password: '', role: 'user', designation: 'Team Member', year: '1st Year', major: 'Mechanical Engineering', bio: '', category: 'technical' })}>
+                          <Users className="w-4 h-4 mr-2" />
+                          Manage Team
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md max-h-[85vh] flex flex-col">
+                        <DialogHeader>
+                          <DialogTitle>Manage Team</DialogTitle>
+                        </DialogHeader>
+                        
+                        <Tabs defaultValue="list" className="w-full flex-1 flex flex-col overflow-hidden">
+                          <TabsList className="grid w-full grid-cols-2 mb-4">
+                            <TabsTrigger value="list">Members List</TabsTrigger>
+                            <TabsTrigger value="add">Add Member</TabsTrigger>
+                          </TabsList>
+                          
+                          <TabsContent value="list" className="flex-1 overflow-y-auto pr-1">
+                            <div className="space-y-3">
+                              {teamMembers.length === 0 ? (
+                                <p className="text-center text-muted-foreground py-6">No team members found.</p>
+                              ) : (
+                                teamMembers.map(member => (
+                                  <div key={member.id} className="flex items-center justify-between p-3 rounded-lg border bg-background hover:bg-muted/30 transition-colors">
+                                    <div className="min-w-0 flex-1 mr-3">
+                                      <p className="font-semibold text-steel-dark truncate">{member.name}</p>
+                                      <p className="text-xs text-muted-foreground truncate">{member.email}</p>
+                                    </div>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      onClick={() => handleDeleteMember(member.id, member.name)}
+                                      className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </TabsContent>
+                          
+                          <TabsContent value="add" className="space-y-4 pt-2 overflow-y-auto max-h-[60vh] pr-1">
+                            <div className="space-y-2">
+                              <Label htmlFor="memberName">Full Name *</Label>
+                              <Input
+                                id="memberName"
+                                placeholder="John Doe"
+                                value={memberFormData.name}
+                                onChange={(e) => setMemberFormData({ ...memberFormData, name: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="memberEmail">Email Address (Username) *</Label>
+                              <Input
+                                id="memberEmail"
+                                type="email"
+                                placeholder="john.doe@autoarchitects.com"
+                                value={memberFormData.email}
+                                onChange={(e) => setMemberFormData({ ...memberFormData, email: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="memberPassword">Password *</Label>
+                              <Input
+                                id="memberPassword"
+                                type="text"
+                                placeholder="Enter password"
+                                value={memberFormData.password}
+                                onChange={(e) => setMemberFormData({ ...memberFormData, password: e.target.value })}
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="memberDesignation">Designation *</Label>
+                                <Input
+                                  id="memberDesignation"
+                                  placeholder="Steering"
+                                  value={memberFormData.designation}
+                                  onChange={(e) => setMemberFormData({ ...memberFormData, designation: e.target.value })}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="memberYear">Year *</Label>
+                                <Select 
+                                  value={memberFormData.year} 
+                                  onValueChange={(value) => setMemberFormData({ ...memberFormData, year: value })}
+                                >
+                                  <SelectTrigger id="memberYear">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="1st Year">1st Year</SelectItem>
+                                    <SelectItem value="2nd Year">2nd Year</SelectItem>
+                                    <SelectItem value="3rd Year">3rd Year</SelectItem>
+                                    <SelectItem value="4th Year">4th Year</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="memberMajor">Major / Department *</Label>
+                              <Input
+                                id="memberMajor"
+                                placeholder="Mechanical Engineering"
+                                value={memberFormData.major}
+                                onChange={(e) => setMemberFormData({ ...memberFormData, major: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="memberBio">Bio / USN</Label>
+                              <Input
+                                id="memberBio"
+                                placeholder="USN: 1SI22ME000"
+                                value={memberFormData.bio}
+                                onChange={(e) => setMemberFormData({ ...memberFormData, bio: e.target.value })}
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="memberCategory">Subteam Category *</Label>
+                                <Select 
+                                  value={memberFormData.category} 
+                                  onValueChange={(value: 'leadership' | 'technical' | 'operations') => setMemberFormData({ ...memberFormData, category: value })}
+                                >
+                                  <SelectTrigger id="memberCategory">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="leadership">Leadership</SelectItem>
+                                    <SelectItem value="technical">Technical</SelectItem>
+                                    <SelectItem value="operations">Operations</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="memberRole">Auth Role *</Label>
+                                <Select 
+                                  value={memberFormData.role} 
+                                  onValueChange={(value: 'admin' | 'user') => setMemberFormData({ ...memberFormData, role: value })}
+                                >
+                                  <SelectTrigger id="memberRole">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="user">User (Team Member)</SelectItem>
+                                    <SelectItem value="admin">Admin</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            <Button onClick={handleAddMember} disabled={isCreatingMember} className="w-full energy-gradient mt-2">
+                              {isCreatingMember ? 'Creating...' : 'Add Team Member'}
+                            </Button>
+                          </TabsContent>
+                        </Tabs>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>

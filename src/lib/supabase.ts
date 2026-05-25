@@ -16,6 +16,11 @@ export interface Database {
           name: string;
           role: 'admin' | 'user';
           created_at: string;
+          designation?: string;
+          year?: string;
+          major?: string;
+          bio?: string;
+          category?: 'leadership' | 'technical' | 'operations';
         };
         Insert: {
           id?: string;
@@ -23,6 +28,11 @@ export interface Database {
           name: string;
           role: 'admin' | 'user';
           created_at?: string;
+          designation?: string;
+          year?: string;
+          major?: string;
+          bio?: string;
+          category?: 'leadership' | 'technical' | 'operations';
         };
         Update: {
           id?: string;
@@ -30,6 +40,11 @@ export interface Database {
           name?: string;
           role?: 'admin' | 'user';
           created_at?: string;
+          designation?: string;
+          year?: string;
+          major?: string;
+          bio?: string;
+          category?: 'leadership' | 'technical' | 'operations';
         };
       };
       attendance_records: {

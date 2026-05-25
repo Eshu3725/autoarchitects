@@ -25,3 +25,10 @@ dist-ssr
 
 # Ignore local .git backups
 .git_backup*
+
+# Media
+Videos/
+*.mp4
+*.MP4
+*.avi
+*.mov
