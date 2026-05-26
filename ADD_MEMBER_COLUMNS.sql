@@ -68,9 +68,6 @@ UPDATE users
 SET designation = 'Transmission', year = '4th Year', major = 'Mechanical Engineering', bio = 'USN: 1SI22ME020', category = 'technical'
 WHERE email = 'karthikkantharaju28@gmail.com';
 
-UPDATE users 
-SET designation = 'Transmission', year = '3rd Year', major = 'Mechanical Engineering', bio = 'USN: 1SI23ME014', category = 'technical'
-WHERE email IN ('damaresh@gmail.com', 'damareshr@gmail.com');
 
 UPDATE users 
 SET designation = 'Transmission', year = '3rd Year', major = 'Mechanical Engineering', bio = 'USN: 1SI23ME016', category = 'technical'

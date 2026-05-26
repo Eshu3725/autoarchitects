@@ -101,15 +101,7 @@ const STATIC_MEMBERS = [
     email: "karthikkantharaju28@gmail.com",
     category: "technical"
   },
-  {
-    name: "Damaresh R",
-    role: "Transmission",
-    year: "3rd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI23ME014",
-    email: "damareshr@gmail.com",
-    category: "technical"
-  },
+
   {
     name: "Darshan H.S",
     role: "Captain (Transmission)",

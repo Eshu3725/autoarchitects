@@ -31,7 +31,7 @@ VALUES
 
   -- TRANSMISSION TEAM (8 members)
   ('karthikkantharaju28@gmail.com', '1SI22ME020', 'Karthik K', 'user'),
-  ('damaresh@gmail.com', '1SI23ME014', 'Damaresh R', 'user'),
+
   ('darshanvaibhav2@gmail.com', '1SI23ME016', 'Darshan H.S', 'user'),
   ('sharadhisimhachina@gmail.com', '1SI23ME084', 'Sharadhi Simha Chi Na', 'user'),
   ('shivaprakashb712@gmail.com', '1SI23ME089', 'Shivaprakash H B', 'user'),

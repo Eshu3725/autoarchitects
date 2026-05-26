@@ -39,7 +39,7 @@ All team members can login using:
 | Name | Email | Password (USN) |
 |------|-------|----------------|
 | Karthik K | karthikkantharaju28@gmail.com | 1SI22ME020 |
-| Damaresh R | damaresh@gmail.com | 1SI23ME014 |
+
 | Darshan H.S | darshanvaibhav2@gmail.com | 1SI23ME016 |
 | Sharadhi Simha Chi Na | sharadhisimhachina@gmail.com | 1SI23ME084 |
 | Shivaprakash H B | shivaprakashb712@gmail.com | 1SI23ME089 |
