@@ -217,7 +217,7 @@ const About = () => {
                         PhD
                       </span>
                       <span className="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
-                        EV Specialist
+                        15+ Yrs Exp
                       </span>
                     </div>
                   </div>
