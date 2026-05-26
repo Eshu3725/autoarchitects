@@ -1255,11 +1255,11 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent className="pt-6">
                 <Tabs defaultValue="daily" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4 mb-6 max-w-2xl bg-zinc-900 border border-white/5 p-1 rounded-xl">
-                    <TabsTrigger value="daily" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Daily Records</TabsTrigger>
-                    <TabsTrigger value="summary" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Member Summary</TabsTrigger>
-                    <TabsTrigger value="leaves" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Leave Requests</TabsTrigger>
-                    <TabsTrigger value="notices" className="rounded-lg data-[state=active]:bg-energy data-[state=active]:text-white">Notices</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto gap-1 mb-6 max-w-2xl bg-zinc-900 border border-white/5 p-1.5 rounded-xl">
+                    <TabsTrigger value="daily" className="rounded-lg py-2 data-[state=active]:bg-energy data-[state=active]:text-white">Daily Records</TabsTrigger>
+                    <TabsTrigger value="summary" className="rounded-lg py-2 data-[state=active]:bg-energy data-[state=active]:text-white">Member Summary</TabsTrigger>
+                    <TabsTrigger value="leaves" className="rounded-lg py-2 data-[state=active]:bg-energy data-[state=active]:text-white">Leave Requests</TabsTrigger>
+                    <TabsTrigger value="notices" className="rounded-lg py-2 data-[state=active]:bg-energy data-[state=active]:text-white">Notices</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="daily" className="space-y-4">
