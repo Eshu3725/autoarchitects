@@ -70,7 +70,7 @@ WHERE email = 'karthikkantharaju28@gmail.com';
 
 
 UPDATE users 
-SET designation = 'Transmission', year = '3rd Year', major = 'Mechanical Engineering', bio = 'USN: 1SI23ME016', category = 'technical'
+SET designation = 'Captain (Transmission)', year = '3rd Year', major = 'Mechanical Engineering', bio = 'USN: 1SI23ME016', category = 'leadership'
 WHERE email = 'darshanvaibhav2@gmail.com';
 
 UPDATE users 
@@ -103,7 +103,7 @@ SET designation = 'Suspension', year = '3rd Year', major = 'Mechanical Engineeri
 WHERE email IN ('prathikjaintn21@gmail.com', 'prathikjaintn12@gmail.com');
 
 UPDATE users 
-SET designation = 'Suspension', year = '3rd Year', major = 'Mechanical Engineering', bio = 'USN: 1SI23ME057', category = 'technical'
+SET designation = 'Vice Captain (Suspension)', year = '3rd Year', major = 'Mechanical Engineering', bio = 'USN: 1SI23ME057', category = 'leadership'
 WHERE email = 'mithunyadavhr@gmail.com';
 
 UPDATE users 
