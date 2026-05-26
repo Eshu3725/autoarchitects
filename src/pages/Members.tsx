@@ -639,19 +639,19 @@ const Members = () => {
 
 
       {/* Join Us Section */}
-      <section className="relative py-24 md:py-32 bg-gradient-to-br from-steel-dark via-steel to-metallic overflow-hidden">
+      <section className="relative py-24 md:py-32 bg-gradient-to-b from-background via-zinc-950 to-background border-t border-white/5 overflow-hidden">
         {/* Animated background */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-energy rounded-full blur-3xl animate-pulse" />
         </div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="glass-card p-12 md:p-16 rounded-3xl border-2 border-white/20 shadow-2xl animate-scale-in">
+          <div className="glass-panel p-12 md:p-16 rounded-3xl border border-white/10 shadow-2xl animate-scale-in">
             <h2 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-white mb-6">
               Contact <span className="text-gradient-energy">Team</span>
             </h2>
-            <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed">
-              We are committed to providing timely and reliable support. Reach out to us with your queries, and our team will respond with the professionalism and clarity you deserve
+            <p className="text-xl md:text-2xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+              We are committed to providing timely and reliable support. Reach out to us with your queries, and our team will respond with the professionalism and clarity you deserve.
             </p>
             <Button
               size="lg"
@@ -667,12 +667,12 @@ const Members = () => {
 
       {/* Contact Us Modal */}
       <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
-        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto glass-card border-2 border-white/20 shadow-2xl p-4 sm:p-6">
+        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto glass-panel border border-white/10 shadow-2xl p-4 sm:p-6 bg-zinc-950/95 backdrop-blur-2xl">
           <DialogHeader className="space-y-2 sm:space-y-3">
-            <DialogTitle className="font-display text-2xl sm:text-3xl font-bold text-steel-dark">
+            <DialogTitle className="font-display text-2xl sm:text-3xl font-bold text-white">
               Contact <span className="text-gradient-energy">Us</span>
             </DialogTitle>
-            <DialogDescription className="text-sm sm:text-base text-muted-foreground">
+            <DialogDescription className="text-sm sm:text-base text-zinc-400">
               Get in touch with the AutoArchitects team. We're here to help!
             </DialogDescription>
           </DialogHeader>
@@ -680,15 +680,15 @@ const Members = () => {
           <div className="space-y-4 sm:space-y-6 py-3 sm:py-4">
             {/* Email */}
             <div className="group">
-              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
+              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-zinc-900/40 hover:bg-energy/10 transition-all duration-300 border border-white/5 hover:border-energy/30">
                 <div className="p-2 sm:p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors flex-shrink-0">
                   <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-energy" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-semibold text-muted-foreground mb-1">Email Address</p>
+                  <p className="text-xs sm:text-sm font-semibold text-zinc-500 mb-1">Email Address</p>
                   <a
                     href="mailto:autoarchitects@gmail.com"
-                    className="text-sm sm:text-base text-steel-dark font-bold hover:text-energy transition-colors flex items-center gap-1 sm:gap-2 break-all"
+                    className="text-sm sm:text-base text-zinc-100 font-bold hover:text-energy transition-colors flex items-center gap-1 sm:gap-2 break-all"
                   >
                     <span className="truncate">autoarchitects@gmail.com</span>
                     <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
@@ -699,15 +699,15 @@ const Members = () => {
 
             {/* Phone */}
             <div className="group">
-              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
+              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-zinc-900/40 hover:bg-energy/10 transition-all duration-300 border border-white/5 hover:border-energy/30">
                 <div className="p-2 sm:p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors flex-shrink-0">
                   <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-energy" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-semibold text-muted-foreground mb-1">Phone Number</p>
+                  <p className="text-xs sm:text-sm font-semibold text-zinc-500 mb-1">Phone Number</p>
                   <a
                     href="tel:+916363852155"
-                    className="text-sm sm:text-base text-steel-dark font-bold hover:text-energy transition-colors flex items-center gap-1 sm:gap-2"
+                    className="text-sm sm:text-base text-zinc-100 font-bold hover:text-energy transition-colors flex items-center gap-1 sm:gap-2"
                   >
                     +91 6363852155
                     <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
@@ -718,20 +718,20 @@ const Members = () => {
 
             {/* Location */}
             <div className="group">
-              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-energy/10 hover:to-energy/5 transition-all duration-300 border border-border/50 hover:border-energy/30">
+              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-zinc-900/40 hover:bg-energy/10 transition-all duration-300 border border-white/5 hover:border-energy/30">
                 <div className="p-2 sm:p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors flex-shrink-0">
                   <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-energy" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-semibold text-muted-foreground mb-1">Location</p>
-                  <p className="text-sm sm:text-base text-steel-dark font-bold">Siddaganga Institute of Technology</p>
+                  <p className="text-xs sm:text-sm font-semibold text-zinc-500 mb-1">Location</p>
+                  <p className="text-sm sm:text-base text-zinc-100 font-bold">Siddaganga Institute of Technology</p>
                 </div>
               </div>
             </div>
 
             {/* Social Media */}
             <div>
-              <p className="text-xs sm:text-sm font-semibold text-muted-foreground mb-3">Follow Us On Social Media</p>
+              <p className="text-xs sm:text-sm font-semibold text-zinc-400 mb-3">Follow Us On Social Media</p>
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <a
                   href="https://www.instagram.com/autoarchitects?igsh=cTZuNGdrcmM2M2I1"
