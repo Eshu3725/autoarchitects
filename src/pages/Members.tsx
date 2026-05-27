@@ -15,45 +15,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
 const STATIC_MEMBERS = [
-  // Leadership Team
-  {
-    name: "Kushal M.V",
-    role: "Steering",
-    year: "4th Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI23ME426",
-    email: "kushalmvkushi2@gmail.com",
-    category: "technical"
-  },
-  {
-    name: "Tejashree P",
-    role: "Chassis (CAE)",
-    year: "4th Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI22ME059",
-    email: "tejashree62005@gmail.com",
-    category: "technical"
-  },
-
   // Steering Team
-  {
-    name: "Kushal N.S",
-    role: "Steering",
-    year: "4th Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI22ME021",
-    email: "kushalns32@gmail.com",
-    category: "technical"
-  },
-  {
-    name: "Skanda Moudgalya KS",
-    role: "Steering",
-    year: "4th Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI22ME052",
-    email: "skandaksmoudgalya@gmail.com",
-    category: "technical"
-  },
   {
     name: "Siddharth S.",
     role: "Steering",
@@ -92,16 +54,6 @@ const STATIC_MEMBERS = [
   },
 
   // Transmission Team
-  {
-    name: "Karthik K",
-    role: "Transmission",
-    year: "4th Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI22ME020",
-    email: "karthikkantharaju28@gmail.com",
-    category: "technical"
-  },
-
   {
     name: "Darshan H.S",
     role: "Captain (Transmission)",
@@ -159,15 +111,6 @@ const STATIC_MEMBERS = [
 
   // Suspension Team
   {
-    name: "Likith H",
-    role: "Suspension",
-    year: "4th Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI22ME023",
-    email: "likhith.785@gmail.com",
-    category: "technical"
-  },
-  {
     name: "Prathik Jain T.N",
     role: "Suspension",
     year: "3rd Year",
@@ -214,24 +157,6 @@ const STATIC_MEMBERS = [
   },
 
   // Brakes Team
-  {
-    name: "Vivek Hiresomannavar",
-    role: "Brakes",
-    year: "4th Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI22ME067",
-    email: "vivekhiresomannavar@gmail.com",
-    category: "technical"
-  },
-  {
-    name: "Basavaraj L Arakeri",
-    role: "Brakes",
-    year: "4th Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI22ME008",
-    email: "basavarajarakeri@zohomail.in",
-    category: "technical"
-  },
   {
     name: "Sumanth Honnungar",
     role: "Brakes",
@@ -354,7 +279,7 @@ const Members = () => {
     }
   };
 
-  const [teamMembers, setTeamMembers] = useState<any[]>(STATIC_MEMBERS.filter(m => m.year !== '4th Year'));
+  const [teamMembers, setTeamMembers] = useState<any[]>(STATIC_MEMBERS);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -362,26 +287,25 @@ const Members = () => {
         const { data, error } = await supabase
           .from('users')
           .select('*')
+          .eq('role', 'user')  // Only get non-admin users
           .order('name');
-        
+
         if (error) {
           console.error("Error loading dynamic members:", error);
           return;
         }
 
         if (data && data.length > 0) {
-          const mappedMembers = data
-            .filter(u => u.year !== '4th Year')
-            .map(u => ({
-              name: u.name,
-              role: u.designation || (u.role === 'admin' ? 'Admin' : 'Team Member'),
-              year: u.year || '1st Year',
-              major: u.major || 'Mechanical Engineering',
-              bio: u.bio || '',
-              email: u.email,
-              category: u.category || 'technical'
-            }));
-          
+          const mappedMembers = data.map(u => ({
+            name: u.name,
+            role: u.designation || 'Team Member',
+            year: u.year || '1st Year',
+            major: u.major || 'Mechanical Engineering',
+            bio: u.bio || '',
+            email: u.email,
+            category: u.category || 'technical'
+          }));
+
           setTeamMembers(mappedMembers);
         }
       } catch (err) {
