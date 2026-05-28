@@ -286,10 +286,10 @@ const STATIC_MEMBERS = [
     category: "technical"
   },
 
-  // Graphics Team
+  // Operations Team
   {
     name: "Eshaan AV",
-    role: "Digital",
+    role: "Operations",
     year: "3rd Year",
     major: "Artificial Intelligence and Data Science",
     bio: "USN: 1SI23AD011",
@@ -342,7 +342,13 @@ const Members = () => {
             category: u.category || 'technical'
           }));
 
-          setTeamMembers(mappedMembers);
+          // Merge database members with static members (remove duplicates by email)
+          const allEmails = new Set(mappedMembers.map(m => m.email.toLowerCase()));
+          const uniqueStaticMembers = STATIC_MEMBERS.filter(
+            sm => !allEmails.has(sm.email.toLowerCase())
+          );
+
+          setTeamMembers([...mappedMembers, ...uniqueStaticMembers]);
         }
       } catch (err) {
         console.error("Error fetching members:", err);
@@ -359,13 +365,12 @@ const Members = () => {
   const suspensionMembers = teamMembers.filter(m => m.role.includes('Suspension') && m.category !== 'leadership');
   const brakesMembers = teamMembers.filter(m => m.role.includes('Brakes') && m.category !== 'leadership');
   const chassisMembers = teamMembers.filter(m => (m.role.includes('Chassis') || m.role.includes('CAE')) && m.category !== 'leadership');
-  const digitalMembers = teamMembers.filter(m => m.role.includes('Digital') && m.category !== 'leadership');
-  const graphicsMembers = teamMembers.filter(m => m.role.includes('Graphics') && m.category !== 'leadership');
+  const operationsMembers = teamMembers.filter(m => m.role.includes('Operations') && m.category !== 'leadership');
 
   const renderMemberCard = (member: typeof teamMembers[0], index: number) => {
     // Determine category styling
     const isLeadership = member.category === 'leadership' || member.role.includes('Captain');
-    const isOperations = member.category === 'operations' || member.role.includes('Digital') || member.role.includes('Graphics');
+    const isOperations = member.category === 'operations' || member.role.includes('Operations');
     
     let accentBg = 'bg-energy/10 text-energy border-energy/20';
     let cardBorder = 'hover:border-energy/40';
@@ -569,18 +574,10 @@ const Members = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => scrollToSection('digital-team')}
+              onClick={() => scrollToSection('operations-team')}
               className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
             >
-              Digital ({digitalMembers.length})
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => scrollToSection('graphics-team')}
-              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
-            >
-              Graphics ({graphicsMembers.length})
+              Operations ({operationsMembers.length})
             </Button>
           </div>
         </div>
@@ -593,8 +590,7 @@ const Members = () => {
       <TeamCarousel members={suspensionMembers} sectionId="suspension-team" title="Suspension" />
       <TeamCarousel members={brakesMembers} sectionId="brakes-team" title="Brakes" />
       <TeamCarousel members={chassisMembers} sectionId="chassis-team" title="Chassis/CAE" />
-      <TeamCarousel members={digitalMembers} sectionId="digital-team" title="Digital" />
-      <TeamCarousel members={graphicsMembers} sectionId="graphics-team" title="Graphics" />
+      <TeamCarousel members={operationsMembers} sectionId="operations-team" title="Operations" />
 
 
 
