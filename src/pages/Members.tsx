@@ -52,6 +52,15 @@ const STATIC_MEMBERS = [
     email: "incharakswamy31@gmail.com",
     category: "technical"
   },
+  {
+    name: "ARJUN M",
+    role: "Steering",
+    year: "2nd Year",
+    major: "Mechanical Engineering",
+    bio: "USN: 1SI24ME011",
+    email: "arjunm.kaveti@gmail.com",
+    category: "technical"
+  },
 
   // Transmission Team
   {
@@ -96,7 +105,25 @@ const STATIC_MEMBERS = [
     year: "2nd Year",
     major: "Mechanical Engineering",
     bio: "USN: 1SI24ME046",
-    email: "karthikkarthi19370@gmail.com",
+    email: "deepakdeepuks75@gmail.com",
+    category: "technical"
+  },
+  {
+    name: "Bhumika B R",
+    role: "Transmission",
+    year: "2nd Year",
+    major: "Computer Science and Engineering",
+    bio: "USN: 1SI24CS034",
+    email: "b301898@gmail.com",
+    category: "technical"
+  },
+  {
+    name: "Bhavana R",
+    role: "Transmission",
+    year: "1st Year",
+    major: "Mechanical Engineering",
+    bio: "USN: 1SI25ME020",
+    email: "bhavana.feb14@gmail.com",
     category: "technical"
   },
   {
@@ -155,6 +182,15 @@ const STATIC_MEMBERS = [
     email: "manojyadav.girish@gmail.com",
     category: "technical"
   },
+  {
+    name: "Mayur S",
+    role: "Suspension",
+    year: "2nd Year",
+    major: "Mechanical Engineering",
+    bio: "USN: 1SI25ME409",
+    email: "1si25me409@sit.ac.in",
+    category: "technical"
+  },
 
   // Brakes Team
   {
@@ -182,6 +218,15 @@ const STATIC_MEMBERS = [
     major: "Chemical Engineering",
     bio: "USN: 1SI24CH045",
     email: "shashi60835@gmail.com",
+    category: "technical"
+  },
+  {
+    name: "Gowtham Gowda S",
+    role: "Brakes",
+    year: "1st Year",
+    major: "Mechanical Engineering",
+    bio: "USN: 1SI25ME038",
+    email: "gowthamgowda8261@gmail.com",
     category: "technical"
   },
 
@@ -249,15 +294,6 @@ const STATIC_MEMBERS = [
     major: "Artificial Intelligence and Data Science",
     bio: "USN: 1SI23AD011",
     email: "eshaanvenkatesh3725@gmail.com",
-    category: "operations"
-  },
-  {
-    name: "Bhumika B.R",
-    role: "Graphics",
-    year: "2nd Year",
-    major: "Computer Science and Engineering",
-    bio: "USN: 1SI24CS034",
-    email: "b301898@gmail.com",
     category: "operations"
   }
 ];
