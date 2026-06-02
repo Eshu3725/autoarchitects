@@ -82,15 +82,6 @@ const STATIC_MEMBERS = [
     category: "technical"
   },
   {
-    name: "Shivaprakash H B",
-    role: "Transmission",
-    year: "3rd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI23ME089",
-    email: "shivaprakashb712@gmail.com",
-    category: "technical"
-  },
-  {
     name: "Dimple K",
     role: "Transmission",
     year: "2nd Year",
@@ -229,6 +220,15 @@ const STATIC_MEMBERS = [
     email: "gowthamgowda8261@gmail.com",
     category: "technical"
   },
+  {
+    name: "Mohammed Umar Siddiq",
+    role: "Brakes",
+    year: "3rd Year",
+    major: "Mechanical Engineering",
+    bio: "USN: 1SI23ME059",
+    email: "mdumarsiddiq5@gmail.com",
+    category: "technical"
+  },
 
   // CAE (Chassis) Team
   {
@@ -247,15 +247,6 @@ const STATIC_MEMBERS = [
     major: "Mechanical Engineering",
     bio: "USN: 1SI23ME055",
     email: "dmedha2005@gmail.com",
-    category: "technical"
-  },
-  {
-    name: "Mohammed Umar Siddiq",
-    role: "Brakes",
-    year: "3rd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI23ME059",
-    email: "mdumarsiddiq5@gmail.com",
     category: "technical"
   },
   {

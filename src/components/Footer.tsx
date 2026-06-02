@@ -44,7 +44,7 @@ const Footer = () => {
                 <div className="p-2 bg-white/5 rounded-lg group-hover:bg-energy/20 transition-colors">
                   <Phone className="w-5 h-5 text-energy" />
                 </div>
-                <span className="font-semibold text-sm">+91 6363852155</span>
+                <span className="font-semibold text-sm">+91 8762751648</span>
               </a>
               <div className="flex items-center space-x-3 text-zinc-400 group">
                 <div className="p-2 bg-white/5 rounded-lg">
