@@ -16,6 +16,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { isRemovedMember } from '@/lib/removedMembers';
 import Layout from '@/components/Layout';
 import { jsPDF } from 'jspdf';
 
@@ -131,20 +132,22 @@ const AdminDashboard = () => {
         }
         
         // Map fallback data with default values for new columns
-        const mappedData = (fallbackData || []).map(member => ({
-          ...member,
-          designation: 'Team Member',
-          year: '1st Year',
-          major: 'Mechanical Engineering',
-          bio: '',
-          category: 'technical' as const
-        }));
+        const mappedData = (fallbackData || [])
+          .filter(member => !isRemovedMember(member))
+          .map(member => ({
+            ...member,
+            designation: 'Team Member',
+            year: '1st Year',
+            major: 'Mechanical Engineering',
+            bio: '',
+            category: 'technical' as const
+          }));
         
         setTeamMembers(mappedData);
         return;
       }
 
-      setTeamMembers(data || []);
+      setTeamMembers((data || []).filter(member => !isRemovedMember(member)));
     } catch (error) {
       console.error('Error loading team members:', error);
       toast.error('Failed to load team members');

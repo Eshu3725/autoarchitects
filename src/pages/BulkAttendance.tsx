@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { CalendarIcon, Save, Users, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { isRemovedMember } from '@/lib/removedMembers';
 import Layout from '@/components/Layout';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -62,11 +63,12 @@ const BulkAttendance = () => {
         return;
       }
 
-      setTeamMembers(data || []);
+      const filteredMembers = (data || []).filter(member => !isRemovedMember(member));
+      setTeamMembers(filteredMembers);
       
       // Initialize all members as present by default
       const initialMap = new Map<string, 'present' | 'absent'>();
-      (data || []).forEach(member => {
+      filteredMembers.forEach(member => {
         initialMap.set(member.id, 'present');
       });
       setAttendanceMap(initialMap);

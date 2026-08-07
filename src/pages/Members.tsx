@@ -13,18 +13,10 @@ import {
 } from "@/components/ui/dialog";
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { isRemovedMember } from '@/lib/removedMembers';
 
 const STATIC_MEMBERS = [
   // Steering Team
-  {
-    name: "Siddharth S.",
-    role: "Steering",
-    year: "3rd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI23ME093",
-    email: "siddharth.s7060@gmail.com",
-    category: "technical"
-  },
   {
     name: "Veeresh",
     role: "Steering",
@@ -32,33 +24,6 @@ const STATIC_MEMBERS = [
     major: "Mechanical Engineering",
     bio: "USN: 1SI23ME108",
     email: "veereshsg14@gmail.com",
-    category: "technical"
-  },
-  {
-    name: "Dhanush gowda",
-    role: "Steering",
-    year: "2nd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI24ME025",
-    email: "dhanushggowdaa@gmail.com",
-    category: "technical" 
-  },
-  {
-    name: "Inchara M.K",
-    role: "Steering",
-    year: "2nd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI24ME039",
-    email: "incharakswamy31@gmail.com",
-    category: "technical"
-  },
-  {
-    name: "ARJUN M",
-    role: "Steering",
-    year: "2nd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI24ME011",
-    email: "arjunm.kaveti@gmail.com",
     category: "technical"
   },
 
@@ -71,33 +36,6 @@ const STATIC_MEMBERS = [
     bio: "USN: 1SI23ME016",
     email: "darshanvaibhav2@gmail.com",
     category: "leadership"
-  },
-  {
-    name: "Sharadhi Simha Chi Na",
-    role: "Transmission",
-    year: "3rd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI23ME084",
-    email: "sharadhisimhachina@gmail.com",
-    category: "technical"
-  },
-  {
-    name: "Dimple K",
-    role: "Transmission",
-    year: "2nd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI24ME028",
-    email: "dimplek5936@gmail.com",
-    category: "technical"
-  },
-  {
-    name: "Karthik S",
-    role: "Transmission",
-    year: "2nd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI24ME046",
-    email: "deepakdeepuks75@gmail.com",
-    category: "technical"
   },
   {
     name: "Bhumika B R",
@@ -155,15 +93,6 @@ const STATIC_MEMBERS = [
     email: "manojyadav.girish@gmail.com",
     category: "technical"
   },
-  {
-    name: "Mayur S",
-    role: "Suspension",
-    year: "2nd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI25ME409",
-    email: "1si25me409@sit.ac.in",
-    category: "technical"
-  },
 
   // Brakes Team
   {
@@ -202,15 +131,6 @@ const STATIC_MEMBERS = [
     email: "gowthamgowda8261@gmail.com",
     category: "technical"
   },
-  {
-    name: "Mohammed Umar Siddiq",
-    role: "Brakes",
-    year: "3rd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI23ME059",
-    email: "mdumarsiddiq5@gmail.com",
-    category: "technical"
-  },
 
   // CAE (Chassis) Team
   {
@@ -229,15 +149,6 @@ const STATIC_MEMBERS = [
     major: "Mechanical Engineering",
     bio: "USN: 1SI23ME038",
     email: "drkamalesh397@gmail.com",
-    category: "technical"
-  },
-  {
-    name: "Nikshith J",
-    role: "Chassis (CAE)",
-    year: "2nd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI24ME075",
-    email: "nikshithjagadeesh@gmail.com",
     category: "technical"
   },
   {
@@ -279,7 +190,9 @@ const Members = () => {
     }
   };
 
-  const [teamMembers, setTeamMembers] = useState<any[]>(STATIC_MEMBERS);
+  const [teamMembers, setTeamMembers] = useState<any[]>(
+    STATIC_MEMBERS.filter(sm => !isRemovedMember(sm))
+  );
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -296,20 +209,22 @@ const Members = () => {
         }
 
         if (data && data.length > 0) {
-          const mappedMembers = data.map(u => ({
-            name: u.name,
-            role: u.designation || 'Team Member',
-            year: u.year || '1st Year',
-            major: u.major || 'Mechanical Engineering',
-            bio: u.bio || '',
-            email: u.email,
-            category: u.category || 'technical'
-          }));
+          const mappedMembers = data
+            .map(u => ({
+              name: u.name,
+              role: u.designation || 'Team Member',
+              year: u.year || '1st Year',
+              major: u.major || 'Mechanical Engineering',
+              bio: u.bio || '',
+              email: u.email,
+              category: u.category || 'technical'
+            }))
+            .filter(m => !isRemovedMember(m));
 
           // Merge database members with static members (remove duplicates by email)
           const allEmails = new Set(mappedMembers.map(m => m.email.toLowerCase()));
           const uniqueStaticMembers = STATIC_MEMBERS.filter(
-            sm => !allEmails.has(sm.email.toLowerCase())
+            sm => !allEmails.has(sm.email.toLowerCase()) && !isRemovedMember(sm)
           );
 
           setTeamMembers([...mappedMembers, ...uniqueStaticMembers]);
