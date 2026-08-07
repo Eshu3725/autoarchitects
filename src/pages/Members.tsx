@@ -129,15 +129,6 @@ const STATIC_MEMBERS = [
 
   // Suspension Team
   {
-    name: "Prathik Jain T.N",
-    role: "Suspension",
-    year: "3rd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI23ME070",
-    email: "prathikjaintn21@gmail.com",
-    category: "technical"
-  },
-  {
     name: "Mithan Yadav H.R",
     role: "Vice Captain (Suspension)",
     year: "3rd Year",
@@ -153,15 +144,6 @@ const STATIC_MEMBERS = [
     major: "Mechanical Engineering",
     bio: "USN: 1SI23ME111",
     email: "vivek8884168@gmail.com",
-    category: "technical"
-  },
-  {
-    name: "Jaswanth D.",
-    role: "Suspension",
-    year: "2nd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI24ME041",
-    email: "jaswanthd150@gmail.com",
     category: "technical"
   },
   {
@@ -231,15 +213,6 @@ const STATIC_MEMBERS = [
   },
 
   // CAE (Chassis) Team
-  {
-    name: "Yashas M.S",
-    role: "Chassis (CAE)",
-    year: "3rd Year",
-    major: "Mechanical Engineering",
-    bio: "USN: 1SI23ME115",
-    email: "yashasms9125@gmail.com",
-    category: "technical"
-  },
   {
     name: "Medha D.",
     role: "Chassis (CAE)",
