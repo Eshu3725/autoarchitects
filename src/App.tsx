@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import StudentRegistrations from "./pages/StudentRegistrations";
 import BulkAttendance from "./pages/BulkAttendance";
+import QrScanner from "./pages/QrScanner";
 import UserDashboard from "./pages/UserDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -55,6 +56,14 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="admin">
                   <BulkAttendance />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/qr-scanner"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <QrScanner />
                 </ProtectedRoute>
               }
             />

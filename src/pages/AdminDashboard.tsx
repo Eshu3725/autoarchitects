@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight, Trash2, Download, Check, X, FileText } from 'lucide-react';
+import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight, Trash2, Download, Check, X, FileText, QrCode } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
@@ -905,7 +905,7 @@ const AdminDashboard = () => {
         <section className="py-8 bg-background/50 border-b border-white/5 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">Quick Access</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card
                 className="glass-panel border-white/5 shadow-2xl cursor-pointer hover:border-energy/30 hover:scale-[1.01] transition-all duration-300"
                 onClick={() => navigate('/admin/registrations')}
@@ -934,14 +934,17 @@ const AdminDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="glass-panel border-white/5 shadow-2xl">
+              <Card
+                className="glass-panel border-white/5 shadow-2xl cursor-pointer hover:border-energy/30 hover:scale-[1.01] transition-all duration-300"
+                onClick={() => navigate('/admin/qr-scanner')}
+              >
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">Individual Records</p>
-                      <p className="text-lg font-bold text-white uppercase tracking-tight">Current Page</p>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">QR Scanner</p>
+                      <p className="text-lg font-bold text-white uppercase tracking-tight">Scan to Mark Present</p>
                     </div>
-                    <ClipboardList className="w-10 h-10 text-zinc-500" />
+                    <QrCode className="w-10 h-10 text-energy" />
                   </div>
                 </CardContent>
               </Card>
