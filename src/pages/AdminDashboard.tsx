@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight, Trash2, Download, Check, X, FileText, QrCode } from 'lucide-react';
+import { Calendar, Plus, Edit, Users, ClipboardList, TrendingUp, UserPlus, ChevronDown, ChevronRight, Trash2, Download, Check, X, FileText, QrCode, Handshake } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
@@ -97,6 +97,30 @@ const AdminDashboard = () => {
     bio: '',
     category: 'technical' as 'leadership' | 'technical' | 'operations'
   });
+
+  // Count of sponsor enquiries nobody has picked up yet (live)
+  const [newSponsorEnquiries, setNewSponsorEnquiries] = useState(0);
+  useEffect(() => {
+    const countNew = async () => {
+      const { count, error } = await supabase
+        .from('sponsor_enquiries')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'New');
+      // A missing table (SQL not run yet) just leaves the card without a count.
+      if (!error) setNewSponsorEnquiries(count ?? 0);
+    };
+    countNew();
+    const channel = supabase
+      .channel('dashboard_sponsor_enquiries')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sponsor_enquiries' }, (payload) => {
+        if (payload.eventType === 'INSERT') toast.success('New sponsor enquiry received');
+        countNew();
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   // Load team members and attendance records from Supabase
   useEffect(() => {
@@ -945,6 +969,31 @@ const AdminDashboard = () => {
                       <p className="text-lg font-bold text-white uppercase tracking-tight">Scan to Mark Present</p>
                     </div>
                     <QrCode className="w-10 h-10 text-energy" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card
+                className="glass-panel border-white/5 shadow-2xl cursor-pointer hover:border-energy/30 hover:scale-[1.01] transition-all duration-300"
+                onClick={() => navigate('/admin/sponsors')}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">Sponsor Enquiries</p>
+                      <p className="text-lg font-bold text-white uppercase tracking-tight">
+                        {newSponsorEnquiries ? (
+                          <span className="text-energy">{newSponsorEnquiries} new</span>
+                        ) : (
+                          'Review Sponsorship Leads'
+                        )}
+                      </p>
+                    </div>
+                    <span className="relative">
+                      <Handshake className="w-10 h-10 text-energy" />
+                      {newSponsorEnquiries > 0 && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-energy ring-2 ring-background animate-pulse" />
+                      )}
+                    </span>
                   </div>
                 </CardContent>
               </Card>

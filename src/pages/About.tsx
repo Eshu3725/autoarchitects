@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Target, Eye, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Target, Eye, ShieldCheck, Mail } from 'lucide-react';
 import sunilImage from '@/assets/Sunil.jpg';
 import nareshImage from '@/assets/Naresh.jpg';
 import { SectionHeader, Reveal, RacePlate } from '@/components/brand/Primitives';
-import { CLUB, RECORD, IMAGES } from '@/data/club';
+import { CLUB, RECORD, IMAGES, BAJA_FACTS, SIT_FACTS, CONTACTS, PATRONS } from '@/data/club';
 import { cn } from '@/lib/utils';
 
 const BRIEF = [
@@ -30,7 +30,8 @@ const BRIEF = [
 const ADVISORS = [
   {
     name: 'Dr. B Sunil',
-    role: 'Professor, Mechanical Engineering',
+    role: 'Faculty Advisor · Assistant Professor, Mechanical Engineering',
+    email: CONTACTS[2].email,
     image: sunilImage,
     imgPos: 'object-center',
     focus: 'Vehicle dynamics & automotive structures',
@@ -38,7 +39,8 @@ const ADVISORS = [
   },
   {
     name: 'Dr. Naresh H',
-    role: 'Assistant Professor, Mechanical Engineering',
+    role: 'Faculty Advisor · Assistant Professor, Mechanical Engineering',
+    email: CONTACTS[3].email,
     image: nareshImage,
     imgPos: 'object-top',
     focus: 'Power systems & automotive controls',
@@ -60,18 +62,22 @@ const About = () => {
               <span className="text-energy">●</span> About the team · Est. {CLUB.founded}
             </p>
             <h1 className="mt-6 font-display font-extrabold italic uppercase tracking-tight leading-[0.86] text-6xl sm:text-7xl xl:text-8xl animate-fade-in-up delay-100">
-              Ten students
+              Learn.
               <br />
-              and a <span className="text-energy">rulebook.</span>
+              Build.
+              <br />
+              <span className="text-energy">Compete.</span>
             </h1>
             <div className="mt-8 space-y-4 text-lg text-muted-foreground leading-relaxed max-w-xl animate-fade-in-up delay-200">
               <p>
-                That's how Team AutoArchitects started at {CLUB.institute} in {CLUB.founded}. Two years later our first car took
-                the start at <span className="text-foreground">BAJA SAEINDIA 2010</span> and finished 37th out of 180 teams.
+                Team AutoArchitects was started in {CLUB.founded} by a group of off-road enthusiasts at {CLUB.institute}. Two
+                years later our first car finished <span className="text-foreground">37th of 180 teams</span> at BAJA SAEINDIA
+                2012.
               </p>
               <p>
-                Since then the team has grown past thirty engineers and more than ten machines, each one designed, analysed,
-                fabricated and raced by students. The cars have changed every season. The rule hasn't:{' '}
+                Today we're {CLUB.crew} students working under the Head of the {CLUB.department} and our faculty advisors, and
+                we're building an IC-engine ATV for <span className="text-foreground">{CLUB.nowBuilding}</span>. The cars change
+                every season. The rule hasn't:{' '}
                 <span className="text-foreground font-semibold">if we can make it, we make it ourselves.</span>
               </p>
             </div>
@@ -117,10 +123,59 @@ const About = () => {
         </div>
       </section>
 
+      {/* ═════════ CONTEXT ═════════ */}
+      <section className="relative py-24 md:py-32 border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader sheet="02" kicker="Operating conditions" title={<>The event &amp; <span className="text-energy">the institute</span></>} />
+          <div className="grid lg:grid-cols-2 gap-6">
+            {[
+              {
+                kicker: 'The competition',
+                title: 'BAJA SAE',
+                facts: BAJA_FACTS,
+                body: 'An SAE International series for undergraduate engineers that began as Mini-Baja in 1976. Teams design, fabricate and validate a single-seat, four-wheeled off-road vehicle, then spend four days proving it: static events judge the engineering, dynamic events test gradeability, speed, acceleration and manoeuvrability, and an endurance race finishes it off.',
+              },
+              {
+                kicker: 'Home ground',
+                title: 'SIT, Tumakuru',
+                facts: SIT_FACTS,
+                body: `${CLUB.institute} is an autonomous institute affiliated to Visvesvaraya Technological University, near Bengaluru. It is one of 125 institutions run by the Siddaganga Education Society, and offers 12 undergraduate disciplines, 16 postgraduate programmes and PhDs.`,
+              },
+            ].map((c, i) => (
+              <Reveal key={c.title} delay={i * 100}>
+                <article className="border border-border bg-card h-full flex flex-col">
+                  <div className="p-8 flex-1">
+                    <p className="label-mono text-[10px] text-energy">{c.kicker}</p>
+                    <h3 className="mt-3 font-display font-extrabold italic uppercase text-4xl leading-none">{c.title}</h3>
+                    <p className="mt-4 text-muted-foreground leading-relaxed">{c.body}</p>
+                  </div>
+                  <dl className="grid grid-cols-2 sm:grid-cols-4 border-t border-border">
+                    {c.facts.map((f, j) => (
+                      <div
+                        key={f.label}
+                        className={cn(
+                          'p-4 border-border',
+                          j % 2 === 1 && 'border-l',
+                          j > 1 && 'border-t sm:border-t-0',
+                          j === 2 && 'sm:border-l'
+                        )}
+                      >
+                        <dt className="label-mono text-[9px] text-muted-foreground">{f.label}</dt>
+                        <dd className="font-display font-extrabold italic text-3xl leading-none mt-2">{f.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ═════════ ADVISORS ═════════ */}
       <section className="relative py-24 md:py-32 border-b border-border bg-graphite">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader sheet="02" kicker="Checked & approved by" title={<>Faculty <span className="text-energy">advisors</span></>}>
+          <SectionHeader sheet="03" kicker="Checked & approved by" title={<>Faculty <span className="text-energy">advisors</span></>}>
             Every design goes past the people who sign off on it. Our faculty advisors guide the engineering and keep the team
             honest.
           </SectionHeader>
@@ -148,13 +203,37 @@ const About = () => {
                         <dd className="text-sm mt-1">{a.focus}</dd>
                       </div>
                       <div className="pt-3 pl-3 border-l border-border">
-                        <dt className="label-mono text-[9px] text-muted-foreground">Credentials</dt>
-                        <dd className="text-sm mt-1">PhD · 15+ yrs</dd>
+                        <dt className="label-mono text-[9px] text-muted-foreground">Contact</dt>
+                        <dd className="text-sm mt-1">
+                          <a href={`mailto:${a.email}`} className="inline-flex items-center gap-1.5 hover:text-energy transition-colors break-all">
+                            <Mail className="w-3.5 h-3.5 shrink-0 text-energy" />
+                            {a.email}
+                          </a>
+                        </dd>
                       </div>
                     </dl>
                   </div>
                 </article>
               </Reveal>
+            ))}
+          </div>
+
+          <div className="mt-6 border border-border bg-background grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border">
+            {PATRONS.map((p) => (
+              <div key={p.name} className="p-5 flex items-center justify-between gap-4">
+                <div>
+                  <p className="label-mono text-[10px] text-muted-foreground">Under the guidance of</p>
+                  <p className="mt-1.5 font-display font-extrabold uppercase text-xl leading-none">{p.name}</p>
+                  <p className="mt-1.5 text-sm text-foreground/80">{p.role}</p>
+                </div>
+                <a
+                  href={`mailto:${p.email}`}
+                  aria-label={`Email ${p.name}`}
+                  className="w-11 h-11 shrink-0 border border-border flex items-center justify-center hover:bg-energy hover:border-energy hover:text-white transition-colors"
+                >
+                  <Mail className="w-4 h-4" />
+                </a>
+              </div>
             ))}
           </div>
         </div>
@@ -163,7 +242,7 @@ const About = () => {
       {/* ═════════ TIMELINE ═════════ */}
       <section id="our-journey" className="relative py-24 md:py-32 border-b border-border scroll-mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader sheet="03" kicker="Revision history" title={<>The <span className="text-energy">journey</span></>}>
+          <SectionHeader sheet="04" kicker="Revision history" title={<>The <span className="text-energy">journey</span></>}>
             Every engineering drawing keeps a revision table. This is ours.
           </SectionHeader>
 
@@ -172,7 +251,7 @@ const About = () => {
             {timeline.map((m, i) => {
               const right = i % 2 === 1;
               return (
-                <li key={m.year + m.event} className="relative mb-8 last:mb-0">
+                <li key={(m.year ?? '') + m.cars.join('') + m.event} className="relative mb-8 last:mb-0">
                   <Reveal className="grid grid-cols-[88px_1fr] md:grid-cols-2 items-center">
                     <div className={cn('md:pr-12 md:text-right', right && 'md:order-2 md:pl-12 md:pr-0 md:text-left')}>
                       <span
@@ -181,7 +260,7 @@ const About = () => {
                           m.status === 'live' ? 'text-energy' : 'text-foreground/90'
                         )}
                       >
-                        {m.year}
+                        {m.year ?? m.car}
                       </span>
                     </div>
                     <span
@@ -204,7 +283,11 @@ const About = () => {
                           <span className={cn(m.status === 'live' ? 'text-energy' : m.status === 'award' ? 'text-amber' : 'text-foreground')}>
                             {m.result}
                           </span>
-                          {m.members && <span className="text-muted-foreground">Crew {m.members}</span>}
+                          {m.cars.length > 0 && m.year && (
+                            <span className="text-muted-foreground">
+                              {m.cars.length > 1 ? 'Cars' : 'Car'} {m.cars.map((c) => `#${c}`).join(' · ')}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

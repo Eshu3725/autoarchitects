@@ -10,9 +10,11 @@ import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Members from "./pages/Members";
+import Sponsors from "./pages/Sponsors";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import StudentRegistrations from "./pages/StudentRegistrations";
+import SponsorEnquiries from "./pages/SponsorEnquiries";
 import BulkAttendance from "./pages/BulkAttendance";
 import QrScanner from "./pages/QrScanner";
 import UserDashboard from "./pages/UserDashboard";
@@ -32,6 +34,7 @@ const App = () => (
             <Route path="/" element={<Layout><Home /></Layout>} />
             <Route path="/about" element={<Layout><About /></Layout>} />
             <Route path="/members" element={<Layout><Members /></Layout>} />
+            <Route path="/sponsors" element={<Layout><Sponsors /></Layout>} />
             <Route path="/login" element={<Login />} />
 
             {/* Protected Admin Routes */}
@@ -48,6 +51,14 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="admin">
                   <StudentRegistrations />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/sponsors"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <SponsorEnquiries />
                 </ProtectedRoute>
               }
             />

@@ -9,7 +9,7 @@ import {
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { isRemovedMember } from '@/lib/removedMembers';
-import { SUBSYSTEMS, CLUB } from '@/data/club';
+import { SUBSYSTEMS, CLUB, TEAM_PHONE } from '@/data/club';
 import { cn } from '@/lib/utils';
 
 const STATIC_MEMBERS = [
@@ -453,11 +453,11 @@ const Members = () => {
               </span>
               <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-energy" />
             </a>
-            <a href="tel:+916363852155" className="flex items-center gap-4 p-5 hover:bg-muted/50 transition-colors group">
+            <a href={TEAM_PHONE.href} className="flex items-center gap-4 p-5 hover:bg-muted/50 transition-colors group">
               <Phone className="w-5 h-5 text-energy shrink-0" />
               <span className="flex-1">
                 <span className="block label-mono text-[10px] text-muted-foreground">Phone</span>
-                <span className="block font-semibold">+91 6363852155</span>
+                <span className="block font-semibold">{TEAM_PHONE.display} · Captain</span>
               </span>
               <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-energy" />
             </a>

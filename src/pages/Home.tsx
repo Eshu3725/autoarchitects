@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowDown, ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, ArrowDown, ArrowLeft, ArrowUpRight, ChevronDown } from 'lucide-react';
 import RegistrationModal from '@/components/RegistrationModal';
 import BuggyBlueprint from '@/components/brand/BuggyBlueprint';
-import { SectionHeader, RacePlate, Marquee, Reveal } from '@/components/brand/Primitives';
+import { SectionHeader, RacePlate, Marquee, Reveal, Callout } from '@/components/brand/Primitives';
 import { useInView } from '@/hooks/use-in-view';
 import { cn } from '@/lib/utils';
 import {
@@ -18,56 +18,6 @@ import {
   IMAGES,
   type SubsystemId,
 } from '@/data/club';
-
-/* ── Hero callout: a dimension-style leader pointing at part of the photo ── */
-function Callout({
-  x,
-  y,
-  side,
-  title,
-  sub,
-  delay,
-}: {
-  x: number;
-  y: number;
-  side: 'left' | 'right' | 'down';
-  title: string;
-  sub: string;
-  delay: number;
-}) {
-  const label = (
-    <span className="block bg-graphite/90 backdrop-blur-sm border border-bone/25 px-2.5 py-1.5 whitespace-nowrap">
-      <span className="block font-display font-bold uppercase text-sm leading-none text-bone">{title}</span>
-      <span className="block font-mono text-[10px] text-bone/60 mt-1">{sub}</span>
-    </span>
-  );
-  return (
-    <div
-      className="absolute hidden sm:block animate-fade-in"
-      style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${delay}ms` }}
-    >
-      <span className="absolute -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-energy ring-4 ring-energy/30" />
-      {side === 'right' && (
-        <span className="absolute left-2 top-0 -translate-y-1/2 flex items-center">
-          <span className="w-10 h-px bg-bone/70" />
-          {label}
-        </span>
-      )}
-      {side === 'left' && (
-        <span className="absolute right-2 top-0 -translate-y-1/2 flex items-center flex-row-reverse">
-          <span className="w-10 h-px bg-bone/70" />
-          {label}
-        </span>
-      )}
-      {side === 'down' && (
-        <span className="absolute top-2 left-0 -translate-x-1/2 flex flex-col items-center">
-          <span className="h-8 w-px bg-bone/70" />
-          {label}
-        </span>
-      )}
-    </div>
-  );
-}
 
 /* ── Interactive anatomy section ── */
 function Anatomy() {
@@ -172,6 +122,104 @@ function Anatomy() {
   );
 }
 
+/* ── Competition record: one expandable row per event ── */
+function CompetitionRecord() {
+  const [open, setOpen] = useState<string | null>(null);
+
+  return (
+    <div className="border border-border bg-card">
+      <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 border-b border-border bg-muted/50 label-mono text-[10px] text-muted-foreground">
+        <span className="col-span-1">Season</span>
+        <span className="col-span-7">Event · Car</span>
+        <span className="col-span-4 text-right pr-9">Result</span>
+      </div>
+      {RECORD.map((r, i) => {
+        const key = (r.year ?? '') + r.cars.join('') + r.event;
+        const multiCar = r.groups.length > 1;
+        const isOpen = open === key;
+        const panelId = `record-panel-${i}`;
+        return (
+          <div key={key} className={cn('border-b border-border last:border-b-0 transition-colors', isOpen && 'bg-muted/30')}>
+            <button
+              type="button"
+              onClick={() => setOpen(isOpen ? null : key)}
+              aria-expanded={isOpen}
+              aria-controls={panelId}
+              className="group w-full text-left grid grid-cols-12 gap-x-4 gap-y-1 px-5 md:px-6 py-5 items-center hover:bg-muted/30 transition-colors"
+            >
+              <span className="col-span-3 md:col-span-1 font-mono text-sm text-muted-foreground">{r.year ?? '—'}</span>
+              <span className="col-span-9 md:col-span-7 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="font-display font-bold uppercase text-xl md:text-2xl leading-tight">{r.event}</span>
+                {r.cars.map((c) => (
+                  <span key={c} className="font-mono text-[11px] border border-border px-1.5 py-0.5 text-foreground/80">
+                    #{c}
+                  </span>
+                ))}
+              </span>
+              <span className="col-span-12 md:col-span-4 flex items-center justify-between md:justify-end gap-4 pl-[25%] md:pl-0">
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-2 font-display font-extrabold italic uppercase text-2xl leading-none',
+                    r.status === 'live' && 'text-energy',
+                    r.status === 'award' && 'text-amber',
+                    r.status === 'milestone' && 'text-muted-foreground'
+                  )}
+                >
+                  {r.status === 'live' && <span className="w-2 h-2 rounded-full bg-energy pulse-glow" />}
+                  {r.result}
+                </span>
+                <ChevronDown
+                  aria-hidden
+                  className={cn(
+                    'w-5 h-5 shrink-0 transition-all duration-300',
+                    isOpen ? 'rotate-180 text-energy' : 'text-muted-foreground group-hover:text-foreground'
+                  )}
+                />
+              </span>
+            </button>
+            <div
+              id={panelId}
+              role="region"
+              aria-label={`${r.event} achievements`}
+              aria-hidden={!isOpen}
+              className={cn(
+                'grid transition-all duration-300 ease-out',
+                isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+              )}
+            >
+              <div className="overflow-hidden grid grid-cols-12 gap-x-4 px-5 md:px-6">
+                <div className="col-start-4 col-span-9 md:col-start-2 md:col-span-11 pb-6 space-y-5">
+                  {r.groups.map((g) => (
+                    <div key={g.car ?? 'main'}>
+                      {multiCar && (
+                        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pb-2 mb-3 border-b border-border">
+                          {g.car && <span className="font-mono text-[11px] text-energy">#{g.car}</span>}
+                          {g.title && <span className="font-display font-bold uppercase text-lg leading-tight">{g.title}</span>}
+                          {g.result && (
+                            <span className="ml-auto font-display font-extrabold italic uppercase text-lg leading-none">{g.result}</span>
+                          )}
+                        </div>
+                      )}
+                      <ul className="grid md:grid-cols-2 gap-x-8 gap-y-2.5">
+                        {g.achievements.map((a) => (
+                          <li key={a} className="flex items-start gap-3 text-sm text-muted-foreground leading-relaxed">
+                            <span className="mt-[0.55em] w-1.5 h-1.5 shrink-0 rotate-45 bg-energy" aria-hidden />
+                            <span>{a}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ── Garage rail ── */
 function Garage() {
   const rail = useRef<HTMLDivElement>(null);
@@ -187,7 +235,8 @@ function Garage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <SectionHeader sheet="03" kicker="Build archive" title={<>The <span className="text-energy">garage</span></>} className="mb-0 md:mb-0">
-            Every one of these was cut, welded, wired and raced by students. Every new car starts from what the last one taught us.
+            Every one of these was cut, welded, wired and raced by students, and each one starts from what the last one taught
+            us. From 380 kg in 2012 to under 175 kg by 2020.
           </SectionHeader>
           <div className="flex gap-2 shrink-0">
             <button
@@ -210,28 +259,46 @@ function Garage() {
 
       <div
         ref={rail}
-        className="mt-12 flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-4 sm:px-6 lg:px-[max(2rem,calc((100vw-80rem)/2+2rem))] pb-2"
+        className="mt-12 flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-4 sm:px-6 lg:px-[max(2rem,calc((100vw-80rem)/2+2rem))] scroll-px-4 sm:scroll-px-6 lg:scroll-px-[max(2rem,calc((100vw-80rem)/2+2rem))] pb-2"
       >
         {GARAGE.map((m, i) => (
           <article
-            key={m.plate}
+            key={m.plate ?? m.name}
             data-card
             className="group snap-start shrink-0 w-[82vw] sm:w-[360px] border border-border bg-background flex flex-col"
           >
             <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-              <img
-                src={m.image}
-                alt={`Car ${m.plate}, ${m.name}`}
-                loading="lazy"
-                className={cn(
-                  'w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]',
-                  m.cropFrame && 'scale-[1.12] group-hover:scale-[1.16]'
-                )}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-              <RacePlate number={m.plate} className="absolute top-3 left-3" />
-              {m.latest && (
-                <span className="absolute top-3 right-3 label-mono text-[10px] bg-energy text-white px-2 py-1">Latest</span>
+              {m.image ? (
+                <img
+                  src={m.image}
+                  alt={m.plate ? `Car ${m.plate}, ${m.name}` : `${m.season} car, ${m.name}`}
+                  loading="lazy"
+                  className={cn(
+                    'w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]',
+                    m.cropFrame && 'scale-[1.12] group-hover:scale-[1.16]'
+                  )}
+                />
+              ) : m.inBuild ? (
+                <div className="absolute inset-0 bg-gradient-to-br from-energy-dark via-energy/70 to-graphite flex flex-col items-center justify-center text-center">
+                  <div className="absolute inset-0 drafting-grid opacity-40" aria-hidden />
+                  <span className="relative font-display font-extrabold italic uppercase text-5xl leading-none text-white">
+                    {m.season}
+                  </span>
+                  <span className="relative label-mono text-[11px] text-white/80 mt-3">
+                    Loading<span className="animate-blink">…</span>
+                  </span>
+                </div>
+              ) : (
+                <div className="absolute inset-0 bg-graphite flex flex-col items-center justify-center">
+                  <div className="absolute inset-0 drafting-grid opacity-70" aria-hidden />
+                  <span className="relative font-display font-extrabold italic text-7xl leading-none text-outline">{m.plate}</span>
+                  <span className="relative label-mono text-[10px] text-muted-foreground mt-4">Photo to come</span>
+                </div>
+              )}
+              {m.image && <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />}
+              {m.plate && <RacePlate number={m.plate} className="absolute top-3 left-3" />}
+              {m.inBuild && (
+                <span className="absolute top-3 right-3 label-mono text-[10px] bg-amber text-graphite px-2 py-1">In build</span>
               )}
               <span className="absolute bottom-3 right-3 font-mono text-[10px] text-white/80">
                 {String(i + 1).padStart(2, '0')} / {String(GARAGE.length).padStart(2, '0')}
@@ -240,7 +307,17 @@ function Garage() {
             <div className="p-5 flex-1 flex flex-col">
               <p className="label-mono text-[10px] text-energy">{m.meta}</p>
               <h3 className="font-display font-extrabold uppercase text-2xl leading-tight mt-2">{m.name}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed mt-2">{m.note}</p>
+              <p className="flex-1 text-sm text-muted-foreground leading-relaxed mt-2">{m.note}</p>
+              <dl className="mt-5 pt-1 grid grid-cols-2 border-t border-border">
+                <div className="pt-3 pr-3">
+                  <dt className="label-mono text-[9px] text-muted-foreground">Season</dt>
+                  <dd className="font-mono text-sm mt-1">{m.season ?? '—'}</dd>
+                </div>
+                <div className="pt-3 pl-3 border-l border-border">
+                  <dt className="label-mono text-[9px] text-muted-foreground">Mass</dt>
+                  <dd className="font-mono text-sm mt-1">{m.mass ?? '—'}</dd>
+                </div>
+              </dl>
             </div>
           </article>
         ))}
@@ -277,9 +354,10 @@ const Home = () => {
               <span className="text-energy">we race.</span>
             </h1>
             <p className="mt-7 text-lg text-muted-foreground leading-relaxed max-w-md animate-fade-in-up delay-200">
-              <strong className="text-foreground font-semibold">Team AutoArchitects</strong> is SIT's student ATV engineering team.
-              Every season we design, simulate, fabricate and test an all-terrain vehicle from bare tube stock, then take it
-              racing at <span className="text-foreground">BAJA SAE India</span> and <span className="text-foreground">ATVC</span>.
+              <strong className="text-foreground font-semibold">Team AutoArchitects</strong> is the off-road racing team of SIT's
+              Department of Mechanical Engineering. Every season we design, simulate, fabricate and test an all-terrain vehicle
+              from bare tube stock, then race it at <span className="text-foreground">BAJA SAEINDIA</span> and{' '}
+              <span className="text-foreground">ATVC</span>.
             </p>
             <div className="mt-9 flex flex-col sm:flex-row gap-3 animate-fade-in-up delay-300">
               <button
@@ -416,44 +494,12 @@ const Home = () => {
       <section id="record" className="relative py-24 md:py-32 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeader sheet="04" kicker="Timing sheet" title={<>Competition <span className="text-energy">record</span></>}>
-            Student motorsport is judged on design reports, cost and inspection as much as lap times. Here is how the team has
-            fared since 2008.
+            Student motorsport is judged on design reports, cost, sales and inspection as much as lap times. AIR is All-India
+            Rank. Here is every car's result since the team's first in 2012. Open an event to see what the car achieved there.
           </SectionHeader>
 
           <Reveal>
-            <div className="border border-border bg-card">
-              <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 border-b border-border bg-muted/50 label-mono text-[10px] text-muted-foreground">
-                <span className="col-span-1">Season</span>
-                <span className="col-span-5">Event</span>
-                <span className="col-span-3">Entry</span>
-                <span className="col-span-3 text-right">Result</span>
-              </div>
-              {RECORD.map((r) => (
-                <div
-                  key={r.year + r.event}
-                  className="grid grid-cols-12 gap-x-4 gap-y-1 px-5 md:px-6 py-5 border-b border-border last:border-b-0 items-center hover:bg-muted/30 transition-colors"
-                >
-                  <span className="col-span-3 md:col-span-1 font-mono text-sm text-muted-foreground">{r.year}</span>
-                  <span className="col-span-9 md:col-span-5 font-display font-bold uppercase text-xl md:text-2xl leading-tight">
-                    {r.event}
-                  </span>
-                  <span className="col-span-12 md:col-span-3 text-sm text-muted-foreground pl-[25%] md:pl-0">{r.detail}</span>
-                  <span className="col-span-12 md:col-span-3 md:text-right pl-[25%] md:pl-0">
-                    <span
-                      className={cn(
-                        'inline-flex items-center gap-2 font-display font-extrabold italic uppercase text-2xl leading-none',
-                        r.status === 'live' && 'text-energy',
-                        r.status === 'award' && 'text-amber',
-                        r.status === 'milestone' && 'text-muted-foreground'
-                      )}
-                    >
-                      {r.status === 'live' && <span className="w-2 h-2 rounded-full bg-energy pulse-glow" />}
-                      {r.result}
-                    </span>
-                  </span>
-                </div>
-              ))}
-            </div>
+            <CompetitionRecord />
           </Reveal>
           <div className="mt-6 flex justify-end">
             <Link to="/about#our-journey" className="inline-flex items-center gap-2 label-mono text-energy hover:text-energy-light">

@@ -1,21 +1,20 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import { User, AuthContextType } from '@/types/auth';
 import { supabase } from '@/lib/supabase';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Load user from localStorage on mount
-  useEffect(() => {
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+  // Read the stored session synchronously so protected routes don't redirect
+  // to /login on the first render after a page reload.
+  const [user, setUser] = useState<User | null>(() => {
+    try {
+      const storedUser = localStorage.getItem('currentUser');
+      return storedUser ? (JSON.parse(storedUser) as User) : null;
+    } catch {
+      return null;
     }
-    setIsLoading(false);
-  }, []);
+  });
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {

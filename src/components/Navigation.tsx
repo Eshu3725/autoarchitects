@@ -11,6 +11,7 @@ const publicNavItems = [
   { n: '01', name: 'Home', path: '/' },
   { n: '02', name: 'About', path: '/about' },
   { n: '03', name: 'Crew', path: '/members' },
+  { n: '04', name: 'Sponsors', path: '/sponsors' },
 ];
 
 const Navigation = () => {

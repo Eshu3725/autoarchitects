@@ -113,6 +113,56 @@ export function Reveal({
   );
 }
 
+/** A dimension-style leader pointing at part of a photo. x/y are % of the container. */
+export function Callout({
+  x,
+  y,
+  side,
+  title,
+  sub,
+  delay = 0,
+}: {
+  x: number;
+  y: number;
+  side: 'left' | 'right' | 'down';
+  title: string;
+  sub: string;
+  delay?: number;
+}) {
+  const label = (
+    <span className="block bg-graphite/90 backdrop-blur-sm border border-bone/25 px-2.5 py-1.5 whitespace-nowrap">
+      <span className="block font-display font-bold uppercase text-sm leading-none text-bone">{title}</span>
+      <span className="block font-mono text-[10px] text-bone/60 mt-1">{sub}</span>
+    </span>
+  );
+  return (
+    <div
+      className="absolute hidden sm:block animate-fade-in"
+      style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${delay}ms` }}
+    >
+      <span className="absolute -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-energy ring-4 ring-energy/30" />
+      {side === 'right' && (
+        <span className="absolute left-2 top-0 -translate-y-1/2 flex items-center">
+          <span className="w-10 h-px bg-bone/70" />
+          {label}
+        </span>
+      )}
+      {side === 'left' && (
+        <span className="absolute right-2 top-0 -translate-y-1/2 flex items-center flex-row-reverse">
+          <span className="w-10 h-px bg-bone/70" />
+          {label}
+        </span>
+      )}
+      {side === 'down' && (
+        <span className="absolute top-2 left-0 -translate-x-1/2 flex flex-col items-center">
+          <span className="h-8 w-px bg-bone/70" />
+          {label}
+        </span>
+      )}
+    </div>
+  );
+}
+
 /** Small key/value cell used in title blocks and spec rows. */
 export function SpecCell({ k, v, className }: { k: string; v: ReactNode; className?: string }) {
   return (

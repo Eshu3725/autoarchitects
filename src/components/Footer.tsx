@@ -1,7 +1,7 @@
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TAAFooterLogo from '@/assets/TAA_footer.png';
-import { CLUB } from '@/data/club';
+import { CLUB, TEAM_PHONE } from '@/data/club';
 import { HazardStripe } from '@/components/brand/Primitives';
 
 const socials = [
@@ -52,9 +52,9 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="tel:+916363852155" className="flex items-center gap-2.5 hover:text-energy transition-colors">
+                <a href={TEAM_PHONE.href} className="flex items-center gap-2.5 hover:text-energy transition-colors">
                   <Phone className="w-4 h-4 text-energy shrink-0" />
-                  +91 8762751648
+                  {TEAM_PHONE.display}
                 </a>
               </li>
               <li className="flex items-start gap-2.5 text-muted-foreground">
@@ -72,6 +72,7 @@ const Footer = () => {
               <li><Link to="/" className="hover:text-energy transition-colors">Home</Link></li>
               <li><Link to="/about" className="hover:text-energy transition-colors">About</Link></li>
               <li><Link to="/members" className="hover:text-energy transition-colors">Crew</Link></li>
+              <li><Link to="/sponsors" className="hover:text-energy transition-colors">Sponsors</Link></li>
               <li><Link to="/login" className="hover:text-energy transition-colors">Crew login</Link></li>
             </ul>
           </div>
