@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Lock, Mail, Eye, EyeOff, Zap, AlertCircle } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, AlertCircle, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import TAALogo from '@/assets/TAA.png';
+import pitsImage from '@/assets/web/m37-pits.jpg';
+import { RacePlate } from '@/components/brand/Primitives';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -54,156 +54,146 @@ const Login = () => {
     }
   };
 
-
-
   return (
-    <div className="min-h-screen bg-background relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Tech Grid Overlay */}
-      <div className="absolute inset-0 grid-background opacity-10 pointer-events-none" />
-      
-      {/* Background neon glows */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-energy/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-900/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-background grid lg:grid-cols-2">
+      {/* Pit-lane photo panel */}
+      <aside className="relative hidden lg:flex flex-col justify-between overflow-hidden border-r border-border">
+        <img
+          src={pitsImage}
+          alt="Team AutoArchitects working on car M37 in the paddock"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-graphite via-graphite/40 to-graphite/30" />
+        <div className="hazard-stripe h-2 relative" />
+        <div className="relative p-10 xl:p-14">
+          <RacePlate number="M37" className="mb-6" />
+          <p className="font-display font-extrabold italic uppercase text-6xl xl:text-7xl leading-[0.86] tracking-tight text-bone">
+            Pit lane.
+            <br />
+            <span className="text-energy">Crew only.</span>
+          </p>
+          <p className="mt-5 text-bone/70 max-w-sm leading-relaxed">
+            Attendance, notices, leave requests and registrations for Team AutoArchitects members and admins.
+          </p>
+        </div>
+      </aside>
 
-      <div className="max-w-md w-full relative z-10">
-        {/* Logo and Header */}
-        <div className="text-center mb-8 animate-fade-in-up">
-          <div className="flex items-center justify-center space-x-3 mb-6 group">
-            <div className="relative">
-              <div className="absolute -inset-1 bg-energy/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300" />
-              <img
-                src={TAALogo}
-                alt="AutoArchitects Logo"
-                className="w-16 h-16 object-contain relative z-10 transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]"
-              />
+      {/* Form */}
+      <main className="relative flex items-center justify-center px-4 sm:px-8 py-12">
+        <div className="absolute inset-0 drafting-grid drafting-grid-fade pointer-events-none" aria-hidden />
+        <div className="relative w-full max-w-md">
+          <Link to="/" className="inline-flex items-center gap-3 mb-10 group">
+            <img src={TAALogo} alt="" className="w-12 h-12 object-contain" />
+            <span className="flex flex-col leading-none">
+              <span className="font-display font-extrabold italic uppercase text-xl">
+                Auto<span className="text-energy">Architects</span>
+              </span>
+              <span className="label-mono text-[9px] text-muted-foreground mt-1 group-hover:text-foreground transition-colors">
+                ← Back to site
+              </span>
+            </span>
+          </Link>
+
+          <p className="label-mono text-energy">Crew portal</p>
+          <h1 className="mt-3 font-display font-extrabold italic uppercase text-5xl leading-[0.9] tracking-tight">Sign in</h1>
+          <p className="mt-3 text-muted-foreground">Use your team email and password to reach your dashboard.</p>
+
+          <div className="mt-8 border border-border bg-card">
+            <div className="flex items-center justify-between px-5 h-9 border-b border-border bg-muted">
+              <span className="label-mono text-[10px] text-muted-foreground">Crew pass · Authentication</span>
+              <Lock className="w-3.5 h-3.5 text-muted-foreground" />
             </div>
-            <div className="flex flex-col text-left">
-              <span className="font-display font-black text-2xl tracking-tight text-white">AUTOARCHITECTS</span>
-              <span className="text-[10px] text-energy font-extrabold tracking-widest uppercase">ATV CLUB</span>
+
+            <div className="p-5 sm:p-6 space-y-5">
+              {error && (
+                <Alert variant="destructive" className="bg-destructive/10 border-destructive/40 text-destructive rounded-sm">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <form onSubmit={handleLogin} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="label-mono text-[10px] text-muted-foreground">
+                    Email address
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="your.email@university.edu"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="pl-10 h-12 bg-background border-border rounded-sm focus-visible:ring-energy/40 focus-visible:border-energy"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="label-mono text-[10px] text-muted-foreground">
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      placeholder="Enter your USN or password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-10 pr-11 h-12 bg-background border-border rounded-sm focus-visible:ring-energy/40 focus-visible:border-energy"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <label htmlFor="remember" className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                    <input id="remember" type="checkbox" className="w-4 h-4 accent-[hsl(var(--energy))]" />
+                    Remember this device
+                  </label>
+                  <Link to="#" className="text-sm text-energy hover:text-energy-light transition-colors">
+                    Forgot password?
+                  </Link>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full h-12 rounded-sm bg-energy hover:bg-energy-dark text-white font-display font-bold uppercase tracking-wide text-lg"
+                >
+                  {isLoading ? (
+                    'Checking credentials…'
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Enter the pit <ArrowRight className="w-5 h-5" />
+                    </span>
+                  )}
+                </Button>
+              </form>
+            </div>
+
+            <div className="px-5 sm:px-6 py-3 border-t border-dashed border-border text-sm text-muted-foreground">
+              Trouble signing in?{' '}
+              <a href="mailto:autoarchitects@gmail.com" className="text-energy hover:text-energy-light font-semibold">
+                Contact the team
+              </a>
             </div>
           </div>
-          <h1 className="font-display font-black text-3xl text-white uppercase tracking-tight mb-2">
-            INSIDERS PANEL
-          </h1>
-          <p className="text-zinc-400 text-sm">
-            Sign in to access your telemetry dashboard
-          </p>
         </div>
-
-        {/* Login Form */}
-        <Card className="glass-panel border border-white/5 shadow-2xl rounded-2xl overflow-hidden animate-scale-in">
-          <CardHeader className="text-center pb-4 border-b border-white/5 bg-black/10">
-            <CardTitle className="font-display font-bold text-lg text-white uppercase tracking-wider">Authentication</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6 pt-6">
-            {error && (
-              <Alert variant="destructive" className="bg-red-950/55 border-red-500/20 text-red-400">
-                <AlertCircle className="h-4 w-4 text-red-500" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <form onSubmit={handleLogin} className="space-y-6">
-              {/* Email Field */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-zinc-300 text-xs font-bold uppercase tracking-wider">
-                  Email Address
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-5 h-5 text-zinc-500" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="your.email@university.edu"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-11 h-11 bg-black/30 border-white/10 text-white placeholder:text-zinc-600 focus:border-energy focus:ring-energy/20 transition-smooth rounded-xl"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Password Field */}
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-zinc-300 text-xs font-bold uppercase tracking-wider">
-                  Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-5 h-5 text-zinc-500" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your USN or Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-11 pr-11 h-11 bg-black/30 border-white/10 text-white placeholder:text-zinc-600 focus:border-energy focus:ring-energy/20 transition-smooth rounded-xl"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-zinc-500 hover:text-energy transition-smooth"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <input
-                    id="remember"
-                    type="checkbox"
-                    className="w-4 h-4 bg-zinc-900 border-zinc-800 text-energy focus:ring-energy/20 rounded"
-                  />
-                  <Label htmlFor="remember" className="text-xs text-zinc-400 font-medium cursor-pointer">
-                    Remember device
-                  </Label>
-                </div>
-                <Link 
-                  to="#" 
-                  className="text-xs text-energy hover:text-energy-light transition-smooth font-bold uppercase tracking-wider"
-                >
-                  Forgot Key?
-                </Link>
-              </div>
-
-              {/* Login Button */}
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-11 energy-gradient hover-glow transition-smooth font-bold text-sm uppercase tracking-wider rounded-xl border border-energy-light/20 shadow-lg"
-              >
-                {isLoading ? 'Decrypting Credentials...' : 'Access Portal'}
-              </Button>
-            </form>
-
-            <div className="text-center pt-2">
-              <p className="text-xs text-zinc-500">
-                Facing issues? Contact{' '}
-                <a
-                  href="mailto:autoarchitects@gmail.com"
-                  className="text-energy hover:text-energy-light transition-smooth font-bold"
-                >
-                  support
-                </a>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Additional Info */}
-        <div className="mt-8 text-center animate-fade-in">
-          <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold">
-            Telemetry Control Center v2.0
-          </p>
-        </div>
-      </div>
+      </main>
     </div>
   );
 };

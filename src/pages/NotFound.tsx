@@ -1,7 +1,7 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Home as HomeIcon } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { RacePlate, HazardStripe } from "@/components/brand/Primitives";
 
 const NotFound = () => {
   const location = useLocation();
@@ -11,26 +11,28 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center max-w-md mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="font-display font-bold text-9xl text-energy mb-4">404</h1>
-          <h2 className="font-display font-bold text-3xl text-steel-dark mb-4">Page Not Found</h2>
-          <p className="text-muted-foreground text-lg">
-            Looks like you've ventured off the beaten path. This page doesn't exist in our club's territory.
+    <div className="min-h-screen bg-background flex flex-col">
+      <HazardStripe />
+      <div className="relative flex-1 flex items-center justify-center px-4 py-16">
+        <div className="absolute inset-0 drafting-grid drafting-grid-fade pointer-events-none" aria-hidden />
+        <div className="relative text-center max-w-xl">
+          <RacePlate number="404" size="lg" />
+          <p className="label-mono text-energy mt-10">Race control · Status</p>
+          <h1 className="mt-3 font-display font-extrabold italic uppercase text-7xl sm:text-8xl leading-[0.85] tracking-tight">
+            DNF
+          </h1>
+          <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
+            Did not finish. <span className="font-mono text-sm text-foreground">{location.pathname}</span> went off the
+            track. There's nothing on this part of the course.
           </p>
+          <Link
+            to="/"
+            className="mt-10 inline-flex h-14 px-8 items-center gap-2 bg-energy text-white font-display font-bold uppercase tracking-wide text-lg hover:bg-energy-dark transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to the pits
+          </Link>
         </div>
-        
-        <Button 
-          asChild 
-          size="lg" 
-          className="energy-gradient hover-glow transition-smooth font-semibold"
-        >
-          <a href="/">
-            <HomeIcon className="mr-2 w-5 h-5" />
-            Return to Home Base
-          </a>
-        </Button>
       </div>
     </div>
   );

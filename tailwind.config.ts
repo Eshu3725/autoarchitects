@@ -64,6 +64,8 @@ export default {
           DEFAULT: "hsl(var(--metallic))",
           light: "hsl(var(--metallic-light))",
         },
+        bone: "hsl(var(--bone))",
+        graphite: "hsl(var(--graphite))",
         energy: {
           DEFAULT: "hsl(var(--energy))",
           light: "hsl(var(--energy-light))",
@@ -86,8 +88,9 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Barlow', 'system-ui', 'sans-serif'],
+        display: ['"Barlow Condensed"', 'Barlow', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       borderRadius: {
         lg: "var(--radius)",

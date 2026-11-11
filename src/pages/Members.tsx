@@ -1,9 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Users, Mail, Phone, Facebook, Instagram, Twitter, MapPin, ExternalLink } from 'lucide-react';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
+import { Mail, Phone, Instagram, Facebook, Twitter, MapPin, ArrowUpRight } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +9,8 @@ import {
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { isRemovedMember } from '@/lib/removedMembers';
+import { SUBSYSTEMS, CLUB } from '@/data/club';
+import { cn } from '@/lib/utils';
 
 const STATIC_MEMBERS = [
   // Steering Team
@@ -179,7 +176,7 @@ const Members = () => {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const offset = 100; // Offset for sticky navigation
+      const offset = 130; // Sticky nav (64px) + sub-team index bar
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
 
@@ -246,356 +243,246 @@ const Members = () => {
   const chassisMembers = teamMembers.filter(m => (m.role.includes('Chassis') || m.role.includes('CAE')) && m.category !== 'leadership');
   const operationsMembers = teamMembers.filter(m => m.role.includes('Operations') && m.category !== 'leadership');
 
-  const renderMemberCard = (member: typeof teamMembers[0], index: number) => {
-    // Determine category styling
-    const isLeadership = member.category === 'leadership' || member.role.includes('Captain');
-    const isOperations = member.category === 'operations' || member.role.includes('Operations');
-    
-    let accentBg = 'bg-energy/10 text-energy border-energy/20';
-    let cardBorder = 'hover:border-energy/40';
-    if (!isLeadership && isOperations) {
-      accentBg = 'bg-amber/10 text-amber border-amber/20';
-      cardBorder = 'hover:border-amber/40';
-    } else if (!isLeadership && !isOperations) {
-      accentBg = 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
-      cardBorder = 'hover:border-cyan-500/40';
-    }
+  type Member = (typeof teamMembers)[number];
 
+  const sub = (id: string) => SUBSYSTEMS.find((s) => s.id === id)!;
+  const departments = [
+    {
+      id: 'leadership-team',
+      code: '00',
+      title: 'Leadership',
+      blurb: 'Captain and vice-captain. They own the build schedule, the crew and every call on race day.',
+      members: leadershipMembers,
+    },
+    { id: 'chassis-team', code: sub('chassis').code, title: 'Chassis / CAE', blurb: sub('chassis').summary, members: chassisMembers },
+    { id: 'suspension-team', code: sub('suspension').code, title: 'Suspension', blurb: sub('suspension').summary, members: suspensionMembers },
+    { id: 'steering-team', code: sub('steering').code, title: 'Steering', blurb: sub('steering').summary, members: steeringMembers },
+    { id: 'brakes-team', code: sub('brakes').code, title: 'Brakes', blurb: sub('brakes').summary, members: brakesMembers },
+    { id: 'transmission-team', code: sub('transmission').code, title: 'Transmission', blurb: sub('transmission').summary, members: transmissionMembers },
+    { id: 'operations-team', code: sub('operations').code, title: 'Operations', blurb: sub('operations').summary, members: operationsMembers },
+  ].filter((d) => d.members.length > 0);
+
+  const initials = (name: string) =>
+    name
+      .replace(/\./g, ' ')
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase();
+
+  /** Crew pass, styled after the lanyard passes the team wears in the paddock. */
+  const renderCrewPass = (member: Member, code: string) => {
+    const isLead = member.category === 'leadership' || member.role.includes('Captain');
     return (
-      <div key={index} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%] px-4 sm:px-6">
-        <Card className={`group glass-panel border border-white/5 shadow-2xl transition-all duration-500 overflow-hidden ${cardBorder} h-full flex flex-col justify-between hover:scale-[1.02]`}>
-          <CardContent className="p-0 flex-1 flex flex-col justify-between">
-            {/* Avatar Section */}
-            <div className="h-44 bg-gradient-to-br from-zinc-900 to-zinc-950 flex items-center justify-center relative overflow-hidden border-b border-white/5">
-              {/* Telemetry Grid Line Overlay */}
-              <div className="absolute inset-0 grid-background opacity-20 pointer-events-none" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-              
-              <div className="relative z-10">
-                <div className="w-24 h-24 bg-white/5 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/10 group-hover:border-energy transition-all duration-500 group-hover:scale-110 shadow-2xl relative">
-                  <span className="font-display font-black text-3xl text-white">
-                    {member.name.split(' ').map(n => n[0]).join('')}
-                  </span>
-                  {/* Neon pulsing ring */}
-                  <div className="absolute -inset-1 rounded-full border border-energy/30 opacity-0 group-hover:opacity-100 group-hover:animate-ping pointer-events-none" />
-                </div>
-              </div>
-            </div>
-
-            {/* Content Section */}
-            <div className="p-6 flex-1 flex flex-col justify-between">
-              <div className="text-center mb-4">
-                <h3 className="font-display font-bold text-xl text-white mb-2 group-hover:text-energy transition-colors">
-                  {member.name}
-                </h3>
-                <Badge
-                  variant="secondary"
-                  className={`mb-3 font-semibold px-3 py-1 text-xs uppercase tracking-wider rounded-md border ${accentBg}`}
-                >
-                  {member.role}
-                </Badge>
-                <p className="text-xs text-zinc-400 font-semibold uppercase tracking-widest">
-                  {member.year} • {member.major}
-                </p>
-              </div>
-
-              {member.bio && (
-                <p className="text-xs text-zinc-500 text-center mb-6 leading-relaxed italic">
-                  {member.bio}
-                </p>
-              )}
-
-              {/* Contact Links */}
-              <div className="flex justify-center pt-4 border-t border-white/5">
-                <a
-                  href={`mailto:${member.email}`}
-                  className="w-10 h-10 glass rounded-lg flex items-center justify-center hover:bg-energy hover:text-white transition-all duration-300 group/btn border border-white/10"
-                >
-                  <Mail className="w-4 h-4 text-zinc-400 group-hover/btn:text-white transition-colors" />
-                </a>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  };
-
-  // Carousel component for team sections
-  const TeamCarousel = ({ members, sectionId, title }: { members: typeof teamMembers, sectionId: string, title: string }) => {
-    const [emblaRef] = useEmblaCarousel(
-      {
-        loop: true,
-        align: 'start',
-        skipSnaps: false,
-        dragFree: false
-      },
-      [Autoplay({ delay: 3000, stopOnInteraction: false, stopOnMouseEnter: true })]
-    );
-
-    return (
-      <section id={sectionId} className="py-24 bg-gradient-to-b from-background via-background to-muted/20 relative overflow-hidden scroll-mt-24 border-b border-white/5">
-        {/* Background decoration */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-energy rounded-full blur-3xl" />
+      <article
+        key={member.email}
+        className="group relative border border-border bg-card flex flex-col hover:border-energy/60 transition-colors"
+      >
+        <div
+          className={cn(
+            'flex items-center justify-between px-4 h-9 border-b border-border',
+            isLead ? 'bg-energy text-white' : 'bg-muted text-muted-foreground'
+          )}
+        >
+          <span className="label-mono text-[10px]">{isLead ? 'Crew pass · Lead' : 'Crew pass'}</span>
+          <span className="font-mono text-[10px]">SUB-{code}</span>
         </div>
+        <span
+          className="absolute left-1/2 -translate-x-1/2 top-[30px] w-10 h-2 rounded-full bg-background border border-border"
+          aria-hidden
+        />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16 animate-fade-in-up">
-            <h2 className="font-display font-black text-3xl md:text-4xl lg:text-5xl text-white uppercase tracking-tight mb-4">
-              {title} <span className="text-gradient-energy">Team</span>
-            </h2>
-            <p className="text-zinc-400 text-sm uppercase tracking-wider font-semibold">
-              {members.length} {members.length === 1 ? 'Engineer' : 'Engineers'}
+        <div className="p-5 pt-7 flex gap-4 items-start">
+          <span className={cn('race-plate h-16 w-16 shrink-0 text-3xl not-italic', isLead && 'border-energy')} aria-hidden>
+            {initials(member.name)}
+          </span>
+          <div className="min-w-0">
+            <h3 className="font-display font-extrabold uppercase text-2xl leading-none truncate">{member.name}</h3>
+            <p className={cn('mt-2 font-display font-bold uppercase text-sm', isLead ? 'text-energy' : 'text-foreground/80')}>
+              {member.role}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {member.year} · {member.major}
             </p>
           </div>
-
-          {/* Carousel */}
-          <div className="relative py-8 px-4 -mx-4 bg-black/10 backdrop-blur-sm rounded-2xl border border-white/5">
-            <div className="overflow-hidden -mx-4" ref={emblaRef}>
-              <div className="flex">
-                {members.map((member, index) => renderMemberCard(member, index))}
-              </div>
-            </div>
-          </div>
         </div>
-      </section>
+
+        <div className="mt-auto flex items-center justify-between gap-3 px-5 py-3 border-t border-dashed border-border">
+          <span className="font-mono text-[11px] text-muted-foreground truncate">{member.bio}</span>
+          <a
+            href={`mailto:${member.email}`}
+            aria-label={`Email ${member.name}`}
+            className="w-9 h-9 shrink-0 border border-border flex items-center justify-center text-muted-foreground hover:bg-energy hover:border-energy hover:text-white transition-colors"
+          >
+            <Mail className="w-4 h-4" />
+          </a>
+        </div>
+      </article>
     );
   };
+
+  const socials = [
+    { href: 'https://www.instagram.com/autoarchitects?igsh=cTZuNGdrcmM2M2I1', icon: Instagram, label: 'Instagram' },
+    { href: 'https://www.facebook.com/autoarchitects.sit', icon: Facebook, label: 'Facebook' },
+    { href: 'https://twitter.com/autoarchitects_', icon: Twitter, label: 'Twitter' },
+  ];
 
   return (
-    <div className="min-h-screen relative bg-background">
-      {/* Tech Grid Overlay */}
-      <div className="absolute inset-0 grid-background opacity-10 pointer-events-none" />
-
-      {/* Hero Section */}
-      <section className="relative hero-gradient py-24 md:py-32 text-white overflow-hidden border-b border-white/5">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-energy rounded-full blur-3xl" />
+    <div className="relative bg-background">
+      {/* ═════════ HERO ═════════ */}
+      <section className="relative border-b border-border overflow-hidden">
+        <div className="absolute inset-0 drafting-grid drafting-grid-fade pointer-events-none" aria-hidden />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 md:pt-20 pb-14 md:pb-16 grid lg:grid-cols-12 gap-10 items-end">
+          <div className="lg:col-span-8">
+            <p className="label-mono text-muted-foreground animate-fade-in-up">
+              <span className="text-energy">●</span> Crew roster · {CLUB.institute}
+            </p>
+            <h1 className="mt-6 font-display font-extrabold italic uppercase tracking-tight leading-[0.86] text-6xl sm:text-7xl xl:text-8xl animate-fade-in-up delay-100">
+              One car.
+              <br />
+              <span className="text-energy">Every</span> branch.
+            </h1>
+            <p className="mt-7 text-lg text-muted-foreground leading-relaxed max-w-xl animate-fade-in-up delay-200">
+              Mechanical engineers weld next to computer scientists, chemical engineers work on brakes and AI &amp; data science
+              students run operations. Every sub-team owns its system from first sketch to race day.
+            </p>
+          </div>
+          <dl className="lg:col-span-4 grid grid-cols-2 border border-border bg-card animate-fade-in delay-300">
+            <div className="p-5 border-r border-border">
+              <dt className="label-mono text-[10px] text-muted-foreground">On the roster</dt>
+              <dd className="font-display font-extrabold italic text-5xl leading-none mt-2">{teamMembers.length}</dd>
+            </div>
+            <div className="p-5">
+              <dt className="label-mono text-[10px] text-muted-foreground">Sub-teams</dt>
+              <dd className="font-display font-extrabold italic text-5xl leading-none mt-2">{departments.length}</dd>
+            </div>
+          </dl>
         </div>
+      </section>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="inline-block mb-6 animate-scale-in">
-            <div className="relative">
-              <div className="absolute -inset-2 bg-energy/30 rounded-full blur-2xl" />
-              <Users className="w-16 h-16 mx-auto text-energy relative z-10" />
+      {/* ═════════ SUB-TEAM INDEX ═════════ */}
+      <div className="sticky top-16 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide py-2">
+            {departments.map((d) => (
+              <button
+                key={d.id}
+                onClick={() => scrollToSection(d.id)}
+                className="shrink-0 flex items-baseline gap-2 px-3 h-10 pt-2 border border-transparent hover:border-border font-display font-bold uppercase text-[15px] text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <span className="font-mono text-[10px] text-energy">{d.code}</span>
+                {d.title}
+                <span className="font-mono text-[10px]">({d.members.length})</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ═════════ DEPARTMENTS ═════════ */}
+      {departments.map((d, i) => (
+        <section
+          key={d.id}
+          id={d.id}
+          className={cn('relative py-16 md:py-20 border-b border-border scroll-mt-32', i % 2 === 1 && 'bg-graphite')}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-12 gap-6 mb-10 items-end">
+              <div className="lg:col-span-7">
+                <p className="label-mono text-energy">Sub-assembly {d.code}</p>
+                <h2 className="mt-3 font-display font-extrabold italic uppercase text-5xl md:text-6xl leading-[0.9] tracking-tight">
+                  {d.title}
+                </h2>
+              </div>
+              <p className="lg:col-span-5 text-muted-foreground leading-relaxed">{d.blurb}</p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {d.members.map((m) => renderCrewPass(m, d.code))}
             </div>
           </div>
-          <h1 className="font-display font-black text-5xl md:text-7xl mb-6 uppercase tracking-tight">
-            OUR <span className="text-gradient-energy">TEAM</span>
-          </h1>
-          <p className="text-xl text-zinc-300 max-w-3xl mx-auto leading-relaxed animate-fade-in-up">
-            Meet the engineers and innovators driving AutoArchitects to the top step of the podium
-          </p>
-        </div>
-      </section>
+        </section>
+      ))}
 
-      {/* Scroll Navigation */}
-      <section className="py-4 bg-background/90 border-b border-white/5 sticky top-20 z-40 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex md:flex-wrap gap-2 justify-start md:justify-center overflow-x-auto scrollbar-hide pb-1 md:pb-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
-            >
-              All ({teamMembers.length})
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => scrollToSection('leadership-team')}
-              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
-            >
-              Leadership ({leadershipMembers.length})
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => scrollToSection('steering-team')}
-              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
-            >
-              Steering ({steeringMembers.length})
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => scrollToSection('transmission-team')}
-              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
-            >
-              Transmission ({transmissionMembers.length})
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => scrollToSection('suspension-team')}
-              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
-            >
-              Suspension ({suspensionMembers.length})
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => scrollToSection('brakes-team')}
-              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
-            >
-              Brakes ({brakesMembers.length})
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => scrollToSection('chassis-team')}
-              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
-            >
-              Chassis/CAE ({chassisMembers.length})
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => scrollToSection('operations-team')}
-              className="transition-all duration-300 hover-scale bg-zinc-900/60 border-white/5 text-zinc-400 hover:bg-energy/10 hover:text-energy hover:border-energy/40 text-xs md:text-sm px-3 md:px-4 py-2 whitespace-nowrap flex-shrink-0 font-bold uppercase tracking-wider rounded-lg"
-            >
-              Operations ({operationsMembers.length})
-            </Button>
+      {/* ═════════ CONTACT ═════════ */}
+      <section className="relative py-20 md:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="border border-border bg-card grid lg:grid-cols-12">
+            <div className="lg:col-span-8 p-8 sm:p-12">
+              <p className="label-mono text-energy">Sponsors · Recruits · Press</p>
+              <h2 className="mt-4 font-display font-extrabold italic uppercase text-4xl sm:text-5xl leading-[0.92] tracking-tight">
+                Talk to the team
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground leading-relaxed max-w-xl">
+                Want to sponsor a build, join the crew or see the car up close? Reach out and someone from the team will get
+                back to you.
+              </p>
+            </div>
+            <div className="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-border p-8 sm:p-12 flex items-center">
+              <button
+                onClick={() => setIsContactModalOpen(true)}
+                className="w-full h-14 bg-energy text-white font-display font-bold uppercase tracking-wide text-lg flex items-center justify-center gap-2 hover:bg-energy-dark transition-colors"
+              >
+                <Mail className="w-5 h-5" />
+                Contact us
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Team Carousels by Domain */}
-      <TeamCarousel members={leadershipMembers} sectionId="leadership-team" title="Leadership" />
-      <TeamCarousel members={steeringMembers} sectionId="steering-team" title="Steering" />
-      <TeamCarousel members={transmissionMembers} sectionId="transmission-team" title="Transmission" />
-      <TeamCarousel members={suspensionMembers} sectionId="suspension-team" title="Suspension" />
-      <TeamCarousel members={brakesMembers} sectionId="brakes-team" title="Brakes" />
-      <TeamCarousel members={chassisMembers} sectionId="chassis-team" title="Chassis/CAE" />
-      <TeamCarousel members={operationsMembers} sectionId="operations-team" title="Operations" />
-
-
-
-      {/* Join Us Section */}
-      <section className="relative py-24 md:py-32 bg-gradient-to-b from-background via-zinc-950 to-background border-t border-white/5 overflow-hidden">
-        {/* Animated background */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-energy rounded-full blur-3xl animate-pulse" />
-        </div>
-
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="glass-panel p-12 md:p-16 rounded-3xl border border-white/10 shadow-2xl animate-scale-in">
-            <h2 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-white mb-6">
-              Contact <span className="text-gradient-energy">Team</span>
-            </h2>
-            <p className="text-xl md:text-2xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-              We are committed to providing timely and reliable support. Reach out to us with your queries, and our team will respond with the professionalism and clarity you deserve.
-            </p>
-            <Button
-              size="lg"
-              onClick={() => setIsContactModalOpen(true)}
-              className="energy-gradient hover-glow hover-shine transition-all duration-300 text-lg px-10 py-7 font-semibold shadow-2xl hover:scale-105"
-            >
-              <Mail className="mr-2 w-6 h-6" />
-              Contact Us
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Us Modal */}
       <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
-        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto glass-panel border border-white/10 shadow-2xl p-4 sm:p-6 bg-zinc-950/95 backdrop-blur-2xl">
-          <DialogHeader className="space-y-2 sm:space-y-3">
-            <DialogTitle className="font-display text-2xl sm:text-3xl font-bold text-white">
-              Contact <span className="text-gradient-energy">Us</span>
+        <DialogContent className="w-[95vw] max-w-[560px] max-h-[90vh] overflow-y-auto bg-card border border-border p-0 gap-0">
+          <DialogHeader className="p-6 border-b border-border text-left">
+            <p className="label-mono text-[10px] text-energy">Contact sheet</p>
+            <DialogTitle className="font-display font-extrabold italic uppercase text-3xl leading-none mt-2">
+              Team AutoArchitects
             </DialogTitle>
-            <DialogDescription className="text-sm sm:text-base text-zinc-400">
-              Get in touch with the AutoArchitects team. We're here to help!
+            <DialogDescription className="text-muted-foreground mt-2">
+              Get in touch with the team. We're happy to help.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 sm:space-y-6 py-3 sm:py-4">
-            {/* Email */}
-            <div className="group">
-              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-zinc-900/40 hover:bg-energy/10 transition-all duration-300 border border-white/5 hover:border-energy/30">
-                <div className="p-2 sm:p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors flex-shrink-0">
-                  <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-energy" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-semibold text-zinc-500 mb-1">Email Address</p>
-                  <a
-                    href="mailto:autoarchitects@gmail.com"
-                    className="text-sm sm:text-base text-zinc-100 font-bold hover:text-energy transition-colors flex items-center gap-1 sm:gap-2 break-all"
-                  >
-                    <span className="truncate">autoarchitects@gmail.com</span>
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                  </a>
-                </div>
-              </div>
+          <div className="divide-y divide-border">
+            <a href={`mailto:${CLUB.email}`} className="flex items-center gap-4 p-5 hover:bg-muted/50 transition-colors group">
+              <Mail className="w-5 h-5 text-energy shrink-0" />
+              <span className="flex-1 min-w-0">
+                <span className="block label-mono text-[10px] text-muted-foreground">Email</span>
+                <span className="block font-semibold truncate">{CLUB.email}</span>
+              </span>
+              <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-energy" />
+            </a>
+            <a href="tel:+916363852155" className="flex items-center gap-4 p-5 hover:bg-muted/50 transition-colors group">
+              <Phone className="w-5 h-5 text-energy shrink-0" />
+              <span className="flex-1">
+                <span className="block label-mono text-[10px] text-muted-foreground">Phone</span>
+                <span className="block font-semibold">+91 6363852155</span>
+              </span>
+              <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-energy" />
+            </a>
+            <div className="flex items-center gap-4 p-5">
+              <MapPin className="w-5 h-5 text-energy shrink-0" />
+              <span>
+                <span className="block label-mono text-[10px] text-muted-foreground">Location</span>
+                <span className="block font-semibold">
+                  {CLUB.institute}, {CLUB.city}
+                </span>
+              </span>
             </div>
-
-            {/* Phone */}
-            <div className="group">
-              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-zinc-900/40 hover:bg-energy/10 transition-all duration-300 border border-white/5 hover:border-energy/30">
-                <div className="p-2 sm:p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors flex-shrink-0">
-                  <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-energy" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-semibold text-zinc-500 mb-1">Phone Number</p>
-                  <a
-                    href="tel:+916363852155"
-                    className="text-sm sm:text-base text-zinc-100 font-bold hover:text-energy transition-colors flex items-center gap-1 sm:gap-2"
-                  >
-                    +91 6363852155
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Location */}
-            <div className="group">
-              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-zinc-900/40 hover:bg-energy/10 transition-all duration-300 border border-white/5 hover:border-energy/30">
-                <div className="p-2 sm:p-3 bg-energy/10 rounded-lg group-hover:bg-energy/20 transition-colors flex-shrink-0">
-                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-energy" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-semibold text-zinc-500 mb-1">Location</p>
-                  <p className="text-sm sm:text-base text-zinc-100 font-bold">Siddaganga Institute of Technology</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Social Media */}
-            <div>
-              <p className="text-xs sm:text-sm font-semibold text-zinc-400 mb-3">Follow Us On Social Media</p>
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <div className="grid grid-cols-3 divide-x divide-border">
+              {socials.map(({ href, icon: Icon, label }) => (
                 <a
-                  href="https://www.instagram.com/autoarchitects?igsh=cTZuNGdrcmM2M2I1"
+                  key={label}
+                  href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 hover:from-pink-500/20 hover:to-purple-500/20 border border-pink-500/20 hover:border-pink-500/40 transition-all duration-300 group min-h-[48px]"
+                  className="flex items-center justify-center gap-2 h-14 font-display font-bold uppercase hover:bg-energy hover:text-white transition-colors"
                 >
-                  <Instagram className="w-5 h-5 text-pink-600 group-hover:scale-110 transition-transform flex-shrink-0" />
-                  <span className="font-semibold text-sm sm:text-base text-pink-600">Instagram</span>
+                  <Icon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{label}</span>
                 </a>
-                <a
-                  href="https://www.facebook.com/autoarchitects.sit"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-600/10 hover:from-blue-500/20 hover:to-blue-600/20 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 group min-h-[48px]"
-                >
-                  <Facebook className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform flex-shrink-0" />
-                  <span className="font-semibold text-sm sm:text-base text-blue-600">Facebook</span>
-                </a>
-                <a
-                  href="https://twitter.com/autoarchitects_"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-sky-400/10 to-sky-500/10 hover:from-sky-400/20 hover:to-sky-500/20 border border-sky-400/20 hover:border-sky-400/40 transition-all duration-300 group min-h-[48px]"
-                >
-                  <Twitter className="w-5 h-5 text-sky-500 group-hover:scale-110 transition-transform flex-shrink-0" />
-                  <span className="font-semibold text-sm sm:text-base text-sky-500">Twitter</span>
-                </a>
-              </div>
+              ))}
             </div>
           </div>
         </DialogContent>

@@ -1,100 +1,119 @@
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import TAAFooterLogo from '@/assets/TAA_footer.png';
+import { CLUB } from '@/data/club';
+import { HazardStripe } from '@/components/brand/Primitives';
 
+const socials = [
+  { href: 'https://www.instagram.com/autoarchitects?igsh=cTZuNGdrcmM2M2I1', icon: Instagram, label: 'Instagram' },
+  { href: 'https://www.facebook.com/autoarchitects.sit', icon: Facebook, label: 'Facebook' },
+  { href: 'https://twitter.com/autoarchitects_', icon: Twitter, label: 'Twitter' },
+];
+
+/** Footer laid out like the title block in the corner of an engineering drawing. */
 const Footer = () => {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="relative bg-gradient-to-br from-black via-zinc-950 to-zinc-900 text-white overflow-hidden border-t border-white/5">
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-energy rounded-full blur-3xl" />
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-red-800 rounded-full blur-3xl" />
-      </div>
+    <footer className="relative bg-graphite text-foreground border-t border-border overflow-hidden">
+      <HazardStripe className="h-1.5 opacity-90" />
+      <div className="absolute inset-0 drafting-grid opacity-40 pointer-events-none" aria-hidden />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {/* Club Info */}
-          <div className="space-y-6 animate-fade-in-up">
-            <div className="flex items-center space-x-3 group">
-              <div className="relative">
-                <div className="absolute -inset-1 bg-energy/20 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <img src={TAAFooterLogo} alt="TAA Footer Logo" className="h-12 transition-all duration-300 group-hover:scale-110 relative z-10 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
-              </div>
-              <div>
-                <h3 className="font-display font-black text-xl tracking-tight text-white group-hover:text-energy transition-colors">AUTOARCHITECTS</h3>
-                <p className="text-energy text-xs font-bold uppercase tracking-wider">Engineering Excellence</p>
-              </div>
-            </div>
-            <p className="text-zinc-400 leading-relaxed text-sm">
-              Where innovation meets adventure. We are a community of ATV enthusiasts
-              and engineers building the future of off-road vehicle performance.
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Oversized sign-off */}
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-14">
+          <div>
+            <p className="label-mono text-energy mb-4">{CLUB.motto}</p>
+            <p className="font-display font-extrabold italic uppercase leading-[0.85] tracking-tight text-5xl sm:text-7xl md:text-8xl">
+              Built.<br />
+              <span className="text-outline">Not bought.</span>
+            </p>
+          </div>
+          <img src={TAAFooterLogo} alt="Team AutoArchitects logo" className="w-28 h-28 sm:w-36 sm:h-36 object-contain opacity-90" />
+        </div>
+
+        {/* Title block */}
+        <div className="border border-border grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 text-sm bg-background/60">
+          <div className="lg:col-span-4 p-5 border-b sm:border-r lg:border-b-0 border-border">
+            <div className="label-mono text-muted-foreground mb-2">Project</div>
+            <div className="font-display font-extrabold uppercase text-2xl leading-none">{CLUB.name}</div>
+            <p className="text-muted-foreground mt-3 leading-relaxed">
+              The student ATV engineering team of {CLUB.institute}. We design, analyse, fabricate and race all-terrain vehicles.
             </p>
           </div>
 
-          {/* Contact Info */}
-          <div className="space-y-6 animate-fade-in-up delay-200">
-            <h3 className="font-display font-bold text-lg tracking-wider uppercase text-white mb-4">Contact <span className="text-energy">Us</span></h3>
-            <div className="space-y-4">
-              <a href="mailto:autoarchitects@gmail.com" className="flex items-center space-x-3 text-zinc-400 hover:text-energy transition-colors group">
-                <div className="p-2 bg-white/5 rounded-lg group-hover:bg-energy/20 transition-colors">
-                  <Mail className="w-5 h-5 text-energy" />
-                </div>
-                <span className="font-semibold text-sm">autoarchitects@gmail.com</span>
-              </a>
-              <a href="tel:+916363852155" className="flex items-center space-x-3 text-zinc-400 hover:text-energy transition-colors group">
-                <div className="p-2 bg-white/5 rounded-lg group-hover:bg-energy/20 transition-colors">
-                  <Phone className="w-5 h-5 text-energy" />
-                </div>
-                <span className="font-semibold text-sm">+91 8762751648</span>
-              </a>
-              <div className="flex items-center space-x-3 text-zinc-400 group">
-                <div className="p-2 bg-white/5 rounded-lg">
-                  <MapPin className="w-5 h-5 text-energy" />
-                </div>
-                <span className="font-semibold text-sm">Siddaganga Institute of Technology</span>
+          <div className="lg:col-span-3 p-5 border-b lg:border-b-0 lg:border-r border-border">
+            <div className="label-mono text-muted-foreground mb-3">Contact</div>
+            <ul className="space-y-2.5">
+              <li>
+                <a href={`mailto:${CLUB.email}`} className="flex items-center gap-2.5 hover:text-energy transition-colors">
+                  <Mail className="w-4 h-4 text-energy shrink-0" />
+                  {CLUB.email}
+                </a>
+              </li>
+              <li>
+                <a href="tel:+916363852155" className="flex items-center gap-2.5 hover:text-energy transition-colors">
+                  <Phone className="w-4 h-4 text-energy shrink-0" />
+                  +91 8762751648
+                </a>
+              </li>
+              <li className="flex items-start gap-2.5 text-muted-foreground">
+                <MapPin className="w-4 h-4 text-energy shrink-0 mt-0.5" />
+                <span>
+                  {CLUB.institute}, {CLUB.city}
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="lg:col-span-2 p-5 border-b sm:border-r lg:border-b-0 border-border">
+            <div className="label-mono text-muted-foreground mb-3">Index</div>
+            <ul className="space-y-1.5 font-display font-bold uppercase text-base">
+              <li><Link to="/" className="hover:text-energy transition-colors">Home</Link></li>
+              <li><Link to="/about" className="hover:text-energy transition-colors">About</Link></li>
+              <li><Link to="/members" className="hover:text-energy transition-colors">Crew</Link></li>
+              <li><Link to="/login" className="hover:text-energy transition-colors">Crew login</Link></li>
+            </ul>
+          </div>
+
+          <div className="lg:col-span-3 grid grid-rows-[1fr_auto]">
+            <div className="p-5 border-b border-border">
+              <div className="label-mono text-muted-foreground mb-3">Follow the build</div>
+              <div className="flex gap-2">
+                {socials.map(({ href, icon: Icon, label }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="w-11 h-11 border border-border flex items-center justify-center hover:bg-energy hover:border-energy hover:text-white transition-colors"
+                  >
+                    <Icon className="w-4 h-4" />
+                  </a>
+                ))}
+              </div>
+            </div>
+            <div className="grid grid-cols-3 divide-x divide-border">
+              <div className="px-3 py-2.5">
+                <div className="label-mono text-[9px] text-muted-foreground">Est.</div>
+                <div className="font-mono text-sm">{CLUB.founded}</div>
+              </div>
+              <div className="px-3 py-2.5">
+                <div className="label-mono text-[9px] text-muted-foreground">Rev.</div>
+                <div className="font-mono text-sm">{year}</div>
+              </div>
+              <div className="px-3 py-2.5">
+                <div className="label-mono text-[9px] text-muted-foreground">Sheet</div>
+                <div className="font-mono text-sm">1 / 1</div>
               </div>
             </div>
           </div>
-
-          {/* Social Media */}
-          <div className="space-y-6 animate-fade-in-up delay-300">
-            <h3 className="font-display font-bold text-lg tracking-wider uppercase text-white mb-4">Follow <span className="text-energy">Us</span></h3>
-            <div className="flex space-x-3">
-              <a
-                href="https://www.facebook.com/autoarchitects.sit"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-11 h-11 glass rounded-xl flex items-center justify-center hover:bg-energy hover-glow hover-scale transition-all duration-300 group border border-white/10 hover:border-energy/50"
-              >
-                <Facebook className="w-5 h-5 text-white/80 group-hover:text-white" />
-              </a>
-              <a
-                href="https://www.instagram.com/autoarchitects?igsh=cTZuNGdrcmM2M2I1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-11 h-11 glass rounded-xl flex items-center justify-center hover:bg-energy hover-glow hover-scale transition-all duration-300 group border border-white/10 hover:border-energy/50"
-              >
-                <Instagram className="w-5 h-5 text-white/80 group-hover:text-white" />
-              </a>
-              <a
-                href="https://twitter.com/autoarchitects_"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-11 h-11 glass rounded-xl flex items-center justify-center hover:bg-energy hover-glow hover-scale transition-all duration-300 group border border-white/10 hover:border-energy/50"
-              >
-                <Twitter className="w-5 h-5 text-white/80 group-hover:text-white" />
-              </a>
-            </div>
-            <p className="text-zinc-400 text-xs leading-relaxed">
-              Stay updated with our latest builds, events, and championships.
-            </p>
-          </div>
         </div>
 
-        <div className="border-t border-white/5 mt-12 pt-8 text-center animate-fade-in">
-          <p className="text-zinc-500 text-xs font-semibold uppercase tracking-widest">
-            © 2026 <span className="text-energy font-black">AUTOARCHITECTS</span> ATV Club. All rights reserved.
-          </p>
-        </div>
+        <p className="label-mono text-[10px] text-muted-foreground mt-6">
+          © {year} {CLUB.name} · {CLUB.institute}. All rights reserved.
+        </p>
       </div>
     </footer>
   );

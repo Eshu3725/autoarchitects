@@ -1,275 +1,242 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Award, Target, Eye, Heart, Trophy, Users, Calendar } from 'lucide-react';
-import facultyImage from '@/assets/faculty-advisor.jpg';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Target, Eye, ShieldCheck } from 'lucide-react';
 import sunilImage from '@/assets/Sunil.jpg';
 import nareshImage from '@/assets/Naresh.jpg';
+import { SectionHeader, Reveal, RacePlate } from '@/components/brand/Primitives';
+import { CLUB, RECORD, IMAGES } from '@/data/club';
+import { cn } from '@/lib/utils';
+
+const BRIEF = [
+  {
+    code: 'REQ-01',
+    title: 'Mission',
+    icon: Target,
+    body: 'Give students real, hands-on engineering: design, manufacturing, testing and national-level competition on a vehicle they built themselves.',
+  },
+  {
+    code: 'REQ-02',
+    title: 'Vision',
+    icon: Eye,
+    body: 'Be the leading university ATV team in the country, pioneering sustainable off-road vehicle technology and the engineers who build it.',
+  },
+  {
+    code: 'REQ-03',
+    title: 'Values',
+    icon: ShieldCheck,
+    body: 'Engineering rigour, safety before speed, teamwork across every branch, and responsible, sustainable practice in everything we build.',
+  },
+];
+
+const ADVISORS = [
+  {
+    name: 'Dr. B Sunil',
+    role: 'Professor, Mechanical Engineering',
+    image: sunilImage,
+    imgPos: 'object-center',
+    focus: 'Vehicle dynamics & automotive structures',
+    body: 'Brings over 15 years of expert guidance in vehicle dynamics and automotive structures.',
+  },
+  {
+    name: 'Dr. Naresh H',
+    role: 'Assistant Professor, Mechanical Engineering',
+    image: nareshImage,
+    imgPos: 'object-top',
+    focus: 'Power systems & automotive controls',
+    body: 'Specialises in power systems and automotive control set-ups, guiding the team’s hybrid technology work.',
+  },
+];
 
 const About = () => {
-  const achievements = [
-    {
-      year: "2025",
-      title: "Cleared Technical Round of BAJA SAE INDIA 2025",
-      description: "Outstanding performance in the national competition with our innovative racing ATV design.",
-      icon: Trophy
-    },
-    {
-      year: "2020",
-      title: "Champions Of Champions",
-      description: "Awarded for exceptional technical design and manufacturing quality in regional competition.",
-      icon: Target
-    },
-    {
-      year: "2010",
-      title: "37th place",
-      description: "In BAJA SAE INDIA 2010 we secured 37th position among 180 teams.",
-      icon: Users
-    }
-  ];
-
-  const milestones = [
-    { year: "2008", event: "Club Founded", members: "10+" },
-    { year: "2010", event: "First Competition", members: "25+" },
-    { year: "2016", event: "National Recognition", members: "30+" },
-    { year: "2020", event: "Champions of champions", members: "30+" },
-    { year: "2025", event: "BAJA SAE INDIA 2025", members: "30+" },
-    { year: "2026", event: "ATVC INDIA 2026", members: "30+" }
-  ];
+  const timeline = [...RECORD].reverse();
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background">
-      {/* Tech Grid Overlay */}
-      <div className="absolute inset-0 grid-background opacity-10 pointer-events-none" />
-
-      {/* Hero Section */}
-      <section className="hero-gradient py-24 md:py-32 text-white relative overflow-hidden border-b border-white/5">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-energy rounded-full blur-3xl" />
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="inline-block mb-4 px-4 py-1.5 rounded-full bg-energy/10 border border-energy/30 text-energy text-xs font-bold uppercase tracking-widest">
-            About Team AutoArchitects
-          </div>
-          <h1 className="font-display font-black text-5xl sm:text-7xl mb-6 tracking-tight uppercase">
-            WHO WE <span className="text-gradient-energy">ARE</span>
-          </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-zinc-300 max-w-3xl mx-auto leading-relaxed">
-            Driving innovation in off-road vehicle engineering through passion,
-            dedication, and cutting-edge automotive tech.
-          </p>
-        </div>
-      </section>
-
-      {/* Mission, Vision, Values */}
-      <section className="py-24 bg-background border-b border-white/5 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="text-center p-8 glass-panel hover-neon-border border border-white/5 hover:border-energy/30 transition-all duration-500 hover:-translate-y-2">
-              <CardContent className="pt-6">
-                <div className="w-16 h-16 energy-gradient rounded-xl flex items-center justify-center mx-auto mb-6 shadow-glow border border-white/10">
-                  <Target className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="font-display font-bold text-2xl text-white mb-4 uppercase tracking-tight">Mission</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  To foster innovation in ATV engineering while providing students with
-                  hands-on experience in design, manufacturing, testing, and competitive national racing.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-8 glass-panel hover-neon-border border border-white/5 hover:border-energy/30 transition-all duration-500 hover:-translate-y-2">
-              <CardContent className="pt-6">
-                <div className="w-16 h-16 energy-gradient rounded-xl flex items-center justify-center mx-auto mb-6 shadow-glow border border-white/10">
-                  <Eye className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="font-display font-bold text-2xl text-white mb-4 uppercase tracking-tight">Vision</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  To be the leading university ATV club, pioneering sustainable
-                  off-road vehicle technologies and inspiring the next generation of global engineers.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-8 glass-panel hover-neon-border border border-white/5 hover:border-energy/30 transition-all duration-500 hover:-translate-y-2">
-              <CardContent className="pt-6">
-                <div className="w-16 h-16 energy-gradient rounded-xl flex items-center justify-center mx-auto mb-6 shadow-glow border border-white/10">
-                  <Heart className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="font-display font-bold text-2xl text-white mb-4 uppercase tracking-tight">Values</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  Excellence in engineering design, collaborative teamwork, innovation, safety,
-                  and sustainable green practices in all our projects.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Achievements */}
-      <section className="py-24 bg-gradient-to-b from-background to-muted/20 border-b border-white/5 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-display font-black text-4xl md:text-5xl text-white uppercase tracking-tight mb-4">
-              Our <span className="text-gradient-energy">Achievements</span>
-            </h2>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-              National recognition of our commitment to engineering perfection and innovation
+    <div className="relative bg-background overflow-x-hidden">
+      {/* ═════════ HERO ═════════ */}
+      <section className="relative border-b border-border">
+        <div className="absolute inset-0 drafting-grid drafting-grid-fade pointer-events-none" aria-hidden />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 md:pt-20 pb-16 md:pb-24 grid lg:grid-cols-12 gap-12 items-end">
+          <div className="lg:col-span-6">
+            <p className="label-mono text-muted-foreground animate-fade-in-up">
+              <span className="text-energy">●</span> About the team · Est. {CLUB.founded}
             </p>
+            <h1 className="mt-6 font-display font-extrabold italic uppercase tracking-tight leading-[0.86] text-6xl sm:text-7xl xl:text-8xl animate-fade-in-up delay-100">
+              Ten students
+              <br />
+              and a <span className="text-energy">rulebook.</span>
+            </h1>
+            <div className="mt-8 space-y-4 text-lg text-muted-foreground leading-relaxed max-w-xl animate-fade-in-up delay-200">
+              <p>
+                That's how Team AutoArchitects started at {CLUB.institute} in {CLUB.founded}. Two years later our first car took
+                the start at <span className="text-foreground">BAJA SAEINDIA 2010</span> and finished 37th out of 180 teams.
+              </p>
+              <p>
+                Since then the team has grown past thirty engineers and more than ten machines, each one designed, analysed,
+                fabricated and raced by students. The cars have changed every season. The rule hasn't:{' '}
+                <span className="text-foreground font-semibold">if we can make it, we make it ourselves.</span>
+              </p>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {achievements.map((achievement, index) => (
-              <Card key={index} className="p-6 glass-panel hover-neon-border border border-white/5 hover:border-energy/30 transition-all duration-500 hover:scale-[1.02] flex flex-col justify-between">
-                <CardContent className="pt-6 flex-1 flex flex-col">
-                  <div className="w-12 h-12 energy-gradient rounded-lg flex items-center justify-center shadow-glow border border-white/10 mb-6">
-                    <achievement.icon className="w-6 h-6 text-white" />
+          <figure className="lg:col-span-6 animate-fade-in delay-200">
+            <div className="crop-marks">
+              <div className="relative overflow-hidden border border-border">
+                <img
+                  src={IMAGES.teamBaja2025}
+                  alt="Team AutoArchitects with car M37 at BAJA SAEINDIA 2025"
+                  className="w-full aspect-[4/3] object-cover"
+                />
+                <RacePlate number="M37" size="sm" className="absolute top-4 right-4" />
+              </div>
+            </div>
+            <figcaption className="mt-4 label-mono text-[10px] text-muted-foreground">
+              Fig. 1: The crew with car M37 in the paddock, BAJA SAEINDIA 2025
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      {/* ═════════ DESIGN BRIEF ═════════ */}
+      <section className="relative py-24 md:py-32 border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader sheet="01" kicker="Design brief" title={<>What we're <span className="text-energy">built for</span></>} />
+          <div className="grid md:grid-cols-3 border border-border divide-y md:divide-y-0 md:divide-x divide-border bg-card">
+            {BRIEF.map((b, i) => {
+              const Icon = b.icon;
+              return (
+                <Reveal key={b.code} delay={i * 80} className="p-8 lg:p-10">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs text-energy">{b.code}</span>
+                    <Icon className="w-5 h-5 text-muted-foreground" />
                   </div>
-                  <div>
-                    <span className="text-xs font-black text-energy bg-energy/10 border border-energy/20 px-3 py-1 rounded-full uppercase tracking-widest mb-3 inline-block">
-                      Season {achievement.year}
-                    </span>
-                    <h3 className="font-display font-bold text-xl text-white mb-3">
-                      {achievement.title}
-                    </h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">
-                      {achievement.description}
-                    </p>
+                  <h3 className="mt-8 font-display font-extrabold italic uppercase text-4xl leading-none">{b.title}</h3>
+                  <p className="mt-4 text-muted-foreground leading-relaxed">{b.body}</p>
+                </Reveal>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═════════ ADVISORS ═════════ */}
+      <section className="relative py-24 md:py-32 border-b border-border bg-graphite">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader sheet="02" kicker="Checked & approved by" title={<>Faculty <span className="text-energy">advisors</span></>}>
+            Every design goes past the people who sign off on it. Our faculty advisors guide the engineering and keep the team
+            honest.
+          </SectionHeader>
+
+          <div className="grid lg:grid-cols-2 gap-6">
+            {ADVISORS.map((a, i) => (
+              <Reveal key={a.name} delay={i * 100}>
+                <article className="border border-border bg-background grid sm:grid-cols-[180px_1fr] h-full">
+                  <div className="relative aspect-square sm:aspect-auto sm:h-full overflow-hidden border-b sm:border-b-0 sm:border-r border-border bg-muted">
+                    <img
+                      src={a.image}
+                      alt={a.name}
+                      className={cn('absolute inset-0 w-full h-full object-cover grayscale contrast-110', a.imgPos)}
+                    />
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="p-6 flex flex-col gap-0">
+
+                    <p className="label-mono text-[10px] text-energy">Advisor {String(i + 1).padStart(2, '0')}</p>
+                    <h3 className="mt-2 font-display font-extrabold uppercase text-3xl leading-none">{a.name}</h3>
+                    <p className="mt-2 text-sm text-foreground/80">{a.role}</p>
+                    <p className="mt-4 mb-6 text-muted-foreground leading-relaxed">{a.body}</p>
+                    <dl className="mt-auto pt-3 grid grid-cols-2 border-t border-border">
+                      <div className="pt-3 pr-3">
+                        <dt className="label-mono text-[9px] text-muted-foreground">Focus</dt>
+                        <dd className="text-sm mt-1">{a.focus}</dd>
+                      </div>
+                      <div className="pt-3 pl-3 border-l border-border">
+                        <dt className="label-mono text-[9px] text-muted-foreground">Credentials</dt>
+                        <dd className="text-sm mt-1">PhD · 15+ yrs</dd>
+                      </div>
+                    </dl>
+                  </div>
+                </article>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Faculty Advisors */}
-      <section className="py-24 bg-background border-b border-white/5 relative z-10">
+      {/* ═════════ TIMELINE ═════════ */}
+      <section id="our-journey" className="relative py-24 md:py-32 border-b border-border scroll-mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-display font-black text-4xl md:text-5xl text-white uppercase tracking-tight mb-4">
-              Faculty <span className="text-gradient-energy">Advisors</span>
-            </h2>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-              Meet the mentors guiding our team towards technical excellence
-            </p>
-          </div>
+          <SectionHeader sheet="03" kicker="Revision history" title={<>The <span className="text-energy">journey</span></>}>
+            Every engineering drawing keeps a revision table. This is ours.
+          </SectionHeader>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <Card className="p-8 glass-panel border border-white/5 hover:border-energy/20 transition-all duration-500">
-              <CardContent className="pt-6">
-                <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6">
-                  <div className="relative w-36 h-36 flex-shrink-0">
-                    <img
-                      src={sunilImage}
-                      alt="Dr. B Sunil"
-                      className="w-full h-full object-cover rounded-xl shadow-2xl border border-white/10"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl" />
-                  </div>
-
-                  <div className="flex-1">
-                    <h3 className="font-display font-black text-2xl text-white mb-1 uppercase tracking-tight">
-                      Dr. B Sunil
-                    </h3>
-                    <p className="text-energy font-bold text-xs uppercase tracking-wider mb-3">
-                      Professor of Mechanical Engineering
-                    </p>
-                    <p className="text-zinc-400 text-sm mb-4 leading-relaxed">
-                      Brings over 15 years of expert guidance in vehicle dynamics and automotive structures.
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
-                        PhD
-                      </span>
-                      <span className="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
-                        15+ Yrs Exp
+          <ol className="relative">
+            <span className="absolute left-[88px] md:left-1/2 top-0 bottom-0 w-px bg-border" aria-hidden />
+            {timeline.map((m, i) => {
+              const right = i % 2 === 1;
+              return (
+                <li key={m.year + m.event} className="relative mb-8 last:mb-0">
+                  <Reveal className="grid grid-cols-[88px_1fr] md:grid-cols-2 items-center">
+                    <div className={cn('md:pr-12 md:text-right', right && 'md:order-2 md:pl-12 md:pr-0 md:text-left')}>
+                      <span
+                        className={cn(
+                          'font-display font-extrabold italic text-4xl md:text-6xl leading-none',
+                          m.status === 'live' ? 'text-energy' : 'text-foreground/90'
+                        )}
+                      >
+                        {m.year}
                       </span>
                     </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="p-8 glass-panel border border-white/5 hover:border-energy/20 transition-all duration-500">
-              <CardContent className="pt-6">
-                <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6">
-                  <div className="relative w-36 h-36 flex-shrink-0">
-                    <img
-                      src={nareshImage}
-                      alt="Dr. Naresh H"
-                      className="w-full h-full object-cover object-top rounded-xl shadow-2xl border border-white/10"
+                    <span
+                      className={cn(
+                        'absolute left-[88px] md:left-1/2 -translate-x-1/2 w-3.5 h-3.5 rotate-45 border-2',
+                        m.status === 'live' ? 'bg-energy border-energy pulse-glow' : 'bg-background border-foreground/60'
+                      )}
+                      aria-hidden
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl" />
-                  </div>
-
-                  <div className="flex-1">
-                    <h3 className="font-display font-black text-2xl text-white mb-1 uppercase tracking-tight">
-                      Dr. Naresh H
-                    </h3>
-                    <p className="text-energy font-bold text-xs uppercase tracking-wider mb-3">
-                      Assistant Professor of Mechanical Engineering
-                    </p>
-                    <p className="text-zinc-400 text-sm mb-4 leading-relaxed">
-                      Specializes in power systems and automotive control setups, guiding hybrid technology.
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
-                        PhD
-                      </span>
-                      <span className="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
-                        15+ Yrs Exp
-                      </span>
+                    <div className={cn('pl-8 md:pl-12', right && 'md:order-1 md:pl-0 md:pr-12')}>
+                      <div className="border border-border bg-card p-5 hover:border-energy/50 transition-colors">
+                        <div className="flex items-start justify-between gap-4">
+                          <h3 className="font-display font-extrabold uppercase text-2xl leading-tight">{m.event}</h3>
+                          <span className="font-mono text-[10px] text-muted-foreground whitespace-nowrap mt-1.5">
+                            Rev. {String(i + 1).padStart(2, '0')}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">{m.detail}</p>
+                        <div className="mt-4 pt-3 border-t border-border flex items-center justify-between label-mono text-[10px]">
+                          <span className={cn(m.status === 'live' ? 'text-energy' : m.status === 'award' ? 'text-amber' : 'text-foreground')}>
+                            {m.result}
+                          </span>
+                          {m.members && <span className="text-muted-foreground">Crew {m.members}</span>}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                  </Reveal>
+                </li>
+              );
+            })}
+          </ol>
         </div>
       </section>
 
-      {/* Timeline */}
-      <section id="our-journey" className="py-24 bg-gradient-to-b from-background to-zinc-950/40 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="font-display font-black text-4xl md:text-5xl text-white uppercase tracking-tight mb-4">
-              Our <span className="text-gradient-energy">Journey</span>
-            </h2>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-              Milestones that map out our team's history, expansion, and victories
-            </p>
-          </div>
-
-          <div className="max-w-3xl mx-auto relative">
-            {/* Steering line representing racetrack track */}
-            <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-energy via-zinc-800 to-energy rounded-full" />
-
-            <div className="space-y-12">
-              {milestones.map((milestone, index) => (
-                <div key={index} className="relative flex items-center group animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                  {/* Milestones Pulse Indicator */}
-                  <div className="w-16 h-16 rounded-full bg-zinc-900 border-4 border-zinc-800 flex items-center justify-center z-10 transition-all duration-300 group-hover:border-energy group-hover:scale-110 shadow-2xl">
-                    <span className="text-xs font-extrabold text-white group-hover:text-energy">{milestone.year}</span>
-                  </div>
-
-                  {/* Milestone Card */}
-                  <div className="ml-8 flex-1">
-                    <Card className="p-6 glass-panel border border-white/5 hover:border-energy/20 transition-all duration-300">
-                      <CardContent className="pt-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                          <h3 className="font-display font-bold text-lg text-white uppercase tracking-tight">
-                            {milestone.event}
-                          </h3>
-                          <span className="text-xs font-black text-energy uppercase tracking-widest bg-energy/10 border border-energy/20 px-3 py-1 rounded-md self-start sm:self-auto">
-                            {milestone.members} Members
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-              ))}
-            </div>
+      {/* ═════════ CTA ═════════ */}
+      <section className="relative py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <h2 className="font-display font-extrabold italic uppercase text-4xl sm:text-5xl leading-[0.92] tracking-tight">
+            The next revision
+            <br />
+            is <span className="text-energy">being built now.</span>
+          </h2>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link
+              to="/members"
+              className="group h-14 px-8 bg-energy text-white font-display font-bold uppercase tracking-wide text-lg flex items-center justify-center gap-2 hover:bg-energy-dark transition-colors"
+            >
+              Meet the crew <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              to="/#garage"
+              className="h-14 px-8 border border-foreground/30 font-display font-bold uppercase tracking-wide text-lg flex items-center justify-center hover:bg-foreground hover:text-background transition-colors"
+            >
+              See the garage
+            </Link>
           </div>
         </div>
       </section>

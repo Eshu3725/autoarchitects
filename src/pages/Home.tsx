@@ -1,298 +1,564 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Trophy, Users, Wrench, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useCallback, useState } from 'react';
-import useEmblaCarousel from 'embla-carousel-react';
-import heroImage from '@/assets/Banner.jpg';
-import workshopImage from '@/assets/workshop-atvs.jpg';
-import eventImage from '@/assets/event-competition.jpg';
-import bannerImage from '@/assets/Banner2.png';
-import dscImage from '@/assets/DSC_0691.jpg';
-import image from  '@/assets/image.png';
+import { ArrowRight, ArrowDown, ArrowLeft, ArrowUpRight } from 'lucide-react';
 import RegistrationModal from '@/components/RegistrationModal';
+import BuggyBlueprint from '@/components/brand/BuggyBlueprint';
+import { SectionHeader, RacePlate, Marquee, Reveal } from '@/components/brand/Primitives';
+import { useInView } from '@/hooks/use-in-view';
+import { cn } from '@/lib/utils';
+import {
+  CLUB,
+  STATS,
+  SUBSYSTEMS,
+  BUILD_STAGES,
+  GARAGE,
+  RECORD,
+  VIDEOS,
+  BRANCHES,
+  IMAGES,
+  type SubsystemId,
+} from '@/data/club';
 
-// YouTube video embeds
-const youtubeVideos = [
-  {
-    id: 's5r2IgRNKy8',
-    title: 'Imagination 4.0',
-    description: 'Experience our innovative design process and technical achievements in the latest season of Imagination 4.0.'
-  },
-  {
-    id: 'jJvIsFY4SLE',
-    title: 'Offroad Hustle',
-    description: 'Experience the thrill and challenges of off-road engineering with our dedicated team pushing boundaries.'
-  },
-  {
-    id: '3iw9kQVrP6A',
-    title: 'Team AutoArchitects',
-    description: 'A glimpse into our team\'s dynamics, dedication, and innovative approach to ATV engineering excellence.'
-  }
-];
+/* ── Hero callout: a dimension-style leader pointing at part of the photo ── */
+function Callout({
+  x,
+  y,
+  side,
+  title,
+  sub,
+  delay,
+}: {
+  x: number;
+  y: number;
+  side: 'left' | 'right' | 'down';
+  title: string;
+  sub: string;
+  delay: number;
+}) {
+  const label = (
+    <span className="block bg-graphite/90 backdrop-blur-sm border border-bone/25 px-2.5 py-1.5 whitespace-nowrap">
+      <span className="block font-display font-bold uppercase text-sm leading-none text-bone">{title}</span>
+      <span className="block font-mono text-[10px] text-bone/60 mt-1">{sub}</span>
+    </span>
+  );
+  return (
+    <div
+      className="absolute hidden sm:block animate-fade-in"
+      style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${delay}ms` }}
+    >
+      <span className="absolute -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-energy ring-4 ring-energy/30" />
+      {side === 'right' && (
+        <span className="absolute left-2 top-0 -translate-y-1/2 flex items-center">
+          <span className="w-10 h-px bg-bone/70" />
+          {label}
+        </span>
+      )}
+      {side === 'left' && (
+        <span className="absolute right-2 top-0 -translate-y-1/2 flex items-center flex-row-reverse">
+          <span className="w-10 h-px bg-bone/70" />
+          {label}
+        </span>
+      )}
+      {side === 'down' && (
+        <span className="absolute top-2 left-0 -translate-x-1/2 flex flex-col items-center">
+          <span className="h-8 w-px bg-bone/70" />
+          {label}
+        </span>
+      )}
+    </div>
+  );
+}
 
-const Home = () => {
-  // Registration Modal State
-  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
+/* ── Interactive anatomy section ── */
+function Anatomy() {
+  const [active, setActive] = useState<SubsystemId>('chassis');
+  const [userControlled, setUserControlled] = useState(false);
+  const { ref, inView } = useInView<HTMLDivElement>(0.25);
 
-  const pastEvents = [
-    {
-      title: "National ATV Championship 2024",
-      description: "Our team secured 2nd place in the national competition with our custom-built racing ATV.",
-      image: eventImage,
-      date: "March 2024"
-    },
-    {
-      title: "Innovation Workshop Series",
-      description: "Monthly workshops covering advanced engineering techniques and ATV modifications.",
-      image: workshopImage,
-      date: "Ongoing"
-    },
-    {
-      title: "Desert Challenge Competition",
-      description: "Extreme terrain testing of our latest all-terrain vehicle prototypes.",
-      image: eventImage,
-      date: "January 2024"
-    }
-  ];
+  useEffect(() => {
+    if (userControlled || !inView) return;
+    const ids = SUBSYSTEMS.filter((s) => s.onDrawing).map((s) => s.id);
+    const t = window.setInterval(() => {
+      setActive((cur) => ids[(ids.indexOf(cur) + 1) % ids.length]);
+    }, 3200);
+    return () => window.clearInterval(t);
+  }, [userControlled, inView]);
 
-  // ATV Carousel Images
-  const atvImages = [
-    { src: dscImage, alt: "Imagination 4.0" },
-    { src: bannerImage, alt: "Team AutoArchitects" },
-    { src: image, alt: "One Team One Dream" }
-  ];
-
-  // Embla Carousel Setup
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, []);
-
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev();
-  }, [emblaApi]);
-
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
-  }, [emblaApi]);
+  const select = (id: SubsystemId) => {
+    setUserControlled(true);
+    setActive(id);
+  };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background">
-      {/* Tech Grid Overlay across the entire page background */}
-      <div className="absolute inset-0 grid-background opacity-10 pointer-events-none" />
+    <section id="anatomy" className="relative py-24 md:py-32 border-b border-border overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SectionHeader sheet="02" kicker="General arrangement" title={<>Anatomy of <span className="text-energy">the machine</span></>}>
+          An ATV is five systems that all have to survive the same crash, jump and four-hour endurance run. Each one has its
+          own sub-team of students who own it from first sketch to final weld.
+        </SectionHeader>
 
-      {/* Hero Section */}
-      <section className="relative h-[85vh] md:h-screen flex items-center justify-center overflow-hidden border-b border-white/5">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105 hover:scale-110"
-          style={{ backgroundImage: `url(${heroImage})`, transition: 'transform 10s ease-in-out' }}
-        />
-        {/* Sleek dark gradient to hide edges */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-background/80 to-background" />
-
-        {/* Dynamic speed-lines background overlay - hidden on mobile to prevent overflow */}
-        <div className="absolute inset-0 opacity-15 pointer-events-none overflow-hidden">
-          <div className="absolute top-[30%] left-[-50px] sm:left-[-100px] w-[150px] sm:w-[200px] h-[2px] bg-gradient-to-r from-transparent to-energy animate-pulse-glow" style={{ animationDuration: '3s' }} />
-          <div className="absolute top-[60%] right-[-50px] sm:right-[-100px] w-[200px] sm:w-[300px] h-[2px] bg-gradient-to-l from-transparent to-energy animate-pulse-glow" style={{ animationDuration: '4s' }} />
-        </div>
-
-        <div className="relative z-10 text-center w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="inline-block mb-3 sm:mb-4 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-energy/10 border border-energy/30 text-energy text-[10px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest animate-fade-in-up">
-            Motorsport Engineering Club
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+          <div ref={ref} className={cn('lg:col-span-7 lg:sticky lg:top-28', inView && 'is-in')}>
+            <div className="crop-marks">
+              <div className="relative border border-border bg-graphite/60 p-3 sm:p-6">
+                <div className="absolute inset-0 drafting-grid opacity-70 pointer-events-none" aria-hidden />
+                <BuggyBlueprint active={active} onSelect={select} className="relative" />
+              </div>
+            </div>
+            <p className="label-mono text-[10px] text-muted-foreground mt-4">
+              Fig. 2: Schematic side elevation. Hover a callout or pick a system.
+            </p>
           </div>
-          <h1 className="font-display font-black text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-white mb-4 sm:mb-6 tracking-tighter uppercase leading-none animate-fade-in-up break-words">
-            AUTOARCHITECTS
-            <span className="block text-gradient-energy mt-2 sm:mt-3 tracking-wider sm:tracking-widest text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light">ATV CLUB</span>
-          </h1>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-zinc-300 mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto font-medium leading-relaxed px-2 sm:px-0 animate-fade-in-up delay-200">
-            Where raw power meets precision engineering. We design, manufacture, and race high-performance all-terrain vehicles.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center animate-fade-in-up delay-300 px-2 sm:px-0">
-            <Button asChild size="lg" className="btn-modern energy-gradient hover-glow text-xs sm:text-sm uppercase tracking-wider px-6 sm:px-8 py-5 sm:py-6 font-bold shadow-2xl rounded-xl border border-energy-light/20 w-full sm:w-auto min-h-[48px]">
-              <Link to="/about#our-journey" className="flex items-center justify-center">
-                Explore Journey<ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
-              </Link>
-            </Button>
-            <Button
-              onClick={() => setIsRegistrationModalOpen(true)}
-              variant="outline"
-              size="lg"
-              className="btn-modern bg-white/5 backdrop-blur-md border border-white/10 text-white hover:bg-white/15 hover:border-energy hover:text-energy hover:scale-105 text-xs sm:text-sm uppercase tracking-wider px-6 sm:px-8 py-5 sm:py-6 font-bold shadow-2xl transition-all duration-300 rounded-xl w-full sm:w-auto min-h-[48px]"
+
+          <ol className="lg:col-span-5 border-t border-border">
+            {SUBSYSTEMS.map((s) => {
+              const isActive = active === s.id;
+              const Icon = s.icon;
+              return (
+                <li key={s.id} className="border-b border-border">
+                  <button
+                    type="button"
+                    onClick={() => select(s.id)}
+                    onMouseEnter={() => select(s.id)}
+                    aria-expanded={isActive}
+                    className="w-full text-left py-5 flex items-start gap-4 group"
+                  >
+                    <span
+                      className={cn(
+                        'font-mono text-xs mt-1.5 w-7 shrink-0 transition-colors',
+                        isActive ? 'text-energy' : 'text-muted-foreground'
+                      )}
+                    >
+                      {s.code}
+                    </span>
+                    <span className="flex-1 min-w-0">
+                      <span className="flex items-center justify-between gap-3">
+                        <span
+                          className={cn(
+                            'font-display font-extrabold uppercase text-2xl sm:text-3xl leading-none tracking-tight transition-colors',
+                            isActive ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'
+                          )}
+                        >
+                          {s.name}
+                        </span>
+                        <Icon className={cn('w-5 h-5 shrink-0 transition-colors', isActive ? 'text-energy' : 'text-muted-foreground/60')} />
+                      </span>
+                      <span
+                        className={cn(
+                          'grid transition-all duration-500 ease-out',
+                          isActive ? 'grid-rows-[1fr] opacity-100 mt-3' : 'grid-rows-[0fr] opacity-0'
+                        )}
+                      >
+                        <span className="overflow-hidden">
+                          <span className="block text-muted-foreground leading-relaxed">{s.summary}</span>
+                          <Link
+                            to={`/members#${s.anchor}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1.5 mt-3 label-mono text-energy hover:text-energy-light"
+                          >
+                            Meet the {s.team} crew <ArrowRight className="w-3.5 h-3.5" />
+                          </Link>
+                        </span>
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Garage rail ── */
+function Garage() {
+  const rail = useRef<HTMLDivElement>(null);
+  const scrollBy = (dir: 1 | -1) => {
+    const el = rail.current;
+    if (!el) return;
+    const card = el.querySelector<HTMLElement>('[data-card]');
+    el.scrollBy({ left: dir * ((card?.offsetWidth ?? 320) + 20), behavior: 'smooth' });
+  };
+
+  return (
+    <section id="garage" className="relative py-24 md:py-32 border-b border-border bg-graphite overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <SectionHeader sheet="03" kicker="Build archive" title={<>The <span className="text-energy">garage</span></>} className="mb-0 md:mb-0">
+            Every one of these was cut, welded, wired and raced by students. Every new car starts from what the last one taught us.
+          </SectionHeader>
+          <div className="flex gap-2 shrink-0">
+            <button
+              onClick={() => scrollBy(-1)}
+              aria-label="Previous machine"
+              className="w-12 h-12 border border-border flex items-center justify-center hover:bg-foreground hover:text-background transition-colors"
             >
-              Join the Team
-            </Button>
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => scrollBy(1)}
+              aria-label="Next machine"
+              className="w-12 h-12 border border-border flex items-center justify-center hover:bg-foreground hover:text-background transition-colors"
+            >
+              <ArrowRight className="w-5 h-5" />
+            </button>
           </div>
         </div>
+      </div>
 
-        {/* Scroll indicator - hidden on very small screens */}
-        <div className="hidden sm:block absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center bg-black/30 backdrop-blur-sm">
-            <div className="w-1.5 h-3 bg-energy rounded-full mt-2 animate-pulse" />
-          </div>
-        </div>
-      </section>
+      <div
+        ref={rail}
+        className="mt-12 flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-4 sm:px-6 lg:px-[max(2rem,calc((100vw-80rem)/2+2rem))] pb-2"
+      >
+        {GARAGE.map((m, i) => (
+          <article
+            key={m.plate}
+            data-card
+            className="group snap-start shrink-0 w-[82vw] sm:w-[360px] border border-border bg-background flex flex-col"
+          >
+            <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+              <img
+                src={m.image}
+                alt={`Car ${m.plate}, ${m.name}`}
+                loading="lazy"
+                className={cn(
+                  'w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]',
+                  m.cropFrame && 'scale-[1.12] group-hover:scale-[1.16]'
+                )}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              <RacePlate number={m.plate} className="absolute top-3 left-3" />
+              {m.latest && (
+                <span className="absolute top-3 right-3 label-mono text-[10px] bg-energy text-white px-2 py-1">Latest</span>
+              )}
+              <span className="absolute bottom-3 right-3 font-mono text-[10px] text-white/80">
+                {String(i + 1).padStart(2, '0')} / {String(GARAGE.length).padStart(2, '0')}
+              </span>
+            </div>
+            <div className="p-5 flex-1 flex flex-col">
+              <p className="label-mono text-[10px] text-energy">{m.meta}</p>
+              <h3 className="font-display font-extrabold uppercase text-2xl leading-tight mt-2">{m.name}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mt-2">{m.note}</p>
+            </div>
+          </article>
+        ))}
+        <div className="shrink-0 w-px" aria-hidden />
+      </div>
+    </section>
+  );
+}
 
-      {/* Stats Section */}
-      <section className="py-16 sm:py-20 md:py-28 bg-gradient-to-b from-background via-background to-muted/20 relative overflow-hidden border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-12 sm:mb-16 md:mb-20 animate-fade-in-up">
-            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white uppercase tracking-tight mb-3 sm:mb-4 px-2">
-              Our <span className="text-gradient-energy">Telemetry</span>
-            </h2>
-            <p className="text-zinc-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4">
-              A record of our continuous strive for engineering superiority and race-track performance
+const Home = () => {
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
+  const openJoin = () => setIsRegistrationModalOpen(true);
+
+  return (
+    <div className="relative bg-background overflow-x-hidden">
+      {/* ═════════ HERO ═════════ */}
+      <section className="relative border-b border-border">
+        <div className="absolute inset-0 drafting-grid drafting-grid-fade pointer-events-none" aria-hidden />
+        <div
+          className="absolute -top-40 right-0 w-[60vw] h-[60vw] rounded-full bg-energy/10 blur-[120px] pointer-events-none"
+          aria-hidden
+        />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-16 pb-16 md:pb-20 grid lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+          <div className="lg:col-span-5">
+            <p className="label-mono text-muted-foreground animate-fade-in-up">
+              <span className="text-energy">●</span> {CLUB.institute}
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-            <div className="group text-center p-6 sm:p-8 md:p-10 rounded-2xl glass-panel hover-neon-border transition-all duration-500 border border-white/5 hover:border-energy/30 animate-fade-in-up delay-100 relative overflow-hidden">
-              {/* Telemetry dial overlay */}
-              <div className="absolute top-0 right-0 w-20 h-20 sm:w-24 sm:h-24 border border-white/5 rounded-full -mr-6 -mt-6 sm:-mr-8 sm:-mt-8 opacity-20 group-hover:scale-125 transition-transform duration-500" />
-              <div className="relative inline-block mb-4 sm:mb-6">
-                <div className="absolute inset-0 bg-energy/20 rounded-full blur-xl group-hover:blur-2xl transition-all" />
-                <Trophy className="w-12 h-12 sm:w-14 sm:h-14 text-energy mx-auto relative z-10 group-hover:scale-110 transition-transform duration-300" />
-              </div>
-              <h3 className="font-display font-black text-4xl sm:text-5xl md:text-6xl text-white mb-2 tracking-tight">10+</h3>
-              <p className="text-energy font-bold text-xs sm:text-sm uppercase tracking-wider sm:tracking-widest">Awards Won</p>
-              <p className="text-zinc-400 text-xs sm:text-sm mt-2 sm:mt-3 leading-relaxed">National recognition for design, durability, and craftsmanship</p>
-            </div>
-
-            <div className="group text-center p-6 sm:p-8 md:p-10 rounded-2xl glass-panel hover-neon-border transition-all duration-500 border border-white/5 hover:border-energy/30 animate-fade-in-up delay-200 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-20 h-20 sm:w-24 sm:h-24 border border-white/5 rounded-full -mr-6 -mt-6 sm:-mr-8 sm:-mt-8 opacity-20 group-hover:scale-125 transition-transform duration-500" />
-              <div className="relative inline-block mb-4 sm:mb-6">
-                <div className="absolute inset-0 bg-energy/20 rounded-full blur-xl group-hover:blur-2xl transition-all" />
-                <Users className="w-12 h-12 sm:w-14 sm:h-14 text-energy mx-auto relative z-10 group-hover:scale-110 transition-transform duration-300" />
-              </div>
-              <h3 className="font-display font-black text-4xl sm:text-5xl md:text-6xl text-white mb-2 tracking-tight">35+</h3>
-              <p className="text-energy font-bold text-xs sm:text-sm uppercase tracking-wider sm:tracking-widest">Active Engineers</p>
-              <p className="text-zinc-400 text-xs sm:text-sm mt-2 sm:mt-3 leading-relaxed">Dedicated minds across structural, chassis, transmission, and electronics subteams</p>
-            </div>
-
-            <div className="group text-center p-6 sm:p-8 md:p-10 rounded-2xl glass-panel hover-neon-border transition-all duration-500 border border-white/5 hover:border-energy/30 animate-fade-in-up delay-300 relative overflow-hidden sm:col-span-2 md:col-span-1">
-              <div className="absolute top-0 right-0 w-20 h-20 sm:w-24 sm:h-24 border border-white/5 rounded-full -mr-6 -mt-6 sm:-mr-8 sm:-mt-8 opacity-20 group-hover:scale-125 transition-transform duration-500" />
-              <div className="relative inline-block mb-4 sm:mb-6">
-                <div className="absolute inset-0 bg-energy/20 rounded-full blur-xl group-hover:blur-2xl transition-all" />
-                <Wrench className="w-12 h-12 sm:w-14 sm:h-14 text-energy mx-auto relative z-10 group-hover:scale-110 transition-transform duration-300" />
-              </div>
-              <h3 className="font-display font-black text-4xl sm:text-5xl md:text-6xl text-white mb-2 tracking-tight">10+</h3>
-              <p className="text-energy font-bold text-xs sm:text-sm uppercase tracking-wider sm:tracking-widest">ATVs Built</p>
-              <p className="text-zinc-400 text-xs sm:text-sm mt-2 sm:mt-3 leading-relaxed">Custom-fabricated off-road machines engineered to endure the toughest terrains</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Video Showcase */}
-      <section className="py-16 sm:py-20 md:py-28 bg-gradient-to-b from-muted/10 via-background to-muted/10 relative overflow-hidden border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-12 sm:mb-16 md:mb-20 animate-fade-in-up">
-            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white uppercase tracking-tight mb-3 sm:mb-4 px-2">
-              Showcasing Our <span className="text-gradient-energy">Journey</span>
-            </h2>
-            <p className="text-zinc-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4">
-              Experience the adrenaline, engineering process, and track-side challenges of Team AutoArchitects
+            <h1 className="mt-6 font-display font-extrabold italic uppercase tracking-tight leading-[0.86] text-[3.4rem] sm:text-7xl xl:text-[5.6rem] animate-fade-in-up delay-100">
+              We build
+              <br />
+              the machines
+              <br />
+              <span className="text-energy">we race.</span>
+            </h1>
+            <p className="mt-7 text-lg text-muted-foreground leading-relaxed max-w-md animate-fade-in-up delay-200">
+              <strong className="text-foreground font-semibold">Team AutoArchitects</strong> is SIT's student ATV engineering team.
+              Every season we design, simulate, fabricate and test an all-terrain vehicle from bare tube stock, then take it
+              racing at <span className="text-foreground">BAJA SAE India</span> and <span className="text-foreground">ATVC</span>.
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {youtubeVideos.map((video, index) => (
-              <div
-                key={video.id}
-                className="group animate-scale-in"
-                style={{ animationDelay: `${index * 0.15}s` }}
+            <div className="mt-9 flex flex-col sm:flex-row gap-3 animate-fade-in-up delay-300">
+              <button
+                onClick={openJoin}
+                className="group h-14 px-7 bg-energy text-white font-display font-bold uppercase tracking-wide text-lg flex items-center justify-center gap-2 hover:bg-energy-dark transition-colors"
               >
-                <div className="relative glass-panel rounded-xl sm:rounded-2xl border border-white/5 shadow-2xl overflow-hidden transition-all duration-500 ease-out hover:scale-[1.03] hover:border-energy/40 hover:shadow-energy/10">
-                  <div className="relative overflow-hidden aspect-video border-b border-white/5">
+                Join the build
+                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+              </button>
+              <a
+                href="#build-cycle"
+                className="h-14 px-7 border border-foreground/30 font-display font-bold uppercase tracking-wide text-lg flex items-center justify-center gap-2 hover:border-foreground hover:bg-foreground hover:text-background transition-colors"
+              >
+                How a car is made
+                <ArrowDown className="w-5 h-5" />
+              </a>
+            </div>
+          </div>
+
+          {/* Figure 1 */}
+          <figure className="lg:col-span-7 animate-fade-in delay-200">
+            <div className="crop-marks">
+              <div className="relative aspect-[4907/3995] overflow-hidden border border-border">
+                <img
+                  src={IMAGES.car150Track}
+                  alt="Team AutoArchitects car number 150 at speed on a dirt track"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  fetchPriority="high"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+                <Callout x={59} y={41.3} side="right" title="Roll cage" sub="Tubular steel · welded in-house" delay={700} />
+                <Callout x={46.5} y={64.5} side="left" title="Powertrain" sub="Briggs & Stratton engine" delay={900} />
+                <Callout x={77.75} y={74.6} side="down" title="Suspension" sub="Independent · long-travel" delay={1100} />
+                <RacePlate number="150" size="sm" className="absolute top-4 left-4" />
+              </div>
+            </div>
+            <figcaption className="mt-4 flex items-center justify-between gap-4 label-mono text-[10px] text-muted-foreground">
+              <span>Fig. 1: Car #150 "Imagination 4.0" at speed</span>
+              <span className="hidden sm:inline">Designed &amp; manufactured by students</span>
+            </figcaption>
+          </figure>
+        </div>
+
+        {/* Spec strip */}
+        <div className="relative border-t border-border bg-graphite/80">
+          <dl className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4">
+            {STATS.map((s, i) => (
+              <div
+                key={s.label}
+                className={cn(
+                  'px-4 sm:px-6 lg:px-8 py-6 border-border',
+                  i % 2 === 0 && 'border-r',
+                  i < 2 && 'border-b lg:border-b-0',
+                  i === 1 && 'lg:border-r',
+                  i === 2 && 'lg:border-r'
+                )}
+              >
+                <dt className="label-mono text-[10px] text-muted-foreground">{s.label}</dt>
+                <dd className="font-display font-extrabold italic text-4xl sm:text-5xl leading-none mt-2">{s.value}</dd>
+                <dd className="text-xs text-muted-foreground mt-2 hidden sm:block">{s.note}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* ═════════ TICKER ═════════ */}
+      <div className="bg-amber text-graphite border-b border-border py-3">
+        <Marquee items={['Design', 'Analyse', 'Fabricate', 'Test', 'Compete', 'Repeat']} />
+      </div>
+
+      {/* ═════════ BUILD CYCLE ═════════ */}
+      <section id="build-cycle" className="relative py-24 md:py-32 border-b border-border scroll-mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-5">
+            <div className="lg:sticky lg:top-28">
+              <SectionHeader sheet="01" kicker="Route sheet" title={<>From tube stock <span className="text-energy">to start line</span></>}>
+                There's no kit and no off-the-shelf frame. A season is a full product cycle, run like a production line: five
+                operations, all done by students.
+              </SectionHeader>
+              <figure className="hidden lg:block crop-marks max-w-sm">
+                <img
+                  src={IMAGES.chassisShakedown}
+                  alt="An unpainted ATV chassis kicking up dust on a shakedown run"
+                  loading="lazy"
+                  className="w-full aspect-[480/526] object-cover border border-border"
+                />
+                <figcaption className="label-mono text-[10px] text-muted-foreground mt-3">
+                  Fig. 3: Bare chassis on a shakedown run (OP-40)
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <ol className="lg:col-span-7 relative">
+            <span className="absolute left-[27px] top-4 bottom-4 w-px bg-border" aria-hidden />
+            {BUILD_STAGES.map((stage, i) => {
+              const Icon = stage.icon;
+              return (
+                <li key={stage.op}>
+                  <Reveal delay={i * 60} className="relative flex gap-6 pb-10 last:pb-0">
+                    <span className="relative z-10 w-14 h-14 shrink-0 bg-background border border-border flex items-center justify-center">
+                      <Icon className="w-6 h-6 text-energy" />
+                    </span>
+                    <div className="flex-1 border border-border bg-card p-6 hover:border-energy/50 transition-colors">
+                      <div className="flex items-baseline justify-between gap-4">
+                        <h3 className="font-display font-extrabold uppercase italic text-3xl leading-none">{stage.title}</h3>
+                        <span className="font-mono text-xs text-energy">{stage.op}</span>
+                      </div>
+                      <p className="mt-3 text-muted-foreground leading-relaxed">{stage.body}</p>
+                      <ul className="mt-4 flex flex-wrap gap-2">
+                        {stage.tags.map((t) => (
+                          <li key={t} className="label-mono text-[10px] border border-border px-2 py-1 text-foreground/80">
+                            {t}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </Reveal>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </section>
+
+      {/* ═════════ ANATOMY ═════════ */}
+      <Anatomy />
+
+      {/* ═════════ GARAGE ═════════ */}
+      <Garage />
+
+      {/* ═════════ RECORD ═════════ */}
+      <section id="record" className="relative py-24 md:py-32 border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader sheet="04" kicker="Timing sheet" title={<>Competition <span className="text-energy">record</span></>}>
+            Student motorsport is judged on design reports, cost and inspection as much as lap times. Here is how the team has
+            fared since 2008.
+          </SectionHeader>
+
+          <Reveal>
+            <div className="border border-border bg-card">
+              <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 border-b border-border bg-muted/50 label-mono text-[10px] text-muted-foreground">
+                <span className="col-span-1">Season</span>
+                <span className="col-span-5">Event</span>
+                <span className="col-span-3">Entry</span>
+                <span className="col-span-3 text-right">Result</span>
+              </div>
+              {RECORD.map((r) => (
+                <div
+                  key={r.year + r.event}
+                  className="grid grid-cols-12 gap-x-4 gap-y-1 px-5 md:px-6 py-5 border-b border-border last:border-b-0 items-center hover:bg-muted/30 transition-colors"
+                >
+                  <span className="col-span-3 md:col-span-1 font-mono text-sm text-muted-foreground">{r.year}</span>
+                  <span className="col-span-9 md:col-span-5 font-display font-bold uppercase text-xl md:text-2xl leading-tight">
+                    {r.event}
+                  </span>
+                  <span className="col-span-12 md:col-span-3 text-sm text-muted-foreground pl-[25%] md:pl-0">{r.detail}</span>
+                  <span className="col-span-12 md:col-span-3 md:text-right pl-[25%] md:pl-0">
+                    <span
+                      className={cn(
+                        'inline-flex items-center gap-2 font-display font-extrabold italic uppercase text-2xl leading-none',
+                        r.status === 'live' && 'text-energy',
+                        r.status === 'award' && 'text-amber',
+                        r.status === 'milestone' && 'text-muted-foreground'
+                      )}
+                    >
+                      {r.status === 'live' && <span className="w-2 h-2 rounded-full bg-energy pulse-glow" />}
+                      {r.result}
+                    </span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+          <div className="mt-6 flex justify-end">
+            <Link to="/about#our-journey" className="inline-flex items-center gap-2 label-mono text-energy hover:text-energy-light">
+              Full team history <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═════════ FOOTAGE ═════════ */}
+      <section id="footage" className="relative py-24 md:py-32 border-b border-border bg-graphite">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader sheet="05" kicker="Paddock footage" title={<>On track, <span className="text-energy">on camera</span></>}>
+            The workshop, the paddock and the dirt, filmed by the team.
+          </SectionHeader>
+          <div className="grid md:grid-cols-3 gap-6">
+            {VIDEOS.map((v, i) => (
+              <Reveal key={v.id} delay={i * 80}>
+                <article className="border border-border bg-background h-full flex flex-col">
+                  <div className="aspect-video bg-black">
                     <iframe
                       className="w-full h-full"
-                      src={`https://www.youtube.com/embed/${video.id}`}
-                      title={video.title}
-                      frameBorder="0"
+                      src={`https://www.youtube.com/embed/${v.id}`}
+                      title={v.title}
+                      loading="lazy"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                     />
                   </div>
-                  <div className="p-4 sm:p-6 bg-gradient-to-b from-background/50 to-background">
-                    <h3 className="font-display font-bold text-lg sm:text-xl text-white mb-2 group-hover:text-energy transition-colors">
-                      {video.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                      {video.description}
-                    </p>
+                  <div className="p-5 border-t border-border">
+                    <p className="label-mono text-[10px] text-energy">Reel {String(i + 1).padStart(2, '0')}</p>
+                    <h3 className="font-display font-extrabold uppercase text-2xl mt-1.5">{v.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{v.description}</p>
                   </div>
-                </div>
-              </div>
+                </article>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ATV Showcase */}
-      <section className="py-16 sm:py-20 md:py-28 bg-background relative overflow-hidden">
+      {/* ═════════ JOIN ═════════ */}
+      <section className="relative py-24 md:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 sm:mb-16 md:mb-20">
-            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white uppercase tracking-tight mb-3 sm:mb-4 px-2">
-              Visual <span className="text-gradient-energy">Collections</span>
-            </h2>
-            <p className="text-zinc-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4">
-              A glance at our custom-designed structures, manufacturing, and test sessions
-            </p>
-          </div>
-
-          {/* ATV Image Carousel */}
-          <div className="relative group/carousel max-w-6xl mx-auto">
-            <div className="overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 shadow-2xl" ref={emblaRef}>
-              <div className="flex">
-                {atvImages.map((image, index) => (
-                  <div key={index} className="flex-[0_0_100%] min-w-0">
-                    <div className="relative">
-                      <img
-                        src={image.src}
-                        alt={image.alt}
-                        className="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] object-cover transition-transform duration-700 hover:scale-105"
-                      />
-                      {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-85" />
-                      {/* Image Caption */}
-                      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 lg:p-12 text-left">
-                        <span className="inline-block px-2 sm:px-3 py-0.5 sm:py-1 bg-energy text-white text-[10px] sm:text-xs font-extrabold uppercase tracking-wider sm:tracking-widest rounded-md mb-2 sm:mb-3">
-                          Featured Build
-                        </span>
-                        <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white mb-1 sm:mb-2 uppercase tracking-tight">
-                          {image.alt}
-                        </h3>
-                        <p className="text-zinc-300 text-xs sm:text-sm md:text-base lg:text-lg max-w-xl font-medium leading-relaxed">
-                          Precision engineering combined with rugged chassis structure built to dominate all terrains.
-                        </p>
-                      </div>
-                    </div>
+          <div className="hazard-stripe p-[6px]">
+            <div className="relative bg-background overflow-hidden">
+              <div className="absolute inset-0 drafting-grid opacity-60 pointer-events-none" aria-hidden />
+              <div className="relative grid lg:grid-cols-12 gap-10 p-8 sm:p-12 lg:p-16">
+                <div className="lg:col-span-7">
+                  <p className="label-mono text-energy">Recruitment open</p>
+                  <h2 className="mt-4 font-display font-extrabold italic uppercase leading-[0.9] tracking-tight text-5xl sm:text-6xl lg:text-7xl">
+                    Put your name
+                    <br />
+                    on the chassis.
+                  </h2>
+                  <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-xl">
+                    You don't need to have built a car before. You learn by building one. The current crew comes from{' '}
+                    {BRANCHES.slice(0, -1).join(', ')} and {BRANCHES[BRANCHES.length - 1]} engineering, and every sub-team takes
+                    newcomers.
+                  </p>
+                  <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={openJoin}
+                      className="group h-14 px-8 bg-energy text-white font-display font-bold uppercase tracking-wide text-lg flex items-center justify-center gap-2 hover:bg-energy-dark transition-colors"
+                    >
+                      Apply to join
+                      <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                    </button>
+                    <Link
+                      to="/members"
+                      className="h-14 px-8 border border-foreground/30 font-display font-bold uppercase tracking-wide text-lg flex items-center justify-center gap-2 hover:bg-foreground hover:text-background transition-colors"
+                    >
+                      Meet the crew
+                      <ArrowUpRight className="w-5 h-5" />
+                    </Link>
                   </div>
-                ))}
+                </div>
+                <div className="lg:col-span-5">
+                  <p className="label-mono text-muted-foreground mb-3">Sub-teams</p>
+                  <ul className="border-t border-border">
+                    {SUBSYSTEMS.map((s) => (
+                      <li key={s.id}>
+                        <Link
+                          to={`/members#${s.anchor}`}
+                          className="group flex items-center justify-between py-3.5 border-b border-border"
+                        >
+                          <span className="flex items-baseline gap-3">
+                            <span className="font-mono text-xs text-energy">{s.code}</span>
+                            <span className="font-display font-bold uppercase text-xl group-hover:text-energy transition-colors">
+                              {s.name}
+                            </span>
+                          </span>
+                          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-energy group-hover:translate-x-1 transition-all" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
-
-            {/* Navigation Buttons */}
-            <button
-              onClick={scrollPrev}
-              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full glass border border-white/10 flex items-center justify-center hover:bg-energy hover:border-energy text-white transition-all duration-300 opacity-80 hover:opacity-100 hover:scale-110 z-10 shadow-2xl"
-              aria-label="Previous slide"
-            >
-              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
-            <button
-              onClick={scrollNext}
-              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full glass border border-white/10 flex items-center justify-center hover:bg-energy hover:border-energy text-white transition-all duration-300 opacity-80 hover:opacity-100 hover:scale-110 z-10 shadow-2xl"
-              aria-label="Next slide"
-            >
-              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
           </div>
         </div>
       </section>
 
-      {/* Registration Modal */}
-      <RegistrationModal
-        open={isRegistrationModalOpen}
-        onOpenChange={setIsRegistrationModalOpen}
-      />
+      <RegistrationModal open={isRegistrationModalOpen} onOpenChange={setIsRegistrationModalOpen} />
     </div>
   );
 };

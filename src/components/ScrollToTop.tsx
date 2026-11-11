@@ -2,24 +2,38 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 /**
- * ScrollToTop Component
- * 
- * Automatically scrolls the window to the top (0, 0) whenever the route changes.
- * This ensures users always see the top of each page when navigating between routes.
- * 
- * Usage: Place this component inside BrowserRouter but outside Routes
+ * On route change: scroll to the `#hash` target if there is one
+ * (e.g. /members#suspension-team), otherwise to the top of the page.
+ * Retries briefly so sections rendered after data loads can still be found.
  */
 const ScrollToTop = () => {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    // Scroll to top whenever the pathname changes
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    if (!hash) {
+      window.scrollTo(0, 0);
+      return;
+    }
 
-  // This component doesn't render anything
+    const id = decodeURIComponent(hash.slice(1));
+    let tries = 0;
+    let timer: number | undefined;
+
+    const attempt = () => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (tries++ < 10) {
+        timer = window.setTimeout(attempt, 100);
+      }
+    };
+
+    window.scrollTo(0, 0);
+    timer = window.setTimeout(attempt, 50);
+    return () => window.clearTimeout(timer);
+  }, [pathname, hash]);
+
   return null;
 };
 
 export default ScrollToTop;
-

@@ -1,21 +1,22 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LogOut, LayoutDashboard, ArrowUpRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import TAALogo from '@/assets/TAA.png';
+import { CLUB } from '@/data/club';
+import { cn } from '@/lib/utils';
+
+const publicNavItems = [
+  { n: '01', name: 'Home', path: '/' },
+  { n: '02', name: 'About', path: '/about' },
+  { n: '03', name: 'Crew', path: '/members' },
+];
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
-
-  const publicNavItems = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'Members', path: '/members' },
-  ];
 
   const handleLogout = () => {
     logout();
@@ -25,136 +26,167 @@ const Navigation = () => {
   };
 
   const handleDashboardClick = () => {
-    if (user?.role === 'admin') {
-      navigate('/admin/dashboard');
-    } else {
-      navigate('/user/dashboard');
-    }
+    navigate(user?.role === 'admin' ? '/admin/dashboard' : '/user/dashboard');
     setIsMenuOpen(false);
   };
 
-  const getLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `relative transition-all duration-300 px-4 py-2 rounded-lg font-semibold tracking-wider uppercase text-xs sm:text-sm ${
-      isActive 
-        ? 'text-energy bg-energy/10 border border-energy/20 shadow-[inset_0_0_12px_rgba(230,0,18,0.15)] shadow-energy/20' 
-        : 'text-steel hover:text-energy hover:bg-white/5'
-    }`;
+  const linkClass = ({ isActive }: { isActive: boolean }) =>
+    cn(
+      'group relative flex items-baseline gap-1.5 px-3 py-2 font-display font-bold uppercase tracking-wide text-[15px] transition-colors',
+      isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+    );
+
+  const indicator = (isActive: boolean) => (
+    <span
+      className={cn(
+        'absolute left-3 right-3 -bottom-[13px] h-[3px] bg-energy origin-left transition-transform duration-300',
+        isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-50'
+      )}
+      aria-hidden
+    />
+  );
 
   return (
-    <nav className="bg-background/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50 shadow-2xl transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-22 py-2">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="relative">
-              <div className="absolute -inset-1 bg-energy/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-500" />
-              <img src={TAALogo} alt="TAA Logo" className="h-12 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 relative z-10 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-display font-black text-xl tracking-tight text-white group-hover:text-energy transition-colors duration-300">AUTOARCHITECTS</span>
-              <span className="text-[10px] text-energy font-extrabold tracking-widest uppercase">ONE TEAM ONE DREAM !!!</span>
-            </div>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-3">
-            {publicNavItems.map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.path}
-                className={getLinkClass}
-              >
-                {item.name}
-              </NavLink>
-            ))}
-
-            {isAuthenticated ? (
-              <>
-                <Button
-                  onClick={handleDashboardClick}
-                  variant="ghost"
-                  className="px-4 py-2 rounded-lg font-semibold tracking-wider uppercase text-xs text-steel hover:bg-white/5 hover:text-energy transition-smooth h-auto"
-                >
-                  <LayoutDashboard className="w-4 h-4 mr-2" />
-                  Dashboard
-                </Button>
-                <Button
-                  onClick={handleLogout}
-                  variant="ghost"
-                  className="px-4 py-2 rounded-lg font-semibold tracking-wider uppercase text-xs text-steel hover:bg-red-500/10 hover:text-red-500 transition-smooth h-auto"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <NavLink to="/login" className={getLinkClass}>
-                Login
-              </NavLink>
-            )}
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-steel hover:text-energy hover:bg-steel/10"
-            >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </Button>
-          </div>
+    <>
+      {/* Workshop status strip */}
+      <div className="bg-graphite border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-8 flex items-center justify-between gap-4">
+          <p className="label-mono text-[10px] sm:text-[11px] text-muted-foreground truncate">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-energy animate-blink mr-2 align-middle" />
+            In the workshop <span className="text-foreground/40 mx-1.5">/</span>
+            <span className="text-foreground">Building for {CLUB.nowBuilding}</span>
+          </p>
+          <p className="label-mono text-[10px] text-muted-foreground hidden md:block">
+            {CLUB.institute} · {CLUB.city}
+          </p>
         </div>
+      </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden pb-4 pt-2 border-t border-border mt-2">
-            <div className="flex flex-col space-y-2">
+      <nav className="bg-background/85 backdrop-blur-md border-b border-border sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link to="/" className="flex items-center gap-3 group" aria-label="Team AutoArchitects home">
+              <img
+                src={TAALogo}
+                alt=""
+                className="h-11 w-11 object-contain transition-transform duration-500 group-hover:-rotate-6"
+              />
+              <span className="flex flex-col leading-none">
+                <span className="font-display font-extrabold italic uppercase text-xl tracking-tight">
+                  Auto<span className="text-energy">Architects</span>
+                </span>
+                <span className="label-mono text-[9px] text-muted-foreground mt-1">SIT · ATV Engineering Team</span>
+              </span>
+            </Link>
+
+            {/* Desktop */}
+            <div className="hidden md:flex items-center gap-1">
               {publicNavItems.map((item) => (
-                <NavLink
-                  key={item.name}
-                  to={item.path}
-                  className={getLinkClass}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
+                <NavLink key={item.path} to={item.path} end className={linkClass}>
+                  {({ isActive }) => (
+                    <>
+                      <span className="font-mono text-[10px] text-energy/80">{item.n}</span>
+                      {item.name}
+                      {indicator(isActive)}
+                    </>
+                  )}
                 </NavLink>
               ))}
 
+              <span className="w-px h-6 bg-border mx-3" aria-hidden />
+
               {isAuthenticated ? (
                 <>
-                  <Button
+                  <button
                     onClick={handleDashboardClick}
-                    variant="ghost"
-                    className="justify-start px-4 py-2 rounded-lg font-medium text-steel hover:bg-steel/10 hover:text-energy transition-smooth"
+                    className="flex items-center gap-2 px-3 py-2 font-display font-bold uppercase tracking-wide text-[15px] text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    <LayoutDashboard className="w-4 h-4" />
                     Dashboard
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     onClick={handleLogout}
-                    variant="ghost"
-                    className="justify-start px-4 py-2 rounded-lg font-medium text-steel hover:bg-red-500/10 hover:text-red-600 transition-smooth"
+                    className="flex items-center gap-2 px-3 py-2 font-display font-bold uppercase tracking-wide text-[15px] text-muted-foreground hover:text-energy transition-colors"
                   >
-                    <LogOut className="w-4 h-4 mr-2" />
+                    <LogOut className="w-4 h-4" />
                     Logout
-                  </Button>
+                  </button>
                 </>
               ) : (
-                <NavLink
+                <Link
                   to="/login"
-                  className={getLinkClass}
-                  onClick={() => setIsMenuOpen(false)}
+                  className="group flex items-center gap-1.5 h-10 px-4 bg-foreground text-background font-display font-bold uppercase tracking-wide text-[15px] hover:bg-energy hover:text-white transition-colors"
                 >
-                  Login
-                </NavLink>
+                  Crew login
+                  <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </Link>
               )}
+            </div>
+
+            {/* Mobile toggle */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden w-11 h-11 flex items-center justify-center border border-border text-foreground"
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMenuOpen}
+            >
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile */}
+        {isMenuOpen && (
+          <div className="md:hidden border-t border-border bg-background animate-fade-in">
+            <div className="px-4 py-4 flex flex-col">
+              {publicNavItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  end
+                  onClick={() => setIsMenuOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-baseline gap-3 py-3 border-b border-border font-display font-extrabold italic uppercase text-3xl',
+                      isActive ? 'text-energy' : 'text-foreground'
+                    )
+                  }
+                >
+                  <span className="font-mono not-italic text-xs text-muted-foreground">{item.n}</span>
+                  {item.name}
+                </NavLink>
+              ))}
+              <div className="flex gap-2 pt-4">
+                {isAuthenticated ? (
+                  <>
+                    <button
+                      onClick={handleDashboardClick}
+                      className="flex-1 h-12 flex items-center justify-center gap-2 border border-border font-display font-bold uppercase"
+                    >
+                      <LayoutDashboard className="w-4 h-4" /> Dashboard
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="flex-1 h-12 flex items-center justify-center gap-2 border border-border font-display font-bold uppercase text-energy"
+                    >
+                      <LogOut className="w-4 h-4" /> Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex-1 h-12 flex items-center justify-center gap-2 bg-foreground text-background font-display font-bold uppercase"
+                  >
+                    Crew login <ArrowUpRight className="w-4 h-4" />
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         )}
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 };
 

@@ -21,7 +21,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { StudentRegistrationInsert } from '@/types/registration';
-import AnimatedATV from './AnimatedATV';
+import BuggyBlueprint from '@/components/brand/BuggyBlueprint';
+import { STATS } from '@/data/club';
 
 interface RegistrationModalProps {
   open: boolean;
@@ -219,59 +220,43 @@ const RegistrationModal = ({ open, onOpenChange }: RegistrationModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[95vw] lg:max-w-[1100px] max-h-[90vh] overflow-hidden glass-card border-2 border-white/20 shadow-2xl p-0">
+      <DialogContent className="max-w-[95vw] lg:max-w-[1100px] max-h-[90vh] overflow-hidden bg-card border border-border shadow-2xl p-0 rounded-sm">
         <div className="flex flex-col lg:flex-row max-h-[90vh]">
-          {/* Left Side - Animated ATV (Hidden on mobile, visible on desktop) */}
-          <div className="hidden lg:flex lg:w-[45%] bg-gradient-to-br from-steel-dark via-steel to-metallic p-8 items-center justify-center relative overflow-hidden">
-            {/* Background decoration */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-energy rounded-full blur-3xl animate-pulse" />
-              <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-white rounded-full blur-3xl" />
+          {/* Left side: blueprint + recruiting pitch (desktop) */}
+          <div className="hidden lg:flex lg:w-[45%] flex-col justify-between bg-graphite border-r border-border relative overflow-hidden">
+            <div className="hazard-stripe h-2 shrink-0" />
+            <div className="absolute inset-0 drafting-grid opacity-70 pointer-events-none" aria-hidden />
+            <div className="relative px-8 pt-8">
+              <p className="label-mono text-energy">Recruitment open</p>
+              <h3 className="mt-3 font-display font-extrabold italic uppercase text-5xl leading-[0.9] tracking-tight">
+                Put your name
+                <br />
+                on the <span className="text-energy">chassis.</span>
+              </h3>
+              <p className="mt-4 text-muted-foreground leading-relaxed">
+                No experience needed. You learn to design, weld and race by doing it with the crew.
+              </p>
             </div>
-
-            {/* ATV Animation Container */}
-            <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
-              <div className="mb-6 text-center">
-                <h3 className="font-display font-bold text-3xl text-white mb-2">
-                  Rev Up Your <span className="text-energy">Future</span>
-                </h3>
-                <p className="text-white/80 text-sm">
-                  Join the ultimate ATV engineering experience
-                </p>
-              </div>
-
-              <div className="w-full max-w-md h-64 animate-fade-in-up">
-                <AnimatedATV />
-              </div>
-
-              {/* Stats or Features */}
-              <div className="mt-8 grid grid-cols-3 gap-4 w-full max-w-md">
-                <div className="text-center glass-card p-3 rounded-lg border border-white/10">
-                  <div className="font-display font-bold text-2xl text-energy">50+</div>
-                  <div className="text-white/70 text-xs">Members</div>
-                </div>
-                <div className="text-center glass-card p-3 rounded-lg border border-white/10">
-                  <div className="font-display font-bold text-2xl text-energy">10+</div>
-                  <div className="text-white/70 text-xs">Projects</div>
-                </div>
-                <div className="text-center glass-card p-3 rounded-lg border border-white/10">
-                  <div className="font-display font-bold text-2xl text-energy">5+</div>
-                  <div className="text-white/70 text-xs">Awards</div>
-                </div>
-              </div>
+            <div className="relative px-4 is-in">
+              <BuggyBlueprint active={null} />
             </div>
+            <dl className="relative grid grid-cols-3 border-t border-border divide-x divide-border">
+              {STATS.slice(1).map((s) => (
+                <div key={s.label} className="px-5 py-4">
+                  <dt className="label-mono text-[9px] text-muted-foreground">{s.label}</dt>
+                  <dd className="font-display font-extrabold italic text-3xl leading-none mt-1.5">{s.value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
           {/* Right Side - Registration Form */}
           <div className="w-full lg:w-[55%] overflow-y-auto p-6 sm:p-8 scroll-smooth">
-            {/* Mobile ATV Animation - Only visible on mobile */}
-            <div className="lg:hidden mb-6 h-40 bg-gradient-to-br from-steel-dark/10 via-steel/10 to-metallic/10 rounded-xl p-4 border border-steel/20">
-              <AnimatedATV />
-            </div>
+            <div className="lg:hidden hazard-stripe h-1.5 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-6" aria-hidden />
 
             <DialogHeader className="mb-6">
-              <DialogTitle className="font-display text-2xl sm:text-3xl font-bold text-steel-dark">
-                Join <span className="text-gradient-energy">AutoArchitects</span>
+              <DialogTitle className="font-display font-extrabold italic uppercase text-3xl sm:text-4xl leading-none text-foreground">
+                Join <span className="text-energy">AutoArchitects</span>
               </DialogTitle>
               <DialogDescription className="text-sm sm:text-base text-muted-foreground">
                 Fill out the form below to register for the ATV Club. We'll get back to you soon!
