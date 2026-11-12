@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import Layout from '@/components/Layout';
 import SponsorMarquee, { SponsorLogoTile } from '@/components/SponsorMarquee';
 import { supabase } from '@/lib/supabase';
+import { processLogo, type ProcessedLogo } from '@/lib/logoImage';
 import {
   SPONSOR_TIERS,
   deleteAllSponsorLogos,
@@ -38,6 +39,8 @@ interface FormState {
   logoFile: File | null;
   /** Editing: the admin cleared the saved logo. */
   removeLogo: boolean;
+  /** Make a plain white/light background transparent before upload. */
+  removeBackground: boolean;
 }
 
 const emptyForm = (): FormState => ({
@@ -48,6 +51,7 @@ const emptyForm = (): FormState => ({
   is_visible: true,
   logoFile: null,
   removeLogo: false,
+  removeBackground: true,
 });
 
 const hostOf = (url: string) => {
@@ -89,18 +93,38 @@ const ManageSponsors = () => {
     load();
   }, [load]);
 
-  // Preview of the picked logo file
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Clean up the picked logo (background removal + trim) as soon as it's chosen,
+  // so the preview shows exactly what will be uploaded.
+  const [processed, setProcessed] = useState<(ProcessedLogo & { url: string }) | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   useEffect(() => {
     if (!form.logoFile) {
-      setPreviewUrl(null);
+      setProcessed(null);
       return;
     }
-    const url = URL.createObjectURL(form.logoFile);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [form.logoFile]);
-  const shownLogo = previewUrl ?? (form.removeLogo ? null : editing?.logo_url ?? null);
+    let cancelled = false;
+    let url: string | null = null;
+    setIsProcessing(true);
+    processLogo(form.logoFile, { removeBackground: form.removeBackground })
+      .then((result) => {
+        if (cancelled) return;
+        url = URL.createObjectURL(result.blob);
+        setProcessed({ ...result, url });
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error('Error processing logo:', err);
+        toast.error((err as Error).message);
+        setForm((f) => ({ ...f, logoFile: null }));
+      })
+      .finally(() => !cancelled && setIsProcessing(false));
+    return () => {
+      cancelled = true;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [form.logoFile, form.removeBackground]);
+  const shownLogo = processed?.url ?? (form.removeLogo ? null : editing?.logo_url ?? null);
+  const newLogo = form.logoFile ? processed?.blob ?? null : null;
 
   const openAdd = () => {
     setEditing(null);
@@ -118,6 +142,7 @@ const ManageSponsors = () => {
       is_visible: s.is_visible,
       logoFile: null,
       removeLogo: false,
+      removeBackground: true,
     });
     setDialogOpen(true);
   };
@@ -131,7 +156,7 @@ const ManageSponsors = () => {
       toast.error(problem);
       return;
     }
-    setForm((f) => ({ ...f, logoFile: file, removeLogo: false }));
+    setForm((f) => ({ ...f, logoFile: file, removeLogo: false, removeBackground: true }));
   };
 
   const save = async () => {
@@ -161,9 +186,9 @@ const ManageSponsors = () => {
         if (error) throw new Error(error.message);
 
         // Logos are stored under the sponsor's id, so they go up after the insert.
-        if (form.logoFile && data?.id) {
+        if (newLogo && data?.id) {
           try {
-            const logoUrl = await uploadSponsorLogo(data.id, form.logoFile);
+            const logoUrl = await uploadSponsorLogo(data.id, newLogo);
             const { error: logoError } = await supabase.from('sponsors').update({ logo_url: logoUrl }).eq('id', data.id);
             if (logoError) throw new Error(logoError.message);
           } catch (logoErr) {
@@ -174,13 +199,13 @@ const ManageSponsors = () => {
         toast.success(`"${name}" added`);
       } else {
         const update: Record<string, unknown> = { ...row, updated_at: new Date().toISOString() };
-        if (form.logoFile) update.logo_url = await uploadSponsorLogo(editing.id, form.logoFile);
+        if (newLogo) update.logo_url = await uploadSponsorLogo(editing.id, newLogo);
         else if (form.removeLogo) update.logo_url = null;
 
         const { error } = await supabase.from('sponsors').update(update).eq('id', editing.id);
         if (error) {
           // Don't leave an orphaned upload behind if the row didn't save.
-          if (form.logoFile) await deleteSponsorLogo(update.logo_url as string);
+          if (newLogo) await deleteSponsorLogo(update.logo_url as string);
           throw new Error(error.message);
         }
         // Remove the replaced/cleared logo only once the row points elsewhere.
@@ -443,10 +468,32 @@ const ManageSponsors = () => {
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      PNG or SVG with a transparent background works best. Without a logo, the name is shown instead.
+                      {isProcessing
+                        ? 'Cleaning up the logo…'
+                        : form.logoFile && processed
+                          ? processed.backgroundRemoved
+                            ? 'Background removed and margins trimmed. This is how it will look on the site.'
+                            : form.removeBackground
+                              ? 'No plain light background found, so the logo is kept as is (margins trimmed).'
+                              : 'Original background kept.'
+                          : 'Any PNG, JPG or SVG. A plain white background is removed automatically. Without a logo, the name is shown instead.'}
                     </p>
                   </div>
                 </div>
+                {form.logoFile && (
+                  <label className="flex items-center justify-between gap-3 rounded-md border p-3 cursor-pointer">
+                    <span className="text-sm">
+                      <span className="font-medium">Remove white background</span>
+                      <span className="block text-xs text-muted-foreground">
+                        Turn off if the clean-up cuts into the logo itself.
+                      </span>
+                    </span>
+                    <Switch
+                      checked={form.removeBackground}
+                      onCheckedChange={(v) => setForm((f) => ({ ...f, removeBackground: v }))}
+                    />
+                  </label>
+                )}
                 <input
                   ref={fileInput}
                   type="file"
@@ -514,7 +561,7 @@ const ManageSponsors = () => {
                 <Switch checked={form.is_visible} onCheckedChange={(v) => setForm((f) => ({ ...f, is_visible: v }))} />
               </label>
 
-              <Button onClick={save} disabled={isSaving} className="w-full energy-gradient">
+              <Button onClick={save} disabled={isSaving || isProcessing} className="w-full energy-gradient">
                 {isSaving ? 'Saving…' : editing ? 'Save changes' : 'Add sponsor'}
               </Button>
             </div>

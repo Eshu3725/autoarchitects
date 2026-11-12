@@ -153,8 +153,8 @@ const Sponsors = () => {
                     const content = (
                       <>
                         {s.logo_url && (
-                          <span className="h-8 w-14 shrink-0 bg-bone flex items-center justify-center p-1">
-                            <img src={s.logo_url} alt="" loading="lazy" className="max-h-full max-w-full object-contain" />
+                          <span className="h-8 w-14 shrink-0 bg-white flex items-center justify-center p-1">
+                            <img src={s.logo_url} alt="" loading="lazy" className="h-full w-full object-contain" />
                           </span>
                         )}
                         <span>{s.name}</span>

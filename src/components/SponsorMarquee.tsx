@@ -7,7 +7,7 @@ const MIN_TILES_PER_HALF = 10;
 /** Seconds per tile: keeps the speed the same however many sponsors there are. */
 const SECONDS_PER_TILE = 3.5;
 
-/** A sponsor's logo on a light plate, so dark and coloured logos both read on the dark site. */
+/** A sponsor's logo on a white plate, so dark and coloured logos both read on the dark site. */
 export function SponsorLogoTile({
   sponsor,
   className,
@@ -18,14 +18,16 @@ export function SponsorLogoTile({
   focusable?: boolean;
 }) {
   const body = sponsor.logo_url ? (
-    <img src={sponsor.logo_url} alt={sponsor.name} loading="lazy" className="max-h-full max-w-full object-contain" />
+    // Logos are trimmed to their edges on upload; scale them up to fill the plate.
+    <img src={sponsor.logo_url} alt={sponsor.name} loading="lazy" className="h-full w-full object-contain" />
   ) : (
     <span className="font-display font-extrabold italic uppercase text-graphite text-lg sm:text-xl leading-[0.95] text-center line-clamp-2">
       {sponsor.name}
     </span>
   );
   const cls = cn(
-    'flex items-center justify-center bg-bone border border-border p-4 sm:p-5 transition-transform duration-300',
+    // Pure white, so any white left inside a logo (letter counters, white shapes) blends in.
+    'flex items-center justify-center bg-white border border-border p-3 sm:p-4 transition-transform duration-300',
     className
   );
   return sponsor.website ? (

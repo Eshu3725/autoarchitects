@@ -112,8 +112,6 @@ export const normalizeWebsite = (raw: string): string | null => {
 export const LOGO_BUCKET = 'sponsor-logos';
 const LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml', 'image/gif'];
 const MAX_SOURCE_BYTES = 10 * 1024 * 1024;
-const MAX_W = 800;
-const MAX_H = 400;
 
 export const validateLogo = (file: File): string | null => {
   if (!LOGO_TYPES.includes(file.type)) return 'Please choose a PNG, JPG, WebP, GIF or SVG logo.';
@@ -122,41 +120,10 @@ export const validateLogo = (file: File): string | null => {
 };
 
 /**
- * Rasterise any logo (including SVG) to a PNG no larger than 800×400, keeping
- * transparency. Serving only PNGs means an uploaded SVG can never carry script.
+ * Upload an already-processed logo PNG (see processLogo in logoImage.ts) and
+ * return its public URL. A fresh filename each time avoids stale CDN caches.
  */
-const processLogo = (file: File): Promise<Blob> =>
-  new Promise((resolve, reject) => {
-    const src = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      // SVGs without width/height report 0×0; give them a sensible canvas.
-      const w0 = img.naturalWidth || 800;
-      const h0 = img.naturalHeight || 400;
-      const scale = Math.min(1, MAX_W / w0, MAX_H / h0);
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.max(1, Math.round(w0 * scale));
-      canvas.height = Math.max(1, Math.round(h0 * scale));
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        URL.revokeObjectURL(src);
-        reject(new Error('Could not process the logo.'));
-        return;
-      }
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      URL.revokeObjectURL(src);
-      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Could not process the logo.'))), 'image/png');
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(src);
-      reject(new Error('Could not read that image. Try a PNG or JPG instead.'));
-    };
-    img.src = src;
-  });
-
-/** Upload a sponsor logo and return its public URL. A fresh filename each time avoids stale CDN caches. */
-export const uploadSponsorLogo = async (sponsorId: string, file: File): Promise<string> => {
-  const blob = await processLogo(file);
+export const uploadSponsorLogo = async (sponsorId: string, blob: Blob): Promise<string> => {
   const path = `${sponsorId}/${Date.now()}.png`;
   const { error } = await supabase.storage
     .from(LOGO_BUCKET)
