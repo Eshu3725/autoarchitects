@@ -11,6 +11,7 @@ export interface CrewMember {
   id: string;
   name: string;
   email: string;
+  role?: 'admin' | 'user';
   designation?: string | null;
   year?: string | null;
   major?: string | null;
@@ -21,17 +22,30 @@ export interface CrewMember {
 }
 
 /** Public profile columns. Never select `*` on users: it includes passwords. */
-export const CREW_COLUMNS = 'id, name, email, designation, year, major, bio, category, domain, photo_url';
+export const CREW_COLUMNS = 'id, name, email, role, designation, year, major, bio, category, domain, photo_url';
 /** Columns that exist before ADD_MEMBER_DOMAIN_AND_PHOTOS.sql has been run. */
-export const CREW_COLUMNS_LEGACY = 'id, name, email, designation, year, major, bio, category';
+export const CREW_COLUMNS_LEGACY = 'id, name, email, role, designation, year, major, bio, category';
 
-/** Load role='user' members, falling back to the older column set if the migration hasn't run. */
-export const fetchCrew = async (): Promise<{ data: CrewMember[]; error: Error | null; hasPhotoColumns: boolean }> => {
-  const full = await supabase.from('users').select(CREW_COLUMNS).eq('role', 'user').order('name');
-  if (!full.error) return { data: (full.data ?? []) as CrewMember[], error: null, hasPhotoColumns: true };
+/**
+ * Load members, falling back to the older column set if the migration hasn't run.
+ *
+ * - 'crew' (public Crew page): every role='user' member, plus admin accounts
+ *   that have been given a domain. Admins without a domain are logins like a
+ *   shared "Admin User" account, not crew, so they stay off the public page.
+ * - 'all' (admin Manage Team): every account, admins included.
+ */
+export const fetchCrew = async (
+  scope: 'crew' | 'all' = 'crew'
+): Promise<{ data: CrewMember[]; error: Error | null; hasPhotoColumns: boolean }> => {
+  let full = supabase.from('users').select(CREW_COLUMNS).order('name');
+  if (scope === 'crew') full = full.or('role.eq.user,domain.not.is.null');
+  const fullRes = await full;
+  if (!fullRes.error) return { data: (fullRes.data ?? []) as CrewMember[], error: null, hasPhotoColumns: true };
 
-  console.warn('Crew: domain/photo columns unavailable, run ADD_MEMBER_DOMAIN_AND_PHOTOS.sql.', full.error);
-  const legacy = await supabase.from('users').select(CREW_COLUMNS_LEGACY).eq('role', 'user').order('name');
+  console.warn('Crew: domain/photo columns unavailable, run ADD_MEMBER_DOMAIN_AND_PHOTOS.sql.', fullRes.error);
+  let legacyQuery = supabase.from('users').select(CREW_COLUMNS_LEGACY).order('name');
+  if (scope === 'crew') legacyQuery = legacyQuery.eq('role', 'user');
+  const legacy = await legacyQuery;
   return {
     data: (legacy.data ?? []) as CrewMember[],
     error: legacy.error ? new Error(legacy.error.message) : null,

@@ -60,7 +60,10 @@ const AdminDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  // Regular members: attendance, leave and summaries
   const [teamMembers, setTeamMembers] = useState<CrewMember[]>([]);
+  // Every account, admins included: Manage Team list
+  const [rosterMembers, setRosterMembers] = useState<CrewMember[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<AttendanceRecord | null>(null);
@@ -140,14 +143,16 @@ const AdminDashboard = () => {
   }, []);
 
   const loadTeamMembers = async () => {
-    const { data, error, hasPhotoColumns } = await fetchCrew();
+    const { data, error, hasPhotoColumns } = await fetchCrew('all');
     if (error) {
       console.error('Error loading team members:', error);
       toast.error('Failed to load team members');
       return;
     }
+    const roster = data.filter(member => !isRemovedMember(member));
     setPhotosEnabled(hasPhotoColumns);
-    setTeamMembers(data.filter(member => !isRemovedMember(member)));
+    setRosterMembers(roster);
+    setTeamMembers(roster.filter(member => member.role !== 'admin'));
   };
 
   const loadAttendanceRecords = async () => {
@@ -578,9 +583,13 @@ const AdminDashboard = () => {
     }
   };
 
+  /** Domain the Crew page will actually use. Admins need a stored domain; there's no designation fallback for them. */
+  const crewDomainOf = (member: CrewMember) =>
+    member.role === 'admin' ? member.domain ?? null : resolveDomain(member);
+
   const openEditMember = (member: CrewMember) => {
     setEditingMember(member);
-    setEditFormData(memberToForm(member, resolveDomain(member)));
+    setEditFormData(memberToForm(member, crewDomainOf(member)));
     setTeamTab('edit');
   };
 
@@ -590,7 +599,8 @@ const AdminDashboard = () => {
       toast.error('Name is required');
       return;
     }
-    if (!editFormData.domain) {
+    // Admin accounts may stay off the Crew page; everyone else needs a domain.
+    if (!editFormData.domain && editingMember.role !== 'admin') {
       toast.error('Please pick a domain so the member shows up on the Crew page');
       return;
     }
@@ -1228,11 +1238,12 @@ const AdminDashboard = () => {
 
                           <TabsContent value="list" className="flex-1 overflow-y-auto pr-1">
                             <div className="space-y-3">
-                              {teamMembers.length === 0 ? (
+                              {rosterMembers.length === 0 ? (
                                 <p className="text-center text-muted-foreground py-6">No team members found.</p>
                               ) : (
-                                teamMembers.map(member => {
-                                  const domain = resolveDomain(member);
+                                rosterMembers.map(member => {
+                                  const domain = crewDomainOf(member);
+                                  const isAdminAccount = member.role === 'admin';
                                   return (
                                     <div key={member.id} className="flex items-center gap-3 p-3 rounded-lg border bg-background hover:bg-muted/30 transition-colors">
                                       <div className="h-10 w-10 shrink-0 rounded-md border bg-muted overflow-hidden flex items-center justify-center text-xs font-bold text-muted-foreground">
@@ -1243,13 +1254,20 @@ const AdminDashboard = () => {
                                         )}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                        <p className="font-semibold text-steel-dark truncate">{member.name}</p>
+                                        <p className="font-semibold text-steel-dark truncate">
+                                          {member.name}
+                                          {isAdminAccount && (
+                                            <Badge variant="outline" className="ml-2 align-middle text-[10px] px-1.5 py-0">Admin</Badge>
+                                          )}
+                                        </p>
                                         <p className="text-xs text-muted-foreground truncate">
                                           {domain ? (
                                             <>
                                               {member.category === 'leadership' ? 'Leadership · ' : ''}
                                               {domainLabel(domain)}
                                             </>
+                                          ) : isAdminAccount ? (
+                                            'Not on Crew page'
                                           ) : (
                                             <span className="text-amber-500">No domain: hidden from Crew page</span>
                                           )}
@@ -1264,15 +1282,18 @@ const AdminDashboard = () => {
                                       >
                                         <Edit className="w-4 h-4" />
                                       </Button>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handleDeleteMember(member.id, member.name)}
-                                        aria-label={`Delete ${member.name}`}
-                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
-                                      >
-                                        <Trash2 className="w-4 h-4" />
-                                      </Button>
+                                      {/* Admin logins can't be deleted here, so nobody locks themselves out. */}
+                                      {!isAdminAccount && (
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => handleDeleteMember(member.id, member.name)}
+                                          aria-label={`Delete ${member.name}`}
+                                          className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                      )}
                                     </div>
                                   );
                                 })
@@ -1315,6 +1336,7 @@ const AdminDashboard = () => {
                                   onSubmit={handleSaveMember}
                                   submitting={isSavingMember}
                                   existingPhotoUrl={editingMember.photo_url}
+                                  allowNoDomain={editingMember.role === 'admin'}
                                   photosEnabled={photosEnabled}
                                 />
                               </>

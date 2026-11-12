@@ -63,9 +63,14 @@ interface MemberFormProps {
   existingPhotoUrl?: string | null;
   /** False until ADD_MEMBER_DOMAIN_AND_PHOTOS.sql has been run. */
   photosEnabled: boolean;
+  /** Admin accounts: offer "Not on Crew page" instead of requiring a domain. */
+  allowNoDomain?: boolean;
 }
 
-const MemberForm = ({ mode, values, onChange, onSubmit, submitting, existingPhotoUrl, photosEnabled }: MemberFormProps) => {
+/** Radix Select can't use '' as an item value, so "no domain" gets a sentinel. */
+const NO_DOMAIN = 'none';
+
+const MemberForm = ({ mode, values, onChange, onSubmit, submitting, existingPhotoUrl, photosEnabled, allowNoDomain }: MemberFormProps) => {
   const set = <K extends keyof MemberFormValues>(key: K, value: MemberFormValues[K]) => onChange({ ...values, [key]: value });
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -171,12 +176,16 @@ const MemberForm = ({ mode, values, onChange, onSubmit, submitting, existingPhot
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor={`${mode}-memberDomain`}>Domain (Crew section) *</Label>
-          <Select value={values.domain} onValueChange={(v: SubsystemId) => set('domain', v)}>
+          <Label htmlFor={`${mode}-memberDomain`}>Domain (Crew section){allowNoDomain ? '' : ' *'}</Label>
+          <Select
+            value={values.domain || (allowNoDomain ? NO_DOMAIN : '')}
+            onValueChange={(v) => set('domain', v === NO_DOMAIN ? '' : (v as SubsystemId))}
+          >
             <SelectTrigger id={`${mode}-memberDomain`}>
               <SelectValue placeholder="Pick a sub-team" />
             </SelectTrigger>
             <SelectContent>
+              {allowNoDomain && <SelectItem value={NO_DOMAIN}>Not on Crew page</SelectItem>}
               {DOMAIN_OPTIONS.map((d) => (
                 <SelectItem key={d.id} value={d.id}>
                   {d.label}
