@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowDown, ArrowRight, Check, Mail, Phone } from 'lucide-react';
 import { SectionHeader, Reveal, Callout, RacePlate } from '@/components/brand/Primitives';
 import SponsorEnquiryForm from '@/components/SponsorEnquiryForm';
+import SponsorMarquee from '@/components/SponsorMarquee';
 import type { TierChoice } from '@/types/sponsor';
-import { CLUB, IMAGES, PARTNERS, TIERS, DELIVERABLES, CONTACTS, PATRONS, BAJA_FACTS } from '@/data/club';
+import { CLUB, IMAGES, TIERS, DELIVERABLES, CONTACTS, PATRONS, BAJA_FACTS } from '@/data/club';
+import { fetchSponsors, groupByTier, STATIC_SPONSORS, type Sponsor } from '@/lib/sponsors';
 import { cn } from '@/lib/utils';
 
 const SPONSOR_MAIL = `mailto:${CLUB.email}?subject=${encodeURIComponent(`Sponsorship · ${CLUB.nowBuilding}`)}`;
@@ -20,6 +22,22 @@ const Sponsors = () => {
     setTier(t);
     scrollToForm();
   };
+
+  // Sponsors added in the admin dashboard. Starts with the built-in list so the
+  // section never renders empty; the database list replaces it once loaded.
+  const [sponsors, setSponsors] = useState<Sponsor[]>(STATIC_SPONSORS);
+  useEffect(() => {
+    let cancelled = false;
+    fetchSponsors({ visibleOnly: true }).then(({ data, error }) => {
+      if (cancelled) return;
+      if (error) console.warn('Sponsors: using built-in list.', error);
+      else if (data.length > 0) setSponsors(data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const sponsorGroups = groupByTier(sponsors);
 
   const strip = [
     { value: BAJA_FACTS[3].value, label: 'Teams at BAJA SAEINDIA' },
@@ -118,19 +136,50 @@ const Sponsors = () => {
           <SectionHeader sheet="01" kicker="On the car now" title={<>Current <span className="text-energy">partners</span></>}>
             The institute, industry and software partners who already put their name on the build.
           </SectionHeader>
+        </div>
+
+        {/* Full-bleed logo strip */}
+        <Reveal className="mb-12 md:mb-16">
+          <SponsorMarquee sponsors={sponsors} />
+        </Reveal>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="border border-border divide-y divide-border bg-card">
-            {PARTNERS.map((group, i) => (
-              <Reveal key={group.tier} delay={i * 60} className="grid md:grid-cols-12 gap-4 p-5 md:p-6 items-center">
-                <p className="md:col-span-3 label-mono text-energy">{group.tier}</p>
+            {sponsorGroups.map((group, i) => (
+              <Reveal key={group.tier.id} delay={i * 60} className="grid md:grid-cols-12 gap-4 p-5 md:p-6 items-center">
+                <p className="md:col-span-3 label-mono text-energy">{group.tier.group}</p>
                 <ul className="md:col-span-9 flex flex-wrap gap-3">
-                  {group.names.map((name) => (
-                    <li
-                      key={name}
-                      className="border border-border bg-background px-4 h-12 flex items-center font-display font-extrabold uppercase text-lg sm:text-xl leading-none tracking-tight"
-                    >
-                      {name}
-                    </li>
-                  ))}
+                  {group.sponsors.map((s) => {
+                    const content = (
+                      <>
+                        {s.logo_url && (
+                          <span className="h-8 w-14 shrink-0 bg-bone flex items-center justify-center p-1">
+                            <img src={s.logo_url} alt="" loading="lazy" className="max-h-full max-w-full object-contain" />
+                          </span>
+                        )}
+                        <span>{s.name}</span>
+                        {s.since && <span className="font-mono text-[10px] text-muted-foreground font-normal not-italic">{s.since}</span>}
+                      </>
+                    );
+                    const cls =
+                      'border border-border bg-background px-4 h-12 flex items-center gap-3 font-display font-extrabold uppercase text-lg sm:text-xl leading-none tracking-tight';
+                    return (
+                      <li key={s.id}>
+                        {s.website ? (
+                          <a
+                            href={s.website}
+                            target="_blank"
+                            rel="noopener noreferrer sponsored"
+                            className={cn(cls, 'hover:border-energy hover:text-energy transition-colors')}
+                          >
+                            {content}
+                          </a>
+                        ) : (
+                          <span className={cls}>{content}</span>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </Reveal>
             ))}

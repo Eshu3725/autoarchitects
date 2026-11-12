@@ -3,6 +3,7 @@
  * admin dashboard: which sub-team a member belongs to, and member photos.
  */
 import { supabase } from '@/lib/supabase';
+import { deleteStoredFile, deleteStoredFolder } from '@/lib/storage';
 import { SUBSYSTEMS, type SubsystemId } from '@/data/club';
 
 export type CrewCategory = 'leadership' | 'technical' | 'operations';
@@ -115,13 +116,6 @@ export const validatePhoto = (file: File): string | null => {
   return null;
 };
 
-/** Storage path of a photo, extracted from its public URL. */
-const pathFromUrl = (url: string) => {
-  const marker = `/object/public/${PHOTO_BUCKET}/`;
-  const i = url.indexOf(marker);
-  return i === -1 ? null : decodeURIComponent(url.slice(i + marker.length).split('?')[0]);
-};
-
 /** Upload a member photo and return its public URL. A fresh filename each time avoids stale CDN caches. */
 export const uploadMemberPhoto = async (memberId: string, file: File): Promise<string> => {
   const blob = await resizeImage(file);
@@ -134,19 +128,10 @@ export const uploadMemberPhoto = async (memberId: string, file: File): Promise<s
 };
 
 /** Best-effort delete of a previously uploaded photo. */
-export const deleteMemberPhoto = async (url?: string | null) => {
-  const path = url ? pathFromUrl(url) : null;
-  if (!path) return;
-  const { error } = await supabase.storage.from(PHOTO_BUCKET).remove([path]);
-  if (error) console.warn('Could not delete old member photo:', error);
-};
+export const deleteMemberPhoto = (url?: string | null) => deleteStoredFile(PHOTO_BUCKET, url);
 
 /** Best-effort delete of every photo a member has, used when the member is removed. */
-export const deleteAllMemberPhotos = async (memberId: string) => {
-  const { data, error } = await supabase.storage.from(PHOTO_BUCKET).list(memberId);
-  if (error || !data?.length) return;
-  await supabase.storage.from(PHOTO_BUCKET).remove(data.map((f) => `${memberId}/${f.name}`));
-};
+export const deleteAllMemberPhotos = (memberId: string) => deleteStoredFolder(PHOTO_BUCKET, memberId);
 
 export const initials = (name: string) =>
   name

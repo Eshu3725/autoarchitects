@@ -402,6 +402,27 @@
   @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   .animate-marquee { animation: marquee 40s linear infinite; }
 
+  /* Sponsor logo strip: edge fade, pause on hover/focus, opposite-direction rows */
+  .logo-marquee {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  }
+  .logo-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee var(--marquee-duration, 40s) linear infinite;
+  }
+  .logo-marquee-track.is-reverse { animation-direction: reverse; }
+  .logo-marquee:hover .logo-marquee-track,
+  .logo-marquee:focus-within .logo-marquee-track { animation-play-state: paused; }
+  /* Reduced motion: one still, wrapped row of logos instead of a ticker */
+  @media (prefers-reduced-motion: reduce) {
+    .logo-marquee { -webkit-mask-image: none; mask-image: none; }
+    .logo-marquee-track { animation: none !important; width: 100%; flex-wrap: wrap; justify-content: center; }
+    .logo-marquee-dup { display: none; }
+  }
+
   /* Live indicator */
   @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
   .animate-blink { animation: blink 1.4s steps(2, jump-none) infinite; }

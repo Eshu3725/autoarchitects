@@ -15,6 +15,7 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import StudentRegistrations from "./pages/StudentRegistrations";
 import SponsorEnquiries from "./pages/SponsorEnquiries";
+import ManageSponsors from "./pages/ManageSponsors";
 import BulkAttendance from "./pages/BulkAttendance";
 import QrScanner from "./pages/QrScanner";
 import UserDashboard from "./pages/UserDashboard";
@@ -59,6 +60,14 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="admin">
                   <SponsorEnquiries />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/partners"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <ManageSponsors />
                 </ProtectedRoute>
               }
             />
