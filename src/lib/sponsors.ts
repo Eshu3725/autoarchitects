@@ -120,16 +120,46 @@ export const validateLogo = (file: File): string | null => {
 };
 
 /**
- * Upload an already-processed logo PNG (see processLogo in logoImage.ts) and
- * return its public URL. A fresh filename each time avoids stale CDN caches.
+ * Upload an already-processed logo PNG (see analyseLogo in logoImage.ts) and
+ * return its public URL. The pixel size goes in the filename so pages can
+ * size the logo by its shape before the image has loaded; the timestamp
+ * avoids stale CDN caches.
  */
-export const uploadSponsorLogo = async (sponsorId: string, blob: Blob): Promise<string> => {
-  const path = `${sponsorId}/${Date.now()}.png`;
+export const uploadSponsorLogo = async (
+  sponsorId: string,
+  logo: { blob: Blob; width: number; height: number }
+): Promise<string> => {
+  const path = `${sponsorId}/${Date.now()}-${logo.width}x${logo.height}.png`;
   const { error } = await supabase.storage
     .from(LOGO_BUCKET)
-    .upload(path, blob, { contentType: 'image/png', cacheControl: '31536000', upsert: false });
+    .upload(path, logo.blob, { contentType: 'image/png', cacheControl: '31536000', upsert: false });
   if (error) throw new Error(error.message);
   return supabase.storage.from(LOGO_BUCKET).getPublicUrl(path).data.publicUrl;
+};
+
+/** Pixel size of a logo, read back from its filename (null for logos uploaded before sizes were recorded). */
+export const logoDimensions = (url: string): { width: number; height: number } | null => {
+  const m = /-(\d+)x(\d+)\.png(?:\?|$)/.exec(url);
+  if (!m) return null;
+  const width = Number(m[1]);
+  const height = Number(m[2]);
+  return width > 0 && height > 0 ? { width, height } : null;
+};
+
+/**
+ * Display size that gives every logo roughly the same visual weight: equal
+ * area rather than equal height, so a square emblem isn't dwarfed by a long
+ * wordmark (or the other way round), within height and width limits.
+ */
+export const balancedLogoSize = (aspect: number, area = 9600, maxHeight = 76, maxWidth = 250) => {
+  let height = Math.sqrt(area / aspect);
+  if (height > maxHeight) height = maxHeight;
+  let width = height * aspect;
+  if (width > maxWidth) {
+    width = maxWidth;
+    height = width / aspect;
+  }
+  return { width: Math.round(width), height: Math.round(height) };
 };
 
 export const deleteSponsorLogo = (url?: string | null) => deleteStoredFile(LOGO_BUCKET, url);

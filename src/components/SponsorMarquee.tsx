@@ -1,35 +1,50 @@
 import type { CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
-import type { Sponsor } from '@/lib/sponsors';
+import { balancedLogoSize, logoDimensions, type Sponsor } from '@/lib/sponsors';
 
-/** Each half of a row needs enough tiles to overfill wide screens, or the loop shows a gap. */
-const MIN_TILES_PER_HALF = 10;
-/** Seconds per tile: keeps the speed the same however many sponsors there are. */
-const SECONDS_PER_TILE = 3.5;
+/** Each half of a row needs enough logos to overfill wide screens, or the loop shows a gap. */
+const MIN_LOGOS_PER_HALF = 10;
+/** Seconds per logo: keeps the speed the same however many sponsors there are. */
+const SECONDS_PER_LOGO = 3.5;
 
-/** A sponsor's logo on a white plate, so dark and coloured logos both read on the dark site. */
-export function SponsorLogoTile({
-  sponsor,
-  className,
-  focusable = true,
-}: {
-  sponsor: Pick<Sponsor, 'name' | 'logo_url' | 'website'>;
-  className?: string;
-  focusable?: boolean;
-}) {
-  const body = sponsor.logo_url ? (
-    // Logos are trimmed to their edges on upload; scale them up to fill the plate.
-    <img src={sponsor.logo_url} alt={sponsor.name} loading="lazy" className="h-full w-full object-contain" />
-  ) : (
-    <span className="font-display font-extrabold italic uppercase text-graphite text-lg sm:text-xl leading-[0.95] text-center line-clamp-2">
-      {sponsor.name}
-    </span>
-  );
-  const cls = cn(
-    // Pure white, so any white left inside a logo (letter counters, white shapes) blends in.
-    'flex items-center justify-center bg-white border border-border p-3 sm:p-4 transition-transform duration-300',
-    className
-  );
+type LogoSponsor = Pick<Sponsor, 'name' | 'logo_url' | 'website'>;
+
+/**
+ * A sponsor's logo sitting directly on the page, with no plate behind it.
+ * Logos are cleaned up for the dark site on upload (background removed, dark
+ * ink lightened) and sized here by their shape so they carry equal weight.
+ * Sponsors without a logo show their name as a wordmark.
+ */
+export function SponsorLogo({ sponsor, focusable = true }: { sponsor: LogoSponsor; focusable?: boolean }) {
+  let body;
+  if (sponsor.logo_url) {
+    const dims = logoDimensions(sponsor.logo_url);
+    const size = dims && balancedLogoSize(dims.width / dims.height);
+    body = (
+      <img
+        src={sponsor.logo_url}
+        alt={sponsor.name}
+        loading="lazy"
+        width={size?.width}
+        height={size?.height}
+        // --logo-scale shrinks every logo together on small screens.
+        style={
+          size && {
+            width: `calc(${size.width}px * var(--logo-scale, 1))`,
+            height: `calc(${size.height}px * var(--logo-scale, 1))`,
+          }
+        }
+        className={cn('block object-contain', !size && 'h-12 sm:h-14 w-auto max-w-[11rem] sm:max-w-[14rem]')}
+      />
+    );
+  } else {
+    body = (
+      <span className="block max-w-[13rem] sm:max-w-[16rem] font-display font-extrabold italic uppercase text-foreground/85 text-xl sm:text-2xl leading-[0.95] text-center line-clamp-2">
+        {sponsor.name}
+      </span>
+    );
+  }
+
   return sponsor.website ? (
     <a
       href={sponsor.website}
@@ -37,31 +52,50 @@ export function SponsorLogoTile({
       rel="noopener noreferrer sponsored"
       title={sponsor.name}
       tabIndex={focusable ? undefined : -1}
-      className={cn(cls, 'hover:-translate-y-1 focus-modern')}
+      className="block opacity-90 hover:opacity-100 hover:scale-105 transition duration-300 focus-modern"
     >
       {body}
     </a>
   ) : (
-    <div title={sponsor.name} className={cls}>
+    <div title={sponsor.name} className="opacity-90">
       {body}
     </div>
   );
 }
 
+/** Small dark tile for the dashboard: shows a logo exactly as it sits on the site's background. */
+export function SponsorLogoThumb({ sponsor, className }: { sponsor: Pick<Sponsor, 'name' | 'logo_url'>; className?: string }) {
+  return (
+    <div className={cn('flex items-center justify-center bg-background border border-white/10 p-2 overflow-hidden', className)}>
+      {sponsor.logo_url ? (
+        <img src={sponsor.logo_url} alt={sponsor.name} loading="lazy" className="max-h-full max-w-full object-contain" />
+      ) : (
+        <span className="font-display font-extrabold italic uppercase text-foreground/70 text-xs leading-none text-center line-clamp-2">
+          {sponsor.name}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function MarqueeRow({ sponsors, reverse }: { sponsors: Sponsor[]; reverse?: boolean }) {
-  const repeats = Math.max(1, Math.ceil(MIN_TILES_PER_HALF / sponsors.length));
+  const repeats = Math.max(1, Math.ceil(MIN_LOGOS_PER_HALF / sponsors.length));
   const half = Array.from({ length: repeats }, () => sponsors).flat();
-  const style = { '--marquee-duration': `${half.length * SECONDS_PER_TILE}s` } as CSSProperties;
+  const style = { '--marquee-duration': `${half.length * SECONDS_PER_LOGO}s` } as CSSProperties;
 
   return (
     <div className="logo-marquee">
-      <ul className={cn('logo-marquee-track py-2', reverse && 'is-reverse')} style={style}>
+      <ul className={cn('logo-marquee-track items-center', reverse && 'is-reverse')} style={style}>
         {/* Two identical halves: the track slides by 50% and loops seamlessly. */}
         {[...half, ...half].map((s, i) => {
           const isOriginal = i < sponsors.length;
           return (
-            <li key={`${s.id}-${i}`} className={cn('px-2 sm:px-3', !isOriginal && 'logo-marquee-dup')} aria-hidden={!isOriginal || undefined}>
-              <SponsorLogoTile sponsor={s} focusable={isOriginal} className="h-24 w-44 sm:h-28 sm:w-56" />
+            <li
+              key={`${s.id}-${i}`}
+              className={cn('flex items-center h-24 sm:h-28 px-6 sm:px-10', !isOriginal && 'logo-marquee-dup')}
+              aria-hidden={!isOriginal || undefined}
+            >
+              <SponsorLogo sponsor={s} focusable={isOriginal} />
             </li>
           );
         })}
@@ -78,7 +112,11 @@ export default function SponsorMarquee({ sponsors, className }: { sponsors: Spon
       ? [sponsors.filter((_, i) => i % 2 === 0), sponsors.filter((_, i) => i % 2 === 1)]
       : [sponsors];
   return (
-    <div className={cn('space-y-4', className)} role="group" aria-label="Our sponsors">
+    <div
+      className={cn('space-y-2 [--logo-scale:0.78] sm:[--logo-scale:1]', className)}
+      role="group"
+      aria-label="Our sponsors"
+    >
       {rows.map((row, i) => (
         <MarqueeRow key={i} sponsors={row} reverse={i === 1} />
       ))}

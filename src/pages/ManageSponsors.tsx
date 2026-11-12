@@ -11,9 +11,10 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Layout from '@/components/Layout';
-import SponsorMarquee, { SponsorLogoTile } from '@/components/SponsorMarquee';
+import { cn } from '@/lib/utils';
+import SponsorMarquee, { SponsorLogoThumb } from '@/components/SponsorMarquee';
 import { supabase } from '@/lib/supabase';
-import { processLogo, type ProcessedLogo } from '@/lib/logoImage';
+import { analyseLogo, type LogoAnalysis, type LogoLook } from '@/lib/logoImage';
 import {
   SPONSOR_TIERS,
   deleteAllSponsorLogos,
@@ -23,6 +24,7 @@ import {
   normalizeWebsite,
   sortSponsors,
   tierLabel,
+  logoDimensions,
   uploadSponsorLogo,
   validateLogo,
   type Sponsor,
@@ -39,9 +41,33 @@ interface FormState {
   logoFile: File | null;
   /** Editing: the admin cleared the saved logo. */
   removeLogo: boolean;
-  /** Make a plain white/light background transparent before upload. */
-  removeBackground: boolean;
 }
+
+/** The finished versions of an uploaded logo the admin can choose between. */
+const LOOKS: Record<LogoLook, { label: string; hint: string }> = {
+  adapted: { label: 'Auto', hint: 'Background removed, dark parts lightened' },
+  keepWhite: { label: 'Keep white details', hint: 'For badges with white lettering' },
+  white: { label: 'Solid white', hint: 'One-colour version' },
+  original: { label: 'Original file', hint: 'No changes' },
+};
+
+const describeAnalysis = (a: LogoAnalysis) => {
+  const found =
+    a.backdrop === 'light'
+      ? 'Found a plain light background and removed it.'
+      : a.backdrop === 'dark'
+        ? 'Found a plain dark background and removed it.'
+        : a.backdrop === 'transparent'
+          ? 'This logo already has a transparent background.'
+          : 'No plain background found, so the image is used as it is.';
+  return a.lightened ? `${found} Dark parts were lightened so they show on the dark site.` : found;
+};
+
+/** Name given to a saved logo that was pulled back in for re-analysis (not a file the admin picked). */
+const SAVED_LOGO_NAME = 'saved-logo.png';
+
+/** Logos saved before automatic clean-up existed have no size in their filename. */
+const needsCleanUp = (s: Pick<Sponsor, 'logo_url'>) => !!s.logo_url && !logoDimensions(s.logo_url);
 
 const emptyForm = (): FormState => ({
   name: '',
@@ -51,7 +77,6 @@ const emptyForm = (): FormState => ({
   is_visible: true,
   logoFile: null,
   removeLogo: false,
-  removeBackground: true,
 });
 
 const hostOf = (url: string) => {
@@ -72,6 +97,8 @@ const ManageSponsors = () => {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [isSaving, setIsSaving] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  /** Sponsor the dialog is currently showing, so a slow logo download can't land in the wrong dialog. */
+  const openSponsorId = useRef<string | null>(null);
 
   const load = useCallback(async () => {
     const { data, error } = await fetchSponsors({ visibleOnly: false });
@@ -93,23 +120,25 @@ const ManageSponsors = () => {
     load();
   }, [load]);
 
-  // Clean up the picked logo (background removal + trim) as soon as it's chosen,
-  // so the preview shows exactly what will be uploaded.
-  const [processed, setProcessed] = useState<(ProcessedLogo & { url: string }) | null>(null);
+  // Analyse the picked logo as soon as it's chosen and build every finished
+  // look, so the admin picks from exactly what would be uploaded.
+  const [analysis, setAnalysis] = useState<(LogoAnalysis & { urls: Record<string, string> }) | null>(null);
+  const [look, setLook] = useState<LogoLook>('adapted');
   const [isProcessing, setIsProcessing] = useState(false);
   useEffect(() => {
     if (!form.logoFile) {
-      setProcessed(null);
+      setAnalysis(null);
       return;
     }
     let cancelled = false;
-    let url: string | null = null;
+    let urls: Record<string, string> = {};
     setIsProcessing(true);
-    processLogo(form.logoFile, { removeBackground: form.removeBackground })
+    analyseLogo(form.logoFile)
       .then((result) => {
         if (cancelled) return;
-        url = URL.createObjectURL(result.blob);
-        setProcessed({ ...result, url });
+        urls = Object.fromEntries(result.variants.map((v) => [v.look, URL.createObjectURL(v.blob)]));
+        setAnalysis({ ...result, urls });
+        setLook(result.recommended);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -120,20 +149,41 @@ const ManageSponsors = () => {
       .finally(() => !cancelled && setIsProcessing(false));
     return () => {
       cancelled = true;
-      if (url) URL.revokeObjectURL(url);
+      Object.values(urls).forEach((u) => URL.revokeObjectURL(u));
     };
-  }, [form.logoFile, form.removeBackground]);
-  const shownLogo = processed?.url ?? (form.removeLogo ? null : editing?.logo_url ?? null);
-  const newLogo = form.logoFile ? processed?.blob ?? null : null;
+  }, [form.logoFile]);
+  const newLogo = (form.logoFile && analysis?.variants.find((v) => v.look === look)) || null;
+  const savedLogo = form.removeLogo ? null : editing?.logo_url ?? null;
+  const shownLogo = (newLogo && analysis?.urls[newLogo.look]) || (form.logoFile ? null : savedLogo);
 
   const openAdd = () => {
     setEditing(null);
+    openSponsorId.current = null;
     setForm(emptyForm());
     setDialogOpen(true);
   };
 
+  /**
+   * Run a logo that is already saved through the analysis again, as if it had
+   * just been uploaded, so older logos can be fixed without the original file.
+   */
+  const reanalyseSaved = async (s: Sponsor, quiet: boolean) => {
+    if (!s.logo_url) return;
+    try {
+      const res = await fetch(s.logo_url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      if (openSponsorId.current !== s.id) return;
+      setForm((f) => ({ ...f, logoFile: new File([blob], SAVED_LOGO_NAME, { type: blob.type || 'image/png' }), removeLogo: false }));
+    } catch (err) {
+      console.error('Error loading saved logo:', err);
+      if (!quiet) toast.error('Could not load the saved logo. Upload the original file instead.');
+    }
+  };
+
   const openEdit = (s: Sponsor) => {
     setEditing(s);
+    openSponsorId.current = s.id;
     setForm({
       name: s.name,
       tier: s.tier,
@@ -142,9 +192,9 @@ const ManageSponsors = () => {
       is_visible: s.is_visible,
       logoFile: null,
       removeLogo: false,
-      removeBackground: true,
     });
     setDialogOpen(true);
+    if (needsCleanUp(s)) reanalyseSaved(s, true);
   };
 
   const pickLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,7 +206,7 @@ const ManageSponsors = () => {
       toast.error(problem);
       return;
     }
-    setForm((f) => ({ ...f, logoFile: file, removeLogo: false, removeBackground: true }));
+    setForm((f) => ({ ...f, logoFile: file, removeLogo: false }));
   };
 
   const save = async () => {
@@ -382,7 +432,7 @@ const ManageSponsors = () => {
                             </Button>
                           </div>
 
-                          <SponsorLogoTile sponsor={{ ...s, website: null }} className="h-14 w-28 p-2 shrink-0 [&_span]:text-xs" />
+                          <SponsorLogoThumb sponsor={s} className="h-14 w-28 shrink-0" />
 
                           <div className="min-w-0 flex-1">
                             <p className="font-semibold text-white truncate">{s.name}</p>
@@ -392,6 +442,15 @@ const ManageSponsors = () => {
                               </Badge>
                               {s.since && <span className="text-xs text-zinc-500">{s.since}</span>}
                               {!s.logo_url && <span className="text-xs text-amber-400">No logo yet</span>}
+                              {needsCleanUp(s) && (
+                                <button
+                                  type="button"
+                                  onClick={() => openEdit(s)}
+                                  className="text-xs text-amber-400 underline underline-offset-2 hover:text-amber-300"
+                                >
+                                  Logo needs clean-up: open and save
+                                </button>
+                              )}
                               {s.website && (
                                 <a
                                   href={s.website}
@@ -442,20 +501,20 @@ const ManageSponsors = () => {
 
             <div className="space-y-4">
               {/* Logo */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label>Logo</Label>
                 <div className="flex items-center gap-4">
-                  <SponsorLogoTile
-                    sponsor={{ name: form.name || 'Logo', logo_url: shownLogo, website: null }}
-                    className="h-20 w-40 shrink-0 [&_span]:text-sm"
+                  <SponsorLogoThumb
+                    sponsor={{ name: form.name || 'Logo', logo_url: shownLogo }}
+                    className="h-20 w-40 shrink-0 p-3"
                   />
                   <div className="space-y-2">
                     <div className="flex flex-wrap gap-2">
                       <Button type="button" variant="outline" size="sm" onClick={() => fileInput.current?.click()}>
                         <ImagePlus className="w-4 h-4 mr-2" />
-                        {shownLogo ? 'Change logo' : 'Upload logo'}
+                        {form.logoFile || savedLogo ? 'Change logo' : 'Upload logo'}
                       </Button>
-                      {shownLogo && (
+                      {(form.logoFile || savedLogo) && (
                         <Button
                           type="button"
                           variant="ghost"
@@ -469,30 +528,47 @@ const ManageSponsors = () => {
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {isProcessing
-                        ? 'Cleaning up the logo…'
-                        : form.logoFile && processed
-                          ? processed.backgroundRemoved
-                            ? 'Background removed and margins trimmed. This is how it will look on the site.'
-                            : form.removeBackground
-                              ? 'No plain light background found, so the logo is kept as is (margins trimmed).'
-                              : 'Original background kept.'
-                          : 'Any PNG, JPG or SVG. A plain white background is removed automatically. Without a logo, the name is shown instead.'}
+                        ? 'Analysing the logo…'
+                        : form.logoFile && analysis
+                          ? `${form.logoFile.name === SAVED_LOGO_NAME ? 'Re-analysed the saved logo. ' : ''}${describeAnalysis(analysis)}${
+                              form.logoFile.name === SAVED_LOGO_NAME ? ' Save to apply.' : ''
+                            }`
+                          : 'Any PNG, JPG or SVG. The background is removed and the logo is adapted to the dark site automatically.'}
                     </p>
                   </div>
                 </div>
-                {form.logoFile && (
-                  <label className="flex items-center justify-between gap-3 rounded-md border p-3 cursor-pointer">
-                    <span className="text-sm">
-                      <span className="font-medium">Remove white background</span>
-                      <span className="block text-xs text-muted-foreground">
-                        Turn off if the clean-up cuts into the logo itself.
-                      </span>
-                    </span>
-                    <Switch
-                      checked={form.removeBackground}
-                      onCheckedChange={(v) => setForm((f) => ({ ...f, removeBackground: v }))}
-                    />
-                  </label>
+
+                {/* Finished looks to choose from, each shown on the site's own background */}
+                {form.logoFile && analysis && analysis.variants.length > 1 && (
+                  <div>
+                    <p className="text-xs font-medium mb-2">Choose how it appears on the site</p>
+                    <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Logo look">
+                      {analysis.variants.map((v) => (
+                        <button
+                          key={v.look}
+                          type="button"
+                          role="radio"
+                          aria-checked={look === v.look}
+                          onClick={() => setLook(v.look)}
+                          className={cn(
+                            'rounded-md border p-2 text-left transition-colors',
+                            look === v.look ? 'border-energy ring-1 ring-energy' : 'border-border hover:border-foreground/40'
+                          )}
+                        >
+                          <span className="flex h-16 items-center justify-center bg-background border border-white/10 p-2">
+                            <img src={analysis.urls[v.look]} alt="" className="max-h-full max-w-full object-contain" />
+                          </span>
+                          <span className="mt-2 flex items-center gap-1.5 text-xs font-medium">
+                            {LOOKS[v.look].label}
+                            {v.look === analysis.recommended && (
+                              <span className="text-[10px] font-semibold uppercase tracking-wide text-energy">Best match</span>
+                            )}
+                          </span>
+                          <span className="block text-[11px] text-muted-foreground leading-snug">{LOOKS[v.look].hint}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
                 <input
                   ref={fileInput}
