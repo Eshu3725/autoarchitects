@@ -17,6 +17,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { isRemovedMember } from '@/lib/removedMembers';
+import {
+  fetchCrew,
+  resolveDomain,
+  categoryFor,
+  domainLabel,
+  initials,
+  uploadMemberPhoto,
+  deleteMemberPhoto,
+  deleteAllMemberPhotos,
+  type CrewMember,
+} from '@/lib/crew';
+import MemberForm, { emptyMemberForm, memberToForm, type MemberFormValues } from '@/components/admin/MemberForm';
 import Layout from '@/components/Layout';
 import { jsPDF } from 'jspdf';
 
@@ -48,7 +60,7 @@ const AdminDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
-  const [teamMembers, setTeamMembers] = useState<Array<{ id: string; name: string; email: string }>>([]);
+  const [teamMembers, setTeamMembers] = useState<CrewMember[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<AttendanceRecord | null>(null);
@@ -86,17 +98,14 @@ const AdminDashboard = () => {
 
   const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState(false);
   const [isCreatingMember, setIsCreatingMember] = useState(false);
-  const [memberFormData, setMemberFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'user' as 'admin' | 'user',
-    designation: 'Team Member',
-    year: '1st Year',
-    major: 'Mechanical Engineering',
-    bio: '',
-    category: 'technical' as 'leadership' | 'technical' | 'operations'
-  });
+  const [memberFormData, setMemberFormData] = useState<MemberFormValues>(emptyMemberForm);
+  // Manage Team dialog: which panel is open, and the member being edited
+  const [teamTab, setTeamTab] = useState<'list' | 'add' | 'edit'>('list');
+  const [editingMember, setEditingMember] = useState<CrewMember | null>(null);
+  const [editFormData, setEditFormData] = useState<MemberFormValues>(emptyMemberForm);
+  const [isSavingMember, setIsSavingMember] = useState(false);
+  // False until ADD_MEMBER_DOMAIN_AND_PHOTOS.sql has been run in Supabase
+  const [photosEnabled, setPhotosEnabled] = useState(true);
 
   // Count of sponsor enquiries nobody has picked up yet (live)
   const [newSponsorEnquiries, setNewSponsorEnquiries] = useState(0);
@@ -131,51 +140,14 @@ const AdminDashboard = () => {
   }, []);
 
   const loadTeamMembers = async () => {
-    try {
-      // First try to load all columns (including new ones)
-      const { data, error } = await supabase
-        .from('users')
-        .select('id, name, email, designation, year, major, bio, category')
-        .eq('role', 'user')
-        .order('name');
-
-      if (error) {
-        console.warn('Failed to load all columns, falling back to core columns:', error);
-        
-        // Fallback: Query only core columns that exist for sure
-        const { data: fallbackData, error: fallbackError } = await supabase
-          .from('users')
-          .select('id, name, email')
-          .eq('role', 'user')
-          .order('name');
-          
-        if (fallbackError) {
-          console.error('Error loading fallback team members:', fallbackError);
-          toast.error('Failed to load team members');
-          return;
-        }
-        
-        // Map fallback data with default values for new columns
-        const mappedData = (fallbackData || [])
-          .filter(member => !isRemovedMember(member))
-          .map(member => ({
-            ...member,
-            designation: 'Team Member',
-            year: '1st Year',
-            major: 'Mechanical Engineering',
-            bio: '',
-            category: 'technical' as const
-          }));
-        
-        setTeamMembers(mappedData);
-        return;
-      }
-
-      setTeamMembers((data || []).filter(member => !isRemovedMember(member)));
-    } catch (error) {
+    const { data, error, hasPhotoColumns } = await fetchCrew();
+    if (error) {
       console.error('Error loading team members:', error);
       toast.error('Failed to load team members');
+      return;
     }
+    setPhotosEnabled(hasPhotoColumns);
+    setTeamMembers(data.filter(member => !isRemovedMember(member)));
   };
 
   const loadAttendanceRecords = async () => {
@@ -535,9 +507,28 @@ const AdminDashboard = () => {
     }
   };
 
+  /** Columns shared by insert and update. Designation falls back to the domain's name. */
+  const memberRowFrom = (values: MemberFormValues) => {
+    const domain = values.domain || null;
+    const row: Record<string, string | null> = {
+      name: values.name.trim(),
+      designation: values.designation.trim() || domainLabel(domain) || 'Team Member',
+      year: values.year,
+      major: values.major.trim(),
+      bio: values.bio.trim(),
+      category: categoryFor(domain, values.isLeadership),
+    };
+    if (photosEnabled) row.domain = domain;
+    return row;
+  };
+
   const handleAddMember = async () => {
-    if (!memberFormData.name || !memberFormData.email || !memberFormData.password) {
+    if (!memberFormData.name.trim() || !memberFormData.email.trim() || !memberFormData.password) {
       toast.error('Please fill in all required fields');
+      return;
+    }
+    if (!memberFormData.domain) {
+      toast.error('Please pick a domain so the member shows up on the Crew page');
       return;
     }
 
@@ -547,18 +538,14 @@ const AdminDashboard = () => {
         .from('users')
         .insert([
           {
-            name: memberFormData.name,
-            email: memberFormData.email,
+            ...memberRowFrom(memberFormData),
+            email: memberFormData.email.trim(),
             password: memberFormData.password,
             role: memberFormData.role,
-            designation: memberFormData.designation,
-            year: memberFormData.year,
-            major: memberFormData.major,
-            bio: memberFormData.bio,
-            category: memberFormData.category
           }
         ])
-        .select();
+        .select('id')
+        .single();
 
       if (error) {
         console.error('Error adding team member:', error);
@@ -566,25 +553,80 @@ const AdminDashboard = () => {
         return;
       }
 
-      setIsAddMemberDialogOpen(false);
-      setMemberFormData({
-        name: '',
-        email: '',
-        password: '',
-        role: 'user',
-        designation: 'Team Member',
-        year: '1st Year',
-        major: 'Mechanical Engineering',
-        bio: '',
-        category: 'technical'
-      });
-      toast.success(`Team member "${memberFormData.name}" added successfully!`);
+      // The photo is stored under the new member's id, so it goes up after the insert.
+      const name = memberFormData.name.trim();
+      if (memberFormData.photoFile && data?.id) {
+        try {
+          const photoUrl = await uploadMemberPhoto(data.id, memberFormData.photoFile);
+          const { error: photoError } = await supabase.from('users').update({ photo_url: photoUrl }).eq('id', data.id);
+          if (photoError) throw new Error(photoError.message);
+        } catch (photoErr) {
+          console.error('Error uploading member photo:', photoErr);
+          toast.warning(`"${name}" was added, but the photo upload failed. Edit the member to try again.`);
+        }
+      }
+
+      setMemberFormData(emptyMemberForm());
+      setTeamTab('list');
+      toast.success(`Team member "${name}" added successfully!`);
       loadTeamMembers(); // Reload members list
     } catch (error) {
       console.error('Error adding team member:', error);
       toast.error('Failed to add team member');
     } finally {
       setIsCreatingMember(false);
+    }
+  };
+
+  const openEditMember = (member: CrewMember) => {
+    setEditingMember(member);
+    setEditFormData(memberToForm(member, resolveDomain(member)));
+    setTeamTab('edit');
+  };
+
+  const handleSaveMember = async () => {
+    if (!editingMember) return;
+    if (!editFormData.name.trim()) {
+      toast.error('Name is required');
+      return;
+    }
+    if (!editFormData.domain) {
+      toast.error('Please pick a domain so the member shows up on the Crew page');
+      return;
+    }
+
+    try {
+      setIsSavingMember(true);
+      const update: Record<string, string | null> = memberRowFrom(editFormData);
+      const oldPhoto = editingMember.photo_url;
+
+      if (editFormData.photoFile) {
+        update.photo_url = await uploadMemberPhoto(editingMember.id, editFormData.photoFile);
+      } else if (editFormData.removePhoto) {
+        update.photo_url = null;
+      }
+
+      const { error } = await supabase.from('users').update(update).eq('id', editingMember.id);
+      if (error) {
+        // Don't leave an orphaned upload behind if the row didn't save.
+        if (editFormData.photoFile && update.photo_url) await deleteMemberPhoto(update.photo_url);
+        console.error('Error updating team member:', error);
+        toast.error(`Failed to update team member: ${error.message}`);
+        return;
+      }
+
+      // Clean up the replaced/removed photo only once the row points elsewhere.
+      if ('photo_url' in update && oldPhoto && oldPhoto !== update.photo_url) await deleteMemberPhoto(oldPhoto);
+
+      toast.success(`"${update.name}" updated`);
+      setEditingMember(null);
+      setTeamTab('list');
+      loadTeamMembers();
+    } catch (error) {
+      console.error('Error updating team member:', error);
+      toast.error(error instanceof Error ? `Failed to update team member: ${error.message}` : 'Failed to update team member');
+    } finally {
+      setIsSavingMember(false);
     }
   };
 
@@ -605,6 +647,7 @@ const AdminDashboard = () => {
         return;
       }
 
+      if (photosEnabled) await deleteAllMemberPhotos(memberId);
       toast.success(`Team member "${memberName}" deleted successfully`);
       loadTeamMembers(); // Reload members list
       loadAttendanceRecords(); // Reload attendance records
@@ -755,7 +798,7 @@ const AdminDashboard = () => {
     return {
       id: member.id,
       name: member.name,
-      designation: (member as any).designation || 'Team Member',
+      designation: member.designation || 'Team Member',
       total,
       present,
       absent,
@@ -1146,9 +1189,22 @@ const AdminDashboard = () => {
                       </DialogContent>
                     </Dialog>
 
-                    <Dialog open={isAddMemberDialogOpen} onOpenChange={setIsAddMemberDialogOpen}>
+                    <Dialog
+                      open={isAddMemberDialogOpen}
+                      onOpenChange={(open) => {
+                        setIsAddMemberDialogOpen(open);
+                        if (!open) setEditingMember(null);
+                      }}
+                    >
                       <DialogTrigger asChild>
-                        <Button variant="outline" className="border-energy text-energy hover:bg-energy hover:text-white" onClick={() => setMemberFormData({ name: '', email: '', password: '', role: 'user', designation: 'Team Member', year: '1st Year', major: 'Mechanical Engineering', bio: '', category: 'technical' })}>
+                        <Button
+                          variant="outline"
+                          className="border-energy text-energy hover:bg-energy hover:text-white"
+                          onClick={() => {
+                            setMemberFormData(emptyMemberForm());
+                            setTeamTab('list');
+                          }}
+                        >
                           <Users className="w-4 h-4 mr-2" />
                           Manage Team
                         </Button>
@@ -1157,150 +1213,112 @@ const AdminDashboard = () => {
                         <DialogHeader>
                           <DialogTitle>Manage Team</DialogTitle>
                         </DialogHeader>
-                        
-                        <Tabs defaultValue="list" className="w-full flex-1 flex flex-col overflow-hidden">
-                          <TabsList className="grid w-full grid-cols-2 mb-4">
-                            <TabsTrigger value="list">Members List</TabsTrigger>
-                            <TabsTrigger value="add">Add Member</TabsTrigger>
-                          </TabsList>
-                          
+
+                        <Tabs
+                          value={teamTab}
+                          onValueChange={(v) => setTeamTab(v as 'list' | 'add' | 'edit')}
+                          className="w-full flex-1 flex flex-col overflow-hidden"
+                        >
+                          {teamTab !== 'edit' && (
+                            <TabsList className="grid w-full grid-cols-2 mb-4">
+                              <TabsTrigger value="list">Members List</TabsTrigger>
+                              <TabsTrigger value="add">Add Member</TabsTrigger>
+                            </TabsList>
+                          )}
+
                           <TabsContent value="list" className="flex-1 overflow-y-auto pr-1">
                             <div className="space-y-3">
                               {teamMembers.length === 0 ? (
                                 <p className="text-center text-muted-foreground py-6">No team members found.</p>
                               ) : (
-                                teamMembers.map(member => (
-                                  <div key={member.id} className="flex items-center justify-between p-3 rounded-lg border bg-background hover:bg-muted/30 transition-colors">
-                                    <div className="min-w-0 flex-1 mr-3">
-                                      <p className="font-semibold text-steel-dark truncate">{member.name}</p>
-                                      <p className="text-xs text-muted-foreground truncate">{member.email}</p>
+                                teamMembers.map(member => {
+                                  const domain = resolveDomain(member);
+                                  return (
+                                    <div key={member.id} className="flex items-center gap-3 p-3 rounded-lg border bg-background hover:bg-muted/30 transition-colors">
+                                      <div className="h-10 w-10 shrink-0 rounded-md border bg-muted overflow-hidden flex items-center justify-center text-xs font-bold text-muted-foreground">
+                                        {member.photo_url ? (
+                                          <img src={member.photo_url} alt="" className="h-full w-full object-cover" loading="lazy" />
+                                        ) : (
+                                          initials(member.name)
+                                        )}
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <p className="font-semibold text-steel-dark truncate">{member.name}</p>
+                                        <p className="text-xs text-muted-foreground truncate">
+                                          {domain ? (
+                                            <>
+                                              {member.category === 'leadership' ? 'Leadership · ' : ''}
+                                              {domainLabel(domain)}
+                                            </>
+                                          ) : (
+                                            <span className="text-amber-500">No domain: hidden from Crew page</span>
+                                          )}
+                                        </p>
+                                      </div>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => openEditMember(member)}
+                                        aria-label={`Edit ${member.name}`}
+                                        className="flex-shrink-0"
+                                      >
+                                        <Edit className="w-4 h-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleDeleteMember(member.id, member.name)}
+                                        aria-label={`Delete ${member.name}`}
+                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
                                     </div>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm" 
-                                      onClick={() => handleDeleteMember(member.id, member.name)}
-                                      className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                  </div>
-                                ))
+                                  );
+                                })
                               )}
                             </div>
                           </TabsContent>
-                          
-                          <TabsContent value="add" className="space-y-4 pt-2 overflow-y-auto max-h-[60vh] pr-1">
-                            <div className="space-y-2">
-                              <Label htmlFor="memberName">Full Name *</Label>
-                              <Input
-                                id="memberName"
-                                placeholder="John Doe"
-                                value={memberFormData.name}
-                                onChange={(e) => setMemberFormData({ ...memberFormData, name: e.target.value })}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="memberEmail">Email Address (Username) *</Label>
-                              <Input
-                                id="memberEmail"
-                                type="email"
-                                placeholder="john.doe@autoarchitects.com"
-                                value={memberFormData.email}
-                                onChange={(e) => setMemberFormData({ ...memberFormData, email: e.target.value })}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="memberPassword">Password *</Label>
-                              <Input
-                                id="memberPassword"
-                                type="text"
-                                placeholder="Enter password"
-                                value={memberFormData.password}
-                                onChange={(e) => setMemberFormData({ ...memberFormData, password: e.target.value })}
-                              />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="memberDesignation">Designation *</Label>
-                                <Input
-                                  id="memberDesignation"
-                                  placeholder="Steering"
-                                  value={memberFormData.designation}
-                                  onChange={(e) => setMemberFormData({ ...memberFormData, designation: e.target.value })}
+
+                          <TabsContent value="add" className="pt-2 overflow-y-auto max-h-[60vh] pr-1">
+                            <MemberForm
+                              mode="add"
+                              values={memberFormData}
+                              onChange={setMemberFormData}
+                              onSubmit={handleAddMember}
+                              submitting={isCreatingMember}
+                              photosEnabled={photosEnabled}
+                            />
+                          </TabsContent>
+
+                          <TabsContent value="edit" className="overflow-y-auto max-h-[65vh] pr-1">
+                            {editingMember && (
+                              <>
+                                <div className="flex items-center justify-between mb-4">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      setEditingMember(null);
+                                      setTeamTab('list');
+                                    }}
+                                  >
+                                    <ChevronRight className="w-4 h-4 mr-1 rotate-180" />
+                                    Back to list
+                                  </Button>
+                                  <span className="text-xs text-muted-foreground truncate ml-3">{editingMember.email}</span>
+                                </div>
+                                <MemberForm
+                                  mode="edit"
+                                  values={editFormData}
+                                  onChange={setEditFormData}
+                                  onSubmit={handleSaveMember}
+                                  submitting={isSavingMember}
+                                  existingPhotoUrl={editingMember.photo_url}
+                                  photosEnabled={photosEnabled}
                                 />
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="memberYear">Year *</Label>
-                                <Select 
-                                  value={memberFormData.year} 
-                                  onValueChange={(value) => setMemberFormData({ ...memberFormData, year: value })}
-                                >
-                                  <SelectTrigger id="memberYear">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="1st Year">1st Year</SelectItem>
-                                    <SelectItem value="2nd Year">2nd Year</SelectItem>
-                                    <SelectItem value="3rd Year">3rd Year</SelectItem>
-                                    <SelectItem value="4th Year">4th Year</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="memberMajor">Major / Department *</Label>
-                              <Input
-                                id="memberMajor"
-                                placeholder="Mechanical Engineering"
-                                value={memberFormData.major}
-                                onChange={(e) => setMemberFormData({ ...memberFormData, major: e.target.value })}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="memberBio">Bio / USN</Label>
-                              <Input
-                                id="memberBio"
-                                placeholder="USN: 1SI22ME000"
-                                value={memberFormData.bio}
-                                onChange={(e) => setMemberFormData({ ...memberFormData, bio: e.target.value })}
-                              />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="memberCategory">Subteam Category *</Label>
-                                <Select 
-                                  value={memberFormData.category} 
-                                  onValueChange={(value: 'leadership' | 'technical' | 'operations') => setMemberFormData({ ...memberFormData, category: value })}
-                                >
-                                  <SelectTrigger id="memberCategory">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="leadership">Leadership</SelectItem>
-                                    <SelectItem value="technical">Technical</SelectItem>
-                                    <SelectItem value="operations">Operations</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="memberRole">Auth Role *</Label>
-                                <Select 
-                                  value={memberFormData.role} 
-                                  onValueChange={(value: 'admin' | 'user') => setMemberFormData({ ...memberFormData, role: value })}
-                                >
-                                  <SelectTrigger id="memberRole">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="user">User (Team Member)</SelectItem>
-                                    <SelectItem value="admin">Admin</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                            <Button onClick={handleAddMember} disabled={isCreatingMember} className="w-full energy-gradient mt-2">
-                              {isCreatingMember ? 'Creating...' : 'Add Team Member'}
-                            </Button>
+                              </>
+                            )}
                           </TabsContent>
                         </Tabs>
                       </DialogContent>

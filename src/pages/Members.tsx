@@ -7,9 +7,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { isRemovedMember } from '@/lib/removedMembers';
-import { SUBSYSTEMS, CLUB, TEAM_PHONE } from '@/data/club';
+import { SUBSYSTEMS, CLUB, TEAM_PHONE, type SubsystemId } from '@/data/club';
+import { fetchCrew, resolveDomain, initials } from '@/lib/crew';
 import { cn } from '@/lib/utils';
 
 const STATIC_MEMBERS = [
@@ -193,55 +193,43 @@ const Members = () => {
 
   useEffect(() => {
     const fetchMembers = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('role', 'user')  // Only get non-admin users
-          .order('name');
-
-        if (error) {
-          console.error("Error loading dynamic members:", error);
-          return;
-        }
-
-        if (data && data.length > 0) {
-          const mappedMembers = data
-            .map(u => ({
-              name: u.name,
-              role: u.designation || 'Team Member',
-              year: u.year || '1st Year',
-              major: u.major || 'Mechanical Engineering',
-              bio: u.bio || '',
-              email: u.email,
-              category: u.category || 'technical'
-            }))
-            .filter(m => !isRemovedMember(m));
-
-          // Merge database members with static members (remove duplicates by email)
-          const allEmails = new Set(mappedMembers.map(m => m.email.toLowerCase()));
-          const uniqueStaticMembers = STATIC_MEMBERS.filter(
-            sm => !allEmails.has(sm.email.toLowerCase()) && !isRemovedMember(sm)
-          );
-
-          setTeamMembers([...mappedMembers, ...uniqueStaticMembers]);
-        }
-      } catch (err) {
-        console.error("Error fetching members:", err);
+      const { data, error } = await fetchCrew();
+      if (error) {
+        console.error("Error loading dynamic members:", error);
+        return;
       }
+      if (data.length === 0) return;
+
+      const mappedMembers = data
+        .map(u => ({
+          name: u.name,
+          role: u.designation || 'Team Member',
+          year: u.year || '1st Year',
+          major: u.major || 'Mechanical Engineering',
+          bio: u.bio || '',
+          email: u.email,
+          category: u.category || 'technical',
+          domain: u.domain ?? null,
+          photo: u.photo_url ?? null,
+        }))
+        .filter(m => !isRemovedMember(m));
+
+      // Merge database members with static members (database wins on duplicate email)
+      const allEmails = new Set(mappedMembers.map(m => m.email.toLowerCase()));
+      const uniqueStaticMembers = STATIC_MEMBERS.filter(
+        sm => !allEmails.has(sm.email.toLowerCase()) && !isRemovedMember(sm)
+      );
+
+      setTeamMembers([...mappedMembers, ...uniqueStaticMembers]);
     };
 
     fetchMembers();
   }, []);
 
-  // Group members by technical domain
+  // Domain picked in the admin dashboard; older rows fall back to their designation text.
   const leadershipMembers = teamMembers.filter(m => m.category === 'leadership');
-  const steeringMembers = teamMembers.filter(m => m.role.includes('Steering') && m.category !== 'leadership');
-  const transmissionMembers = teamMembers.filter(m => m.role.includes('Transmission') && m.category !== 'leadership');
-  const suspensionMembers = teamMembers.filter(m => m.role.includes('Suspension') && m.category !== 'leadership');
-  const brakesMembers = teamMembers.filter(m => m.role.includes('Brakes') && m.category !== 'leadership');
-  const chassisMembers = teamMembers.filter(m => (m.role.includes('Chassis') || m.role.includes('CAE')) && m.category !== 'leadership');
-  const operationsMembers = teamMembers.filter(m => m.role.includes('Operations') && m.category !== 'leadership');
+  const inDomain = (id: SubsystemId) =>
+    teamMembers.filter(m => m.category !== 'leadership' && resolveDomain({ domain: m.domain, designation: m.role, category: m.category }) === id);
 
   type Member = (typeof teamMembers)[number];
 
@@ -254,23 +242,13 @@ const Members = () => {
       blurb: 'Captain and vice-captain. They own the build schedule, the crew and every call on race day.',
       members: leadershipMembers,
     },
-    { id: 'chassis-team', code: sub('chassis').code, title: 'Chassis / CAE', blurb: sub('chassis').summary, members: chassisMembers },
-    { id: 'suspension-team', code: sub('suspension').code, title: 'Suspension', blurb: sub('suspension').summary, members: suspensionMembers },
-    { id: 'steering-team', code: sub('steering').code, title: 'Steering', blurb: sub('steering').summary, members: steeringMembers },
-    { id: 'brakes-team', code: sub('brakes').code, title: 'Brakes', blurb: sub('brakes').summary, members: brakesMembers },
-    { id: 'transmission-team', code: sub('transmission').code, title: 'Transmission', blurb: sub('transmission').summary, members: transmissionMembers },
-    { id: 'operations-team', code: sub('operations').code, title: 'Operations', blurb: sub('operations').summary, members: operationsMembers },
+    { id: 'chassis-team', code: sub('chassis').code, title: 'Chassis / CAE', blurb: sub('chassis').summary, members: inDomain('chassis') },
+    { id: 'suspension-team', code: sub('suspension').code, title: 'Suspension', blurb: sub('suspension').summary, members: inDomain('suspension') },
+    { id: 'steering-team', code: sub('steering').code, title: 'Steering', blurb: sub('steering').summary, members: inDomain('steering') },
+    { id: 'brakes-team', code: sub('brakes').code, title: 'Brakes', blurb: sub('brakes').summary, members: inDomain('brakes') },
+    { id: 'transmission-team', code: sub('transmission').code, title: 'Transmission', blurb: sub('transmission').summary, members: inDomain('transmission') },
+    { id: 'operations-team', code: sub('operations').code, title: 'Operations', blurb: sub('operations').summary, members: inDomain('operations') },
   ].filter((d) => d.members.length > 0);
-
-  const initials = (name: string) =>
-    name
-      .replace(/\./g, ' ')
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase();
 
   /** Crew pass, styled after the lanyard passes the team wears in the paddock. */
   const renderCrewPass = (member: Member, code: string) => {
@@ -295,9 +273,21 @@ const Members = () => {
         />
 
         <div className="p-5 pt-7 flex gap-4 items-start">
-          <span className={cn('race-plate h-16 w-16 shrink-0 text-3xl not-italic', isLead && 'border-energy')} aria-hidden>
-            {initials(member.name)}
-          </span>
+          {member.photo ? (
+            <img
+              src={member.photo}
+              alt={member.name}
+              loading="lazy"
+              className={cn(
+                'h-20 w-20 shrink-0 object-cover border-2 border-bone shadow-[0_0_0_3px_hsl(var(--graphite))] bg-graphite',
+                isLead && 'border-energy'
+              )}
+            />
+          ) : (
+            <span className={cn('race-plate h-16 w-16 shrink-0 text-3xl not-italic', isLead && 'border-energy')} aria-hidden>
+              {initials(member.name)}
+            </span>
+          )}
           <div className="min-w-0">
             <h3 className="font-display font-extrabold uppercase text-2xl leading-none truncate">{member.name}</h3>
             <p className={cn('mt-2 font-display font-bold uppercase text-sm', isLead ? 'text-energy' : 'text-foreground/80')}>
