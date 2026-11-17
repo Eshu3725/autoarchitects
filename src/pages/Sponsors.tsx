@@ -138,7 +138,7 @@ const Sponsors = () => {
           </SectionHeader>
         </div>
 
-        {/* Full-bleed logo strip */}
+        {/* Full-bleed, single-line logo lane */}
         <Reveal className="mb-12 md:mb-16">
           <SponsorMarquee sponsors={sponsors} />
         </Reveal>

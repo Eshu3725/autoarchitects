@@ -402,26 +402,89 @@
   @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   .animate-marquee { animation: marquee 40s linear infinite; }
 
-  /* Sponsor logo strip: edge fade, pause on hover/focus, opposite-direction rows */
-  .logo-marquee {
+  /* Sponsor lane: one row of logos between two ruler rails. Position, speed
+     and the lean (--lean) are driven from SponsorMarquee.tsx; the logo on the
+     centre mark gets .is-active. */
+  .sponsor-lane-stage {
+    position: relative;
     overflow: hidden;
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-    mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+    overflow: clip;
+    cursor: grab;
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
   }
-  .logo-marquee-track {
+  .sponsor-lane-stage[data-dragging] { cursor: grabbing; }
+  .sponsor-lane-stage[data-dragging] a { cursor: grabbing; }
+
+  .sponsor-lane-track {
+    position: relative;
     display: flex;
+    align-items: center;
     width: max-content;
-    animation: marquee var(--marquee-duration, 40s) linear infinite;
+    will-change: transform;
   }
-  .logo-marquee-track.is-reverse { animation-direction: reverse; }
-  .logo-marquee:hover .logo-marquee-track,
-  .logo-marquee:focus-within .logo-marquee-track { animation-play-state: paused; }
-  /* Reduced motion: one still, wrapped row of logos instead of a ticker */
-  @media (prefers-reduced-motion: reduce) {
-    .logo-marquee { -webkit-mask-image: none; mask-image: none; }
-    .logo-marquee-track { animation: none !important; width: 100%; flex-wrap: wrap; justify-content: center; }
-    .logo-marquee-dup { display: none; }
+  .sponsor-lane-item { position: relative; flex: none; }
+  .sponsor-lane-lean { transform: skewX(var(--lean, 0deg)); }
+
+  /* Logos stay in full colour; the one crossing the centre mark brightens and grows */
+  .sponsor-lane-logo {
+    opacity: 0.8;
+    transform: scale(0.9);
+    transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
+  .sponsor-lane-item.is-active .sponsor-lane-logo,
+  .sponsor-lane-item:hover .sponsor-lane-logo,
+  .sponsor-lane-item:focus-within .sponsor-lane-logo {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  /* Lock-on brackets that close in around the active logo */
+  .sponsor-lane-item::before {
+    content: "";
+    position: absolute;
+    inset: 8px 10px;
+    pointer-events: none;
+    --c: hsl(var(--energy));
+    background:
+      linear-gradient(var(--c), var(--c)) top left / 14px 2px no-repeat,
+      linear-gradient(var(--c), var(--c)) top left / 2px 14px no-repeat,
+      linear-gradient(var(--c), var(--c)) top right / 14px 2px no-repeat,
+      linear-gradient(var(--c), var(--c)) top right / 2px 14px no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom left / 14px 2px no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom left / 2px 14px no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom right / 14px 2px no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom right / 2px 14px no-repeat;
+    opacity: 0;
+    transform: scale(1.16);
+    transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .sponsor-lane-item.is-active::before { opacity: 1; transform: none; }
+
+  /* Ruler rails: 8px minor / 40px major ticks, matching the drafting grid */
+  .sponsor-lane-rail { position: relative; height: 9px; overflow: hidden; }
+  .sponsor-lane-rail.is-top { border-top: 1px solid hsl(var(--bone) / 0.16); }
+  .sponsor-lane-rail.is-bottom { border-bottom: 1px solid hsl(var(--bone) / 0.16); }
+  .sponsor-lane-rail > span {
+    position: absolute;
+    inset: 0 -40px 0 0;
+    background-image:
+      linear-gradient(90deg, hsl(var(--bone) / 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--bone) / 0.16) 1px, transparent 1px);
+    background-size: 40px 100%, 8px 50%;
+    background-repeat: repeat-x;
+    will-change: transform;
+  }
+  .sponsor-lane-rail.is-bottom > span { background-position: 0 100%; }
+
+  @keyframes sponsorReadoutIn {
+    from { opacity: 0; transform: translateY(7px); }
+    to { opacity: 1; transform: none; }
+  }
+  .sponsor-lane-readout { animation: sponsorReadoutIn 0.28s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 
   /* Live indicator */
   @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
