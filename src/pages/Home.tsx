@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowDown, ArrowLeft, ArrowUpRight, ChevronDown } from 'lucide-react';
+import { ArrowRight, ArrowDown, ArrowLeft, ArrowUpRight, ChevronDown, Play } from 'lucide-react';
 import RegistrationModal from '@/components/RegistrationModal';
-import BuggyBlueprint from '@/components/brand/BuggyBlueprint';
-import { SectionHeader, RacePlate, Marquee, Reveal, Callout } from '@/components/brand/Primitives';
+import TestRig from '@/components/home/TestRig';
+import WeighIn from '@/components/home/WeighIn';
+import { SectionHeader, RacePlate, Marquee, Reveal, Callout, Odometer, CadViewport } from '@/components/brand/Primitives';
 import { useInView } from '@/hooks/use-in-view';
+import { useScrollProgress, prefersReducedMotion } from '@/hooks/use-scroll-progress';
 import { cn } from '@/lib/utils';
 import {
   CLUB,
@@ -39,6 +41,26 @@ function Anatomy() {
     setActive(id);
   };
 
+  // Test rig. It runs itself for a few seconds the first time the drawing is
+  // seen, to show that the drawing moves; after that it is the visitor's.
+  const [rigRunning, setRigRunning] = useState(false);
+  const rigTouched = useRef(false);
+  useEffect(() => {
+    if (!inView || prefersReducedMotion()) return;
+    const start = window.setTimeout(() => !rigTouched.current && setRigRunning(true), 1900);
+    const stop = window.setTimeout(() => !rigTouched.current && setRigRunning(false), 6200);
+    return () => {
+      window.clearTimeout(start);
+      window.clearTimeout(stop);
+    };
+  }, [inView]);
+
+  const toggleRig = () => {
+    rigTouched.current = true;
+    if (!rigRunning) select('suspension');
+    setRigRunning((on) => !on);
+  };
+
   return (
     <section id="anatomy" className="relative py-24 md:py-32 border-b border-border overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -49,15 +71,7 @@ function Anatomy() {
 
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           <div ref={ref} className={cn('lg:col-span-7 lg:sticky lg:top-28', inView && 'is-in')}>
-            <div className="crop-marks">
-              <div className="relative border border-border bg-graphite/60 p-3 sm:p-6">
-                <div className="absolute inset-0 drafting-grid opacity-70 pointer-events-none" aria-hidden />
-                <BuggyBlueprint active={active} onSelect={select} className="relative" />
-              </div>
-            </div>
-            <p className="label-mono text-[10px] text-muted-foreground mt-4">
-              Fig. 2: Schematic side elevation. Hover a callout or pick a system.
-            </p>
+            <TestRig active={active} onSelect={select} running={rigRunning} onToggle={toggleRig} />
           </div>
 
           <ol className="lg:col-span-5 border-t border-border">
@@ -223,11 +237,49 @@ function CompetitionRecord() {
 /* ── Garage rail ── */
 function Garage() {
   const rail = useRef<HTMLDivElement>(null);
-  const scrollBy = (dir: 1 | -1) => {
+  const thumb = useRef<HTMLSpanElement>(null);
+  const counter = useRef<HTMLSpanElement>(null);
+  const drag = useRef<{ x: number; left: number } | null>(null);
+
+  const cardStep = () => (rail.current?.querySelector<HTMLElement>('[data-card]')?.offsetWidth ?? 320) + 20;
+  const scrollBy = (dir: 1 | -1) => rail.current?.scrollBy({ left: dir * cardStep(), behavior: 'smooth' });
+
+  // Position readout under the rail, written straight to the DOM.
+  const onScroll = () => {
     const el = rail.current;
     if (!el) return;
-    const card = el.querySelector<HTMLElement>('[data-card]');
-    el.scrollBy({ left: dir * ((card?.offsetWidth ?? 320) + 20), behavior: 'smooth' });
+    const max = el.scrollWidth - el.clientWidth;
+    const p = max > 0 ? Math.min(1, Math.max(0, el.scrollLeft / max)) : 0;
+    if (thumb.current) thumb.current.style.left = `${p * 80}%`;
+    if (counter.current) {
+      const n = Math.min(GARAGE.length, Math.round(el.scrollLeft / cardStep()) + 1);
+      counter.current.textContent = String(n).padStart(2, '0');
+    }
+  };
+
+  // Mouse drag. Touch keeps native scrolling, which already feels right.
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = rail.current;
+    if (e.pointerType !== 'mouse' || e.button !== 0 || !el) return;
+    drag.current = { x: e.clientX, left: el.scrollLeft };
+    el.setPointerCapture(e.pointerId);
+    el.style.scrollSnapType = 'none';
+    el.dataset.dragging = '';
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (drag.current && rail.current) rail.current.scrollLeft = drag.current.left - (e.clientX - drag.current.x);
+  };
+  const onPointerUp = () => {
+    const el = rail.current;
+    if (!drag.current || !el) return;
+    drag.current = null;
+    delete el.dataset.dragging;
+    // settle on the nearest card, then hand back to scroll snapping
+    const step = cardStep();
+    el.scrollTo({ left: Math.round(el.scrollLeft / step) * step, behavior: 'smooth' });
+    window.setTimeout(() => {
+      if (!drag.current) el.style.scrollSnapType = '';
+    }, 450);
   };
 
   return (
@@ -259,7 +311,12 @@ function Garage() {
 
       <div
         ref={rail}
-        className="mt-12 flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-4 sm:px-6 lg:px-[max(2rem,calc((100vw-80rem)/2+2rem))] scroll-px-4 sm:scroll-px-6 lg:scroll-px-[max(2rem,calc((100vw-80rem)/2+2rem))] pb-2"
+        onScroll={onScroll}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        className="mt-12 flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide md:cursor-grab data-[dragging]:cursor-grabbing data-[dragging]:select-none px-4 sm:px-6 lg:px-[max(2rem,calc((100vw-80rem)/2+2rem))] scroll-px-4 sm:scroll-px-6 lg:scroll-px-[max(2rem,calc((100vw-80rem)/2+2rem))] pb-2"
       >
         {GARAGE.map((m, i) => (
           <article
@@ -273,6 +330,7 @@ function Garage() {
                   src={m.image}
                   alt={m.plate ? `Car ${m.plate}, ${m.name}` : `${m.season} car, ${m.name}`}
                   loading="lazy"
+                  draggable={false}
                   className={cn(
                     'w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]',
                     m.cropFrame && 'scale-[1.12] group-hover:scale-[1.16]'
@@ -323,12 +381,189 @@ function Garage() {
         ))}
         <div className="shrink-0 w-px" aria-hidden />
       </div>
+
+      {/* Rail position */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 flex items-center gap-5" aria-hidden>
+        <span className="font-mono text-xs text-muted-foreground">
+          <span ref={counter} className="text-foreground">
+            01
+          </span>{' '}
+          / {String(GARAGE.length).padStart(2, '0')}
+        </span>
+        <span className="relative flex-1 h-px bg-border">
+          <span ref={thumb} className="absolute -top-px left-0 h-[3px] w-1/5 bg-energy" />
+        </span>
+        <span className="hidden md:inline label-mono text-[10px] text-muted-foreground">Drag to browse</span>
+      </div>
     </section>
+  );
+}
+
+/* ── Build cycle: the route line fills as the page scrolls past each operation ── */
+function BuildCycle() {
+  const [reached, setReached] = useState(0);
+  const fill = useRef<HTMLSpanElement>(null);
+  const head = useRef<HTMLSpanElement>(null);
+
+  const list = useScrollProgress<HTMLOListElement>((p, el) => {
+    if (fill.current) fill.current.style.transform = `scaleY(${p})`;
+    if (head.current) head.current.style.top = `${p * 100}%`;
+    const y = p * el.offsetHeight;
+    let n = 0;
+    el.querySelectorAll<HTMLElement>('[data-op]').forEach((li) => {
+      if (li.offsetTop + 28 <= y + 1) n += 1;
+    });
+    setReached(n);
+  }, 0.62);
+
+  return (
+    <ol ref={list} className="lg:col-span-7 relative">
+      <span className="absolute left-[27px] top-0 bottom-0 w-px bg-border" aria-hidden />
+      <span ref={fill} className="absolute left-[27px] top-0 bottom-0 w-px bg-energy origin-top scale-y-0" aria-hidden />
+      <span
+        ref={head}
+        className="absolute left-[27px] top-0 w-2.5 h-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-energy"
+        aria-hidden
+      />
+      {BUILD_STAGES.map((stage, i) => {
+        const Icon = stage.icon;
+        const done = i < reached;
+        const current = i === reached - 1;
+        return (
+          <li key={stage.op} data-op>
+            <Reveal delay={i * 60} className="relative flex gap-6 pb-10 last:pb-0">
+              <span
+                className={cn(
+                  'relative z-10 w-14 h-14 shrink-0 border flex items-center justify-center transition-colors duration-500',
+                  done ? 'bg-energy border-energy' : 'bg-background border-border'
+                )}
+              >
+                <Icon className={cn('w-6 h-6 transition-colors duration-500', done ? 'text-white' : 'text-energy')} />
+              </span>
+              <div
+                className={cn(
+                  'flex-1 border bg-card p-6 transition-colors duration-500 hover:border-energy/50',
+                  current ? 'border-energy/60' : 'border-border'
+                )}
+              >
+                <div className="flex items-baseline justify-between gap-4">
+                  <h3 className="font-display font-extrabold uppercase italic text-3xl leading-none">{stage.title}</h3>
+                  <span className={cn('font-mono text-xs transition-colors duration-500', done ? 'text-energy' : 'text-muted-foreground')}>
+                    {stage.op}
+                  </span>
+                </div>
+                <p className="mt-3 text-muted-foreground leading-relaxed">{stage.body}</p>
+                <ul className="mt-4 flex flex-wrap gap-2">
+                  {stage.tags.map((t) => (
+                    <li key={t} className="label-mono text-[10px] border border-border px-2 py-1 text-foreground/80">
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/* ── Footage: a poster until asked, so three players don't load with the page ── */
+function Reel({ id, title }: { id: string; title: string }) {
+  const [playing, setPlaying] = useState(false);
+  const [poster, setPoster] = useState(true);
+
+  if (playing) {
+    return (
+      <iframe
+        className="w-full h-full"
+        src={`https://www.youtube.com/embed/${id}?autoplay=1`}
+        title={title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+      />
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => setPlaying(true)}
+      aria-label={`Play ${title}`}
+      className="group relative block w-full h-full overflow-hidden"
+    >
+      <span className="absolute inset-0 drafting-grid opacity-60" aria-hidden />
+      {poster && (
+        <img
+          src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
+          alt=""
+          loading="lazy"
+          onError={() => setPoster(false)}
+          className="absolute inset-0 w-full h-full object-cover opacity-80 transition-all duration-700 group-hover:opacity-100 group-hover:scale-[1.04]"
+        />
+      )}
+      <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30" aria-hidden />
+      <span className="absolute inset-0 flex items-center justify-center">
+        <span className="w-16 h-16 flex items-center justify-center bg-energy text-white transition-transform duration-300 group-hover:scale-110 group-focus-visible:scale-110">
+          <Play className="w-6 h-6 fill-current translate-x-0.5" />
+        </span>
+      </span>
+      <span className="absolute bottom-3 left-3 flex items-center gap-2 label-mono text-[10px] text-white/90">
+        <span className="w-1.5 h-1.5 rounded-full bg-energy" aria-hidden />
+        Play reel
+      </span>
+    </button>
+  );
+}
+
+/* ── Join: type your name onto a length of chassis tube ── */
+function NameTube({ value, onChange, onSubmit }: { value: string; onChange: (v: string) => void; onSubmit: () => void }) {
+  return (
+    <form
+      className="mt-8 max-w-xl"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }}
+    >
+      <label htmlFor="chassis-name" className="label-mono text-[10px] text-muted-foreground">
+        Try it: type your name onto the tube
+      </label>
+      <div className="chassis-tube relative mt-3 h-16 sm:h-[4.5rem] flex items-center px-7 sm:px-9">
+        {/* weld beads where the tube meets its nodes */}
+        <span className="absolute left-3 inset-y-2 w-1 rounded-full bg-black/30" aria-hidden />
+        <span className="absolute right-3 inset-y-2 w-1 rounded-full bg-black/30" aria-hidden />
+        <input
+          id="chassis-name"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          maxLength={24}
+          autoComplete="name"
+          spellCheck={false}
+          placeholder="Your name here"
+          className="w-full min-w-0 bg-transparent outline-none font-display font-extrabold italic uppercase tracking-[0.06em] text-3xl sm:text-4xl leading-none text-white caret-white"
+        />
+        <span className="hidden sm:block shrink-0 pl-4 font-mono text-[10px] tracking-[0.18em] text-white/70 whitespace-nowrap">
+          CREW · {CLUB.nowBuilding.match(/\d{4}/)?.[0]}
+        </span>
+      </div>
+      <p className="mt-3 text-sm text-muted-foreground min-h-[1.25rem]">
+        {value.trim() ? (
+          <>
+            Reads well in chassis red, <span className="text-foreground font-semibold">{value.trim()}</span>. Press Enter to
+            start your application.
+          </>
+        ) : (
+          'Go on. See how it reads in chassis red.'
+        )}
+      </p>
+    </form>
   );
 }
 
 const Home = () => {
   const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
+  const [chassisName, setChassisName] = useState('');
   const openJoin = () => setIsRegistrationModalOpen(true);
 
   return (
@@ -346,12 +581,14 @@ const Home = () => {
             <p className="label-mono text-muted-foreground animate-fade-in-up">
               <span className="text-energy">●</span> {CLUB.institute}
             </p>
-            <h1 className="mt-6 font-display font-extrabold italic uppercase tracking-tight leading-[0.86] text-[3.4rem] sm:text-7xl xl:text-[5.6rem] animate-fade-in-up delay-100">
-              We build
-              <br />
-              the machines
-              <br />
-              <span className="text-energy">we race.</span>
+            <h1 className="mt-6 font-display font-extrabold italic uppercase tracking-tight leading-[0.86] text-[3.4rem] sm:text-7xl xl:text-[5.6rem]">
+              {['We build', 'the machines', 'we race.'].map((line, i) => (
+                <span key={line} className="line-mask">
+                  <span className={cn('line-rise', i === 2 && 'text-energy')} style={{ animationDelay: `${100 + i * 110}ms` }}>
+                    {line}
+                  </span>
+                </span>
+              ))}
             </h1>
             <p className="mt-7 text-lg text-muted-foreground leading-relaxed max-w-md animate-fade-in-up delay-200">
               <strong className="text-foreground font-semibold">Team AutoArchitects</strong> is the off-road racing team of SIT's
@@ -380,7 +617,7 @@ const Home = () => {
           {/* Figure 1 */}
           <figure className="lg:col-span-7 animate-fade-in delay-200">
             <div className="crop-marks">
-              <div className="relative aspect-[4907/3995] overflow-hidden border border-border">
+              <CadViewport className="aspect-[4907/3995] border border-border">
                 <img
                   src={IMAGES.car150Track}
                   alt="Team AutoArchitects car number 150 at speed on a dirt track"
@@ -392,7 +629,7 @@ const Home = () => {
                 <Callout x={46.5} y={64.5} side="left" title="Powertrain" sub="Briggs & Stratton engine" delay={900} />
                 <Callout x={77.75} y={74.6} side="down" title="Suspension" sub="Independent · long-travel" delay={1100} />
                 <RacePlate number="150" size="sm" className="absolute top-4 left-4" />
-              </div>
+              </CadViewport>
             </div>
             <figcaption className="mt-4 flex items-center justify-between gap-4 label-mono text-[10px] text-muted-foreground">
               <span>Fig. 1: Car #150 "Imagination 4.0" at speed</span>
@@ -416,7 +653,9 @@ const Home = () => {
                 )}
               >
                 <dt className="label-mono text-[10px] text-muted-foreground">{s.label}</dt>
-                <dd className="font-display font-extrabold italic text-4xl sm:text-5xl leading-none mt-2">{s.value}</dd>
+                <dd className="font-display font-extrabold italic text-4xl sm:text-5xl leading-none mt-2">
+                  <Odometer value={s.value} />
+                </dd>
                 <dd className="text-xs text-muted-foreground mt-2 hidden sm:block">{s.note}</dd>
               </div>
             ))}
@@ -452,35 +691,7 @@ const Home = () => {
             </div>
           </div>
 
-          <ol className="lg:col-span-7 relative">
-            <span className="absolute left-[27px] top-4 bottom-4 w-px bg-border" aria-hidden />
-            {BUILD_STAGES.map((stage, i) => {
-              const Icon = stage.icon;
-              return (
-                <li key={stage.op}>
-                  <Reveal delay={i * 60} className="relative flex gap-6 pb-10 last:pb-0">
-                    <span className="relative z-10 w-14 h-14 shrink-0 bg-background border border-border flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-energy" />
-                    </span>
-                    <div className="flex-1 border border-border bg-card p-6 hover:border-energy/50 transition-colors">
-                      <div className="flex items-baseline justify-between gap-4">
-                        <h3 className="font-display font-extrabold uppercase italic text-3xl leading-none">{stage.title}</h3>
-                        <span className="font-mono text-xs text-energy">{stage.op}</span>
-                      </div>
-                      <p className="mt-3 text-muted-foreground leading-relaxed">{stage.body}</p>
-                      <ul className="mt-4 flex flex-wrap gap-2">
-                        {stage.tags.map((t) => (
-                          <li key={t} className="label-mono text-[10px] border border-border px-2 py-1 text-foreground/80">
-                            {t}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </Reveal>
-                </li>
-              );
-            })}
-          </ol>
+          <BuildCycle />
         </div>
       </section>
 
@@ -490,10 +701,13 @@ const Home = () => {
       {/* ═════════ GARAGE ═════════ */}
       <Garage />
 
+      {/* ═════════ WEIGH-IN ═════════ */}
+      <WeighIn />
+
       {/* ═════════ RECORD ═════════ */}
-      <section id="record" className="relative py-24 md:py-32 border-b border-border">
+      <section id="record" className="relative py-24 md:py-32 border-b border-border bg-graphite">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader sheet="04" kicker="Timing sheet" title={<>Competition <span className="text-energy">record</span></>}>
+          <SectionHeader sheet="05" kicker="Timing sheet" title={<>Competition <span className="text-energy">record</span></>}>
             Student motorsport is judged on design reports, cost, sales and inspection as much as lap times. AIR is All-India
             Rank. Here is every car's result since the team's first in 2012. Open an event to see what the car achieved there.
           </SectionHeader>
@@ -510,24 +724,17 @@ const Home = () => {
       </section>
 
       {/* ═════════ FOOTAGE ═════════ */}
-      <section id="footage" className="relative py-24 md:py-32 border-b border-border bg-graphite">
+      <section id="footage" className="relative py-24 md:py-32 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader sheet="05" kicker="Paddock footage" title={<>On track, <span className="text-energy">on camera</span></>}>
+          <SectionHeader sheet="06" kicker="Paddock footage" title={<>On track, <span className="text-energy">on camera</span></>}>
             The workshop, the paddock and the dirt, filmed by the team.
           </SectionHeader>
           <div className="grid md:grid-cols-3 gap-6">
             {VIDEOS.map((v, i) => (
               <Reveal key={v.id} delay={i * 80}>
-                <article className="border border-border bg-background h-full flex flex-col">
+                <article className="border border-border bg-card h-full flex flex-col hover:border-energy/50 transition-colors">
                   <div className="aspect-video bg-black">
-                    <iframe
-                      className="w-full h-full"
-                      src={`https://www.youtube.com/embed/${v.id}`}
-                      title={v.title}
-                      loading="lazy"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
+                    <Reel id={v.id} title={v.title} />
                   </div>
                   <div className="p-5 border-t border-border">
                     <p className="label-mono text-[10px] text-energy">Reel {String(i + 1).padStart(2, '0')}</p>
@@ -560,7 +767,8 @@ const Home = () => {
                     {BRANCHES.slice(0, -1).join(', ')} and {BRANCHES[BRANCHES.length - 1]} engineering, and every sub-team takes
                     newcomers.
                   </p>
-                  <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                  <NameTube value={chassisName} onChange={setChassisName} onSubmit={openJoin} />
+                  <div className="mt-6 flex flex-col sm:flex-row gap-3">
                     <button
                       onClick={openJoin}
                       className="group h-14 px-8 bg-energy text-white font-display font-bold uppercase tracking-wide text-lg flex items-center justify-center gap-2 hover:bg-energy-dark transition-colors"
@@ -604,7 +812,11 @@ const Home = () => {
         </div>
       </section>
 
-      <RegistrationModal open={isRegistrationModalOpen} onOpenChange={setIsRegistrationModalOpen} />
+      <RegistrationModal
+        open={isRegistrationModalOpen}
+        onOpenChange={setIsRegistrationModalOpen}
+        initialName={chassisName.trim()}
+      />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ArrowDown, ArrowRight, Check, Mail, Phone } from 'lucide-react';
-import { SectionHeader, Reveal, Callout, RacePlate } from '@/components/brand/Primitives';
+import { SectionHeader, Reveal, Callout, RacePlate, Odometer, CadViewport } from '@/components/brand/Primitives';
 import SponsorEnquiryForm from '@/components/SponsorEnquiryForm';
 import SponsorMarquee from '@/components/SponsorMarquee';
 import type { TierChoice } from '@/types/sponsor';
@@ -90,7 +90,7 @@ const Sponsors = () => {
 
           <figure className="lg:col-span-7 animate-fade-in delay-200">
             <div className="crop-marks">
-              <div className="relative aspect-[3/2] overflow-hidden border border-border">
+              <CadViewport className="aspect-[3/2] border border-border">
                 <img
                   src={IMAGES.m37Pits}
                   alt="Car M37 in the paddock, showing the firewall, nose and sidepod where sponsor logos go"
@@ -101,7 +101,7 @@ const Sponsors = () => {
                 <Callout x={49} y={34} side="right" title="Firewall" sub="Title sponsor" delay={700} />
                 <Callout x={56} y={73} side="right" title="Nose" sub="Title · Major" delay={900} />
                 <Callout x={39} y={64} side="left" title="Sidepod" sub="Associate · Technical · Media" delay={1100} />
-              </div>
+              </CadViewport>
             </div>
             <figcaption className="mt-4 flex items-center justify-between gap-4 label-mono text-[10px] text-muted-foreground">
               <span>Fig. 1: Logo zones on car M37</span>
@@ -123,7 +123,9 @@ const Sponsors = () => {
                 )}
               >
                 <dt className="label-mono text-[10px] text-muted-foreground">{s.label}</dt>
-                <dd className="font-display font-extrabold italic text-4xl sm:text-5xl leading-none mt-2">{s.value}</dd>
+                <dd className="font-display font-extrabold italic text-4xl sm:text-5xl leading-none mt-2">
+                  <Odometer value={s.value} />
+                </dd>
               </div>
             ))}
           </dl>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { Menu, X, LogOut, LayoutDashboard, ArrowUpRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,6 +16,29 @@ const publicNavItems = [
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Page progress, drawn as a rule under the nav. Written straight to the DOM.
+  const ruler = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      if (ruler.current) ruler.current.style.transform = `scaleX(${p})`;
+    };
+    const queue = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', queue);
+      window.removeEventListener('resize', queue);
+    };
+  }, []);
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -64,6 +87,11 @@ const Navigation = () => {
       </div>
 
       <nav className="bg-background/85 backdrop-blur-md border-b border-border sticky top-0 z-50">
+        <span
+          ref={ruler}
+          aria-hidden
+          className="pointer-events-none absolute left-0 right-0 top-full h-[2px] origin-left scale-x-0 bg-energy"
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center gap-3 group" aria-label="Team AutoArchitects home">

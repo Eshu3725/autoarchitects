@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useRef, type PointerEvent, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { useInView } from '@/hooks/use-in-view';
 
@@ -159,6 +159,95 @@ export function Callout({
           {label}
         </span>
       )}
+    </div>
+  );
+}
+
+const REEL = Array.from({ length: 20 }, (_, i) => i % 10);
+
+/**
+ * A number that rolls into place like a trip meter the first time it is seen.
+ * Non-digit characters ("1st", "250+") are passed through untouched.
+ */
+export function Odometer({ value, className }: { value: string | number; className?: string }) {
+  const text = String(value);
+  const { ref, inView } = useInView<HTMLSpanElement>(0.4);
+  let reel = 0;
+  return (
+    <span ref={ref} className={className}>
+      <span className="sr-only">{text}</span>
+      <span className="odo" aria-hidden>
+        {text.split('').map((ch, i) => {
+          if (ch < '0' || ch > '9') return <span key={i}>{ch}</span>;
+          const delay = reel++ * 110;
+          return (
+            <span key={i} className="odo-col">
+              <span
+                className="odo-reel"
+                style={{ transform: `translateY(-${inView ? 10 + Number(ch) : 0}em)`, transitionDelay: `${delay}ms` }}
+              >
+                {REEL.map((n, j) => (
+                  <span key={j}>{n}</span>
+                ))}
+              </span>
+            </span>
+          );
+        })}
+      </span>
+    </span>
+  );
+}
+
+/**
+ * Turns a figure into a CAD viewport: a crosshair follows the mouse and a
+ * readout gives its position as a percentage of the frame. Mouse only, and it
+ * writes straight to the DOM so moving the pointer never re-renders.
+ */
+export function CadViewport({ children, className }: { children: ReactNode; className?: string }) {
+  const box = useRef<HTMLDivElement>(null);
+  const h = useRef<HTMLSpanElement>(null);
+  const v = useRef<HTMLSpanElement>(null);
+  const out = useRef<HTMLSpanElement>(null);
+
+  const move = (e: PointerEvent<HTMLDivElement>) => {
+    const el = box.current;
+    if (e.pointerType !== 'mouse' || !el || !h.current || !v.current || !out.current) return;
+    const r = el.getBoundingClientRect();
+    const x = Math.min(r.width, Math.max(0, e.clientX - r.left));
+    const y = Math.min(r.height, Math.max(0, e.clientY - r.top));
+    h.current.style.transform = `translateY(${y}px)`;
+    v.current.style.transform = `translateX(${x}px)`;
+    const pct = (n: number) => n.toFixed(1).padStart(5, '0');
+    out.current.textContent = `X ${pct((x / r.width) * 100)} · Y ${pct((y / r.height) * 100)}`;
+    el.dataset.live = '';
+  };
+  const leave = () => {
+    if (box.current) delete box.current.dataset.live;
+  };
+
+  return (
+    <div
+      ref={box}
+      onPointerMove={move}
+      onPointerLeave={leave}
+      className={cn('group/cad relative overflow-hidden md:cursor-crosshair', className)}
+    >
+      {children}
+      <span
+        ref={h}
+        aria-hidden
+        className="pointer-events-none absolute left-0 right-0 top-0 h-px bg-bone/50 opacity-0 transition-opacity duration-200 group-data-[live]/cad:opacity-100"
+      />
+      <span
+        ref={v}
+        aria-hidden
+        className="pointer-events-none absolute top-0 bottom-0 left-0 w-px bg-bone/50 opacity-0 transition-opacity duration-200 group-data-[live]/cad:opacity-100"
+      />
+      <span
+        ref={out}
+        aria-hidden
+        className="pointer-events-none absolute bottom-3 left-3 bg-graphite/85 border border-bone/25 px-2 py-1 font-mono text-[10px] tracking-[0.14em] text-bone opacity-0 transition-opacity duration-200 group-data-[live]/cad:opacity-100"
+      />
     </div>
   );
 }

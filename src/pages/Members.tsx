@@ -11,6 +11,7 @@ import { isRemovedMember } from '@/lib/removedMembers';
 import { SUBSYSTEMS, CLUB, TEAM_PHONE, type SubsystemId } from '@/data/club';
 import { fetchCrew, resolveDomain, initials } from '@/lib/crew';
 import { cn } from '@/lib/utils';
+import { Odometer } from '@/components/brand/Primitives';
 
 const STATIC_MEMBERS = [
   // Steering Team
@@ -342,11 +343,15 @@ const Members = () => {
           <dl className="lg:col-span-4 grid grid-cols-2 border border-border bg-card animate-fade-in delay-300">
             <div className="p-5 border-r border-border">
               <dt className="label-mono text-[10px] text-muted-foreground">On the roster</dt>
-              <dd className="font-display font-extrabold italic text-5xl leading-none mt-2">{teamMembers.length}</dd>
+              <dd className="font-display font-extrabold italic text-5xl leading-none mt-2">
+                <Odometer value={teamMembers.length} />
+              </dd>
             </div>
             <div className="p-5">
               <dt className="label-mono text-[10px] text-muted-foreground">Sub-teams</dt>
-              <dd className="font-display font-extrabold italic text-5xl leading-none mt-2">{departments.length}</dd>
+              <dd className="font-display font-extrabold italic text-5xl leading-none mt-2">
+                <Odometer value={departments.length} />
+              </dd>
             </div>
           </dl>
         </div>

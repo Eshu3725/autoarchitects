@@ -27,6 +27,8 @@ import { STATS } from '@/data/club';
 interface RegistrationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Name typed elsewhere on the page (the chassis tube), carried into the form. */
+  initialName?: string;
 }
 
 interface FormData {
@@ -48,7 +50,7 @@ interface FormErrors {
   otherClubName?: string;
 }
 
-const RegistrationModal = ({ open, onOpenChange }: RegistrationModalProps) => {
+const RegistrationModal = ({ open, onOpenChange, initialName }: RegistrationModalProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -74,6 +76,13 @@ const RegistrationModal = ({ open, onOpenChange }: RegistrationModalProps) => {
     'Digital',
     'Graphics',
   ];
+
+  // Carry a name typed on the page into the form when it opens
+  useEffect(() => {
+    if (open && initialName) {
+      setFormData((prev) => (prev.name ? prev : { ...prev, name: initialName }));
+    }
+  }, [open, initialName]);
 
   // Reset form when modal closes
   useEffect(() => {

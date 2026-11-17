@@ -2,7 +2,9 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Target, Eye, ShieldCheck, Mail } from 'lucide-react';
 import sunilImage from '@/assets/Sunil.jpg';
 import nareshImage from '@/assets/Naresh.jpg';
-import { SectionHeader, Reveal, RacePlate } from '@/components/brand/Primitives';
+import { useRef } from 'react';
+import { SectionHeader, Reveal, RacePlate, Odometer, CadViewport } from '@/components/brand/Primitives';
+import { useScrollProgress } from '@/hooks/use-scroll-progress';
 import { CLUB, RECORD, IMAGES, BAJA_FACTS, SIT_FACTS, CONTACTS, PATRONS } from '@/data/club';
 import { cn } from '@/lib/utils';
 
@@ -51,6 +53,12 @@ const ADVISORS = [
 const About = () => {
   const timeline = [...RECORD].reverse();
 
+  // The revision line fills as the page scrolls down the years.
+  const lineFill = useRef<HTMLSpanElement>(null);
+  const timelineRef = useScrollProgress<HTMLOListElement>((p) => {
+    if (lineFill.current) lineFill.current.style.transform = `scaleY(${p})`;
+  }, 0.62);
+
   return (
     <div className="relative bg-background overflow-x-hidden">
       {/* ═════════ HERO ═════════ */}
@@ -85,14 +93,14 @@ const About = () => {
 
           <figure className="lg:col-span-6 animate-fade-in delay-200">
             <div className="crop-marks">
-              <div className="relative overflow-hidden border border-border">
+              <CadViewport className="border border-border">
                 <img
                   src={IMAGES.teamBaja2025}
                   alt="Team AutoArchitects with car M37 at BAJA SAEINDIA 2025"
                   className="w-full aspect-[4/3] object-cover"
                 />
                 <RacePlate number="M37" size="sm" className="absolute top-4 right-4" />
-              </div>
+              </CadViewport>
             </div>
             <figcaption className="mt-4 label-mono text-[10px] text-muted-foreground">
               Fig. 1: The crew with car M37 in the paddock, BAJA SAEINDIA 2025
@@ -161,7 +169,9 @@ const About = () => {
                         )}
                       >
                         <dt className="label-mono text-[9px] text-muted-foreground">{f.label}</dt>
-                        <dd className="font-display font-extrabold italic text-3xl leading-none mt-2">{f.value}</dd>
+                        <dd className="font-display font-extrabold italic text-3xl leading-none mt-2">
+                          <Odometer value={f.value} />
+                        </dd>
                       </div>
                     ))}
                   </dl>
@@ -246,8 +256,13 @@ const About = () => {
             Every engineering drawing keeps a revision table. This is ours.
           </SectionHeader>
 
-          <ol className="relative">
+          <ol ref={timelineRef} className="relative">
             <span className="absolute left-[88px] md:left-1/2 top-0 bottom-0 w-px bg-border" aria-hidden />
+            <span
+              ref={lineFill}
+              className="absolute left-[88px] md:left-1/2 top-0 bottom-0 w-px bg-energy origin-top scale-y-0"
+              aria-hidden
+            />
             {timeline.map((m, i) => {
               const right = i % 2 === 1;
               return (

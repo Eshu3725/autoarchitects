@@ -486,6 +486,59 @@
   }
   .sponsor-lane-readout { animation: sponsorReadoutIn 0.28s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 
+  /* ── Instrument details ────────────────────────────────────────── */
+
+  /* Odometer: each digit is a reel that rolls a full turn onto its value */
+  .odo { display: inline-flex; line-height: 1; }
+  .odo-col {
+    display: inline-block;
+    height: 1em;
+    /* clip top/bottom only, so italic glyphs keep their overhang */
+    clip-path: inset(0 -0.35em);
+  }
+  .odo-reel {
+    display: flex;
+    flex-direction: column;
+    transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+  .odo-reel > span { display: block; height: 1em; line-height: 1; }
+
+  /* Headline lines rise out of a mask, one after the other */
+  @keyframes lineRise { to { transform: none; } }
+  .line-mask { display: block; clip-path: inset(-0.1em -0.25em -0.1em -0.1em); }
+  .line-rise {
+    display: block;
+    transform: translateY(125%);
+    animation: lineRise 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Mass removed, drawn the way a drawing hatches a cut section */
+  .hatch-energy {
+    background: repeating-linear-gradient(
+      -45deg,
+      hsl(var(--energy) / 0.55) 0 1px,
+      transparent 1px 7px
+    );
+  }
+
+  /* A length of powder-coated chassis tube */
+  .chassis-tube {
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      hsl(var(--energy-dark)) 0%,
+      hsl(var(--energy-light)) 34%,
+      hsl(var(--energy)) 56%,
+      hsl(6 80% 26%) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.28),
+      inset 0 -8px 12px hsl(0 0% 0% / 0.28),
+      0 14px 30px -14px hsl(var(--energy) / 0.6);
+  }
+  .chassis-tube input::placeholder { color: hsl(0 0% 100% / 0.55); }
+
   /* Live indicator */
   @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
   .animate-blink { animation: blink 1.4s steps(2, jump-none) infinite; }
@@ -561,5 +614,6 @@
     }
     .reveal { opacity: 1; transform: none; }
     .draw-line { stroke-dashoffset: 0; }
+    .line-rise { transform: none; }
   }
 }

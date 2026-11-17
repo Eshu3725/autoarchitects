@@ -1,14 +1,23 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import type { SubsystemId } from '@/data/club';
+import { terrain, FRONT_AXLE_X, REAR_AXLE_X, GROUND_Y, type RigPose } from './rig';
 
 /**
  * Side-elevation line drawing of a BAJA-style ATV.
  * Each subsystem is its own <g> so it can be highlighted to match the
  * team's departments. Not to scale — it's a schematic, and labelled as one.
+ *
+ * Pass a `rig` pose and the drawing becomes a working model: the wheels follow
+ * the ground, the sprung mass rides on the coilovers, and every link that
+ * joins the two is redrawn between its real end points.
  */
 
 type DrawId = Exclude<SubsystemId, 'operations'>;
+
+const r2 = (v: number) => Math.round(v * 100) / 100;
+/** translate() for a group that has moved up by `d`. */
+const lift = (d: number) => (d ? `translate(0 ${r2(-d)})` : undefined);
 
 const HOTSPOTS: Record<DrawId, { n: string; anchor: [number, number]; bubble: [number, number] }> = {
   chassis: { n: '01', anchor: [432, 88], bubble: [478, 46] },
@@ -42,13 +51,29 @@ function coilover(x1: number, y1: number, x2: number, y2: number, coils = 7, amp
   return pts.join(' ');
 }
 
-function Wheel({ cx, cy, r }: { cx: number; cy: number; r: number }) {
+function Wheel({ cx, cy, r, spin = 0 }: { cx: number; cy: number; r: number; spin?: number }) {
+  const hub = r * 0.53;
+  const rim = r - 14;
   return (
     <g>
       <circle cx={cx} cy={cy} r={r} pathLength={1} className="draw-line" />
-      <circle cx={cx} cy={cy} r={r - 5} strokeDasharray="5 6" strokeWidth={3} opacity={0.35} />
-      <circle cx={cx} cy={cy} r={r - 14} pathLength={1} className="draw-line" opacity={0.6} />
-      <circle cx={cx} cy={cy} r={r * 0.53} pathLength={1} className="draw-line" />
+      {/* tread blocks and rim marks turn with the wheel */}
+      <g transform={`rotate(${r2(spin)} ${cx} ${cy})`}>
+        <circle cx={cx} cy={cy} r={r - 5} strokeDasharray="5 6" strokeWidth={3} opacity={0.35} />
+        {[0, 120, 240].map((deg) => {
+          const c = Math.cos((deg * Math.PI) / 180);
+          const s = Math.sin((deg * Math.PI) / 180);
+          return (
+            <path
+              key={deg}
+              d={`M${r2(cx + c * (hub + 3))} ${r2(cy + s * (hub + 3))} L${r2(cx + c * (rim - 3))} ${r2(cy + s * (rim - 3))}`}
+              opacity={0.5}
+            />
+          );
+        })}
+      </g>
+      <circle cx={cx} cy={cy} r={rim} pathLength={1} className="draw-line" opacity={0.6} />
+      <circle cx={cx} cy={cy} r={hub} pathLength={1} className="draw-line" />
       <circle cx={cx} cy={cy} r={6} />
     </g>
   );
@@ -58,11 +83,39 @@ export default function BuggyBlueprint({
   active,
   onSelect,
   className,
+  rig,
 }: {
   active: SubsystemId | null;
   onSelect?: (id: SubsystemId) => void;
   className?: string;
+  /** Live pose from the test rig. Omit for the static drawing. */
+  rig?: RigPose;
 }) {
+  const f = rig?.front ?? 0; // front wheel lift
+  const r = rig?.rear ?? 0; // rear wheel lift
+  const h = rig?.heave ?? 0; // sprung-mass lift
+  const dist = rig?.dist ?? 0;
+  const amp = rig?.amp ?? 0;
+  const spinRear = (dist / 68) * (180 / Math.PI);
+  const spinFront = (dist / 66) * (180 / Math.PI);
+
+  // The ground: a straight datum at rest, the scrolling track when the rig runs.
+  let ground = `M30 ${GROUND_Y} H770`;
+  if (amp > 0.002) {
+    const pts: string[] = [];
+    for (let x = 30; x <= 770; x += 10) pts.push(`${x} ${r2(GROUND_Y - amp * terrain(x + dist))}`);
+    ground = `M${pts.join(' L')}`;
+  }
+
+  // Where each callout leader lands, so it follows the part it points at.
+  const anchorLift: Record<DrawId, number> = {
+    chassis: h,
+    steering: h,
+    transmission: h,
+    suspension: (h + f) / 2,
+    brakes: f,
+  };
+
   const part = (id: DrawId, children: ReactNode) => {
     const isActive = active === id;
     const dimmed = active !== null && active !== 'operations' && !isActive;
@@ -112,7 +165,7 @@ export default function BuggyBlueprint({
           DWG AA-ATV-01
         </text>
         {/* ground */}
-        <path d="M30 400 H770" strokeDasharray="10 6 2 6" />
+        <path d={ground} strokeDasharray="10 6 2 6" strokeDashoffset={r2(dist % 24)} />
         {/* wheelbase */}
         <path d="M175 406 V444 M625 406 V444" />
         <path d="M181 434 H619" markerStart="url(#bp-arrow)" markerEnd="url(#bp-arrow)" />
@@ -138,13 +191,13 @@ export default function BuggyBlueprint({
       </g>
 
       {/* Seat (reference geometry, not a subsystem) */}
-      <g style={{ color: 'hsl(var(--bone))' }} opacity={active ? 0.15 : 0.35} strokeWidth={1.2}>
+      <g style={{ color: 'hsl(var(--bone))' }} opacity={active ? 0.15 : 0.35} strokeWidth={1.2} transform={lift(h)}>
         <path d="M318 294 L338 170 L354 172 L338 284 L412 284 L414 294 Z" />
       </g>
 
       {part(
         'chassis',
-        <>
+        <g transform={lift(h)}>
           <path pathLength={1} className="draw-line" d="M110 300 L290 300 L680 302 L708 288" />
           <path pathLength={1} className="draw-line" d="M290 300 L306 96 L432 88 L560 198 L708 288" />
           <path pathLength={1} className="draw-line" d="M292 228 L586 232" />
@@ -155,76 +208,102 @@ export default function BuggyBlueprint({
           {nodes.map(([x, y]) => (
             <circle key={`${x}-${y}`} cx={x} cy={y} r={3.2} fill="hsl(var(--background))" />
           ))}
-        </>
+        </g>
       )}
 
       {part(
         'transmission',
         <>
-          <rect x="196" y="196" width="78" height="52" rx="3" />
-          <path d="M210 196 L220 160 L262 160 L270 196" />
-          <path d="M218 170 H264 M216 180 H266 M214 188 H268" opacity={0.6} />
-          <circle cx="206" cy="236" r="12" />
-          <rect x="212" y="286" width="46" height="36" rx="3" />
-          <circle cx="232" cy="302" r="15" />
-          <path d="M195 241 L218 314 M217 230 L246 292" />
-          <path d="M212 314 L181 328" strokeWidth={3} />
+          <g transform={lift(h)}>
+            <rect x="196" y="196" width="78" height="52" rx="3" />
+            <path d="M210 196 L220 160 L262 160 L270 196" />
+            <path d="M218 170 H264 M216 180 H266 M214 188 H268" opacity={0.6} />
+            <circle cx="206" cy="236" r="12" />
+            <rect x="212" y="286" width="46" height="36" rx="3" />
+            <circle cx="232" cy="302" r="15" />
+            <path d="M195 241 L218 314 M217 230 L246 292" />
+          </g>
+          {/* half-shaft: gearbox end rides with the chassis, hub end with the wheel */}
+          <path d={`M212 ${r2(314 - h)} L181 ${r2(328 - r)}`} strokeWidth={3} />
         </>
       )}
 
       {part(
         'suspension',
         <>
-          {/* front double wishbone */}
-          <path d="M586 252 L620 300 M604 304 L632 362 M620 300 L632 362" />
-          <path d={coilover(562, 208, 616, 338)} />
+          {/* front double wishbone: inboard pivots on the chassis, upright on the wheel */}
+          <path
+            d={`M586 ${r2(252 - h)} L620 ${r2(300 - f)} M604 ${r2(304 - h)} L632 ${r2(362 - f)} M620 ${r2(300 - f)} L632 ${r2(362 - f)}`}
+          />
+          <path d={coilover(562, r2(208 - h), 616, r2(338 - (h + 0.43 * (f - h))))} />
           {/* rear trailing links */}
-          <path d="M290 300 L180 326 M282 318 L182 338" />
-          <path d={coilover(128, 238, 172, 320, 6)} />
+          <path d={`M290 ${r2(300 - h)} L180 ${r2(326 - r)} M282 ${r2(318 - h)} L182 ${r2(338 - r)}`} />
+          <path d={coilover(128, r2(238 - h), 172, r2(320 - r), 6)} />
         </>
       )}
 
       {part(
         'steering',
         <>
-          <ellipse cx="468" cy="164" rx="6" ry="24" transform="rotate(-35 468 164)" />
-          <path d="M473 172 L590 262" />
-          <rect x="584" y="256" width="26" height="12" rx="2" />
-          <path d="M610 262 L624 316" />
+          <g transform={lift(h)}>
+            <ellipse cx="468" cy="164" rx="6" ry="24" transform="rotate(-35 468 164)" />
+            <path d="M473 172 L590 262" />
+            <rect x="584" y="256" width="26" height="12" rx="2" />
+          </g>
+          {/* tie rod: rack to steering arm */}
+          <path d={`M610 ${r2(262 - h)} L624 ${r2(316 - f)}`} />
         </>
       )}
 
       {part(
         'brakes',
         <>
-          <circle cx="175" cy="330" r="24" />
-          <circle cx="175" cy="330" r="16" strokeDasharray="3 4" />
-          <circle cx="625" cy="332" r="23" />
-          <circle cx="625" cy="332" r="15" strokeDasharray="3 4" />
-          <rect x="146" y="306" width="12" height="18" rx="2" />
-          <rect x="640" y="308" width="12" height="18" rx="2" />
-          <path d="M676 294 L662 254 M656 252 H670" />
-          <rect x="644" y="264" width="14" height="8" rx="1" />
-          <path d="M646 308 C 648 292 636 292 600 292 L 180 292 L 156 306" strokeDasharray="6 5" opacity={0.8} />
+          {/* discs turn with the wheels, calipers ride on the uprights */}
+          <g transform={lift(r)}>
+            <circle cx="175" cy="330" r="24" />
+            <circle cx="175" cy="330" r="16" strokeDasharray="3 4" transform={`rotate(${r2(spinRear)} 175 330)`} />
+            <rect x="146" y="306" width="12" height="18" rx="2" />
+          </g>
+          <g transform={lift(f)}>
+            <circle cx="625" cy="332" r="23" />
+            <circle cx="625" cy="332" r="15" strokeDasharray="3 4" transform={`rotate(${r2(spinFront)} 625 332)`} />
+            <rect x="640" y="308" width="12" height="18" rx="2" />
+          </g>
+          {/* pedal and master cylinder on the chassis */}
+          <g transform={lift(h)}>
+            <path d="M676 294 L662 254 M656 252 H670" />
+            <rect x="644" y="264" width="14" height="8" rx="1" />
+          </g>
+          <path
+            d={`M646 ${r2(308 - f)} C 648 ${r2(292 - h)} 636 ${r2(292 - h)} 600 ${r2(292 - h)} L 180 ${r2(292 - h)} L 156 ${r2(306 - r)}`}
+            strokeDasharray="6 5"
+            opacity={0.8}
+          />
         </>
       )}
 
       {/* Wheels sit on top as reference geometry */}
       <g style={{ color: 'hsl(var(--bone))' }} opacity={active && active !== 'operations' ? 0.35 : 0.8} strokeWidth={1.5}>
-        <Wheel cx={175} cy={330} r={68} />
-        <Wheel cx={625} cy={332} r={66} />
+        <g transform={lift(r)}>
+          <Wheel cx={REAR_AXLE_X} cy={330} r={68} spin={spinRear} />
+        </g>
+        <g transform={lift(f)}>
+          <Wheel cx={FRONT_AXLE_X} cy={332} r={66} spin={spinFront} />
+        </g>
       </g>
 
       {/* Hotspots */}
       {(Object.keys(HOTSPOTS) as DrawId[]).map((id) => {
-        const h = HOTSPOTS[id];
+        const spot = HOTSPOTS[id];
         const isActive = active === id;
+        const ax = spot.anchor[0];
+        const ay = r2(spot.anchor[1] - anchorLift[id]);
         return (
           <g
             key={id}
             role="button"
             tabIndex={0}
-            aria-label={`Highlight subsystem ${h.n}`}
+            aria-label={`Highlight subsystem ${spot.n}`}
             className="cursor-pointer outline-none"
             onClick={() => onSelect?.(id)}
             onMouseEnter={() => onSelect?.(id)}
@@ -234,22 +313,18 @@ export default function BuggyBlueprint({
             }}
             style={{ color: isActive ? 'hsl(var(--energy))' : 'hsl(var(--bone))' }}
           >
-            <path
-              d={`M${h.anchor[0]} ${h.anchor[1]} L${h.bubble[0]} ${h.bubble[1]}`}
-              strokeWidth={1}
-              opacity={isActive ? 1 : 0.5}
-            />
-            <circle cx={h.anchor[0]} cy={h.anchor[1]} r={3} fill="currentColor" stroke="none" />
+            <path d={`M${ax} ${ay} L${spot.bubble[0]} ${spot.bubble[1]}`} strokeWidth={1} opacity={isActive ? 1 : 0.5} />
+            <circle cx={ax} cy={ay} r={3} fill="currentColor" stroke="none" />
             <circle
-              cx={h.bubble[0]}
-              cy={h.bubble[1]}
+              cx={spot.bubble[0]}
+              cy={spot.bubble[1]}
               r={15}
               fill={isActive ? 'hsl(var(--energy))' : 'hsl(var(--background))'}
               strokeWidth={1.5}
             />
             <text
-              x={h.bubble[0]}
-              y={h.bubble[1] + 4}
+              x={spot.bubble[0]}
+              y={spot.bubble[1] + 4}
               textAnchor="middle"
               fontSize="11"
               fontWeight="700"
@@ -257,7 +332,7 @@ export default function BuggyBlueprint({
               fill={isActive ? 'white' : 'currentColor'}
               stroke="none"
             >
-              {h.n}
+              {spot.n}
             </text>
           </g>
         );
